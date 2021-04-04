@@ -78,8 +78,8 @@ export class Player {
   changeSpeed(n: number) {
     this.speed += n;
 
-    if (this.speed > 1) {
-      this.speed = 1;
+    if (this.speed > 2) {
+      this.speed = 2;
     }
 
     if (this.speed < 0) {

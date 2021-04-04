@@ -14,22 +14,26 @@ export class Game {
   scale = 2;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  width: number;
-  height: number;
+  width: number = 600;
+  height: number = 600;
   keys: { [id: string]: Boolean } = {};
   players: Player[] = [];
   player: Player;
   socket: WebSocket;
   status: Status = Status.DISCONNECTED;
+  downloadedPlayers: Player[] = [];
 
   constructor(c: HTMLCanvasElement) {
     this.canvas = c;
     this.ctx = c.getContext("2d") as CanvasRenderingContext2D; // we know we will always get a context
 
-    this.canvas.width = window.innerWidth;
-    this.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    this.height = window.innerHeight;
+    //this.canvas.width = window.innerWidth;
+    //this.width = window.innerWidth;
+    //this.canvas.height = window.innerHeight;
+    //this.height = window.innerHeight;
+
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
 
     this.player = new Player(null); // dummy player
 
@@ -52,7 +56,7 @@ export class Game {
 
   ready() {
     this.tick();
-    this.render();
+    this.render(0);
   }
 
   handle(data: MessageEvent) {
@@ -73,7 +77,7 @@ export class Game {
         }
       }
 
-      this.players = tempPlayers;
+      this.downloadedPlayers = tempPlayers;
     } else {
       if (this.status == Status.CONNECTED) {
         this.player = new Player(msg);
@@ -93,11 +97,11 @@ export class Game {
         this.player.changeSpeed(-0.1);
       }
 
-      if (this.keys["a"]) {
+      if (this.keys["d"]) {
         this.player.changeHeading(1);
       }
 
-      if (this.keys["d"]) {
+      if (this.keys["a"]) {
         this.player.changeHeading(-1);
       }
 
@@ -107,17 +111,22 @@ export class Game {
     setTimeout(() => this.tick(), TICK);
   }
 
-  render() {
+  render(i: number) {
     if (this.status == Status.READY) {
-      this.ctx.clearRect(0, 0, this.width, this.height);
+      if (this.downloadedPlayers.length > 0) {
+        this.players = this.downloadedPlayers;
+        this.downloadedPlayers = [];
+      }
 
-      this.player.render(this.ctx, this.scale);
+      this.ctx.clearRect(0, 0, this.width, this.height);
 
       this.players.forEach((player) => {
         player.render(this.ctx, this.scale);
       });
+
+      this.player.render(this.ctx, this.scale);
     }
 
-    window.requestAnimationFrame(() => this.render());
+    window.requestAnimationFrame(() => this.render(i + 1));
   }
 }
