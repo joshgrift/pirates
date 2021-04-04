@@ -1,0 +1,29 @@
+{
+  "name": "pirates",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc client/src/main.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dotjersh/pirates.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dotjersh/pirates/issues"
+  },
+  "homepage": "https://github.com/dotjersh/pirates#readme",
+  "dependencies": {
+    "@types/node": "^14.14.37",
+    "ts-loader": "^8.1.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3",
+    "webpack": "^5.30.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.6.0"
+  }
+}
