@@ -1,3 +1,5 @@
+import { ids } from "webpack";
+import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
 
 export class Player {
@@ -7,7 +9,7 @@ export class Player {
   y: number;
   heading: number = 90; // in degrees
   speed: number = 1;
-  id: number;
+  id: string;
   health: number = 0;
 
   constructor(d: PlayerInTransit | null) {
@@ -19,7 +21,7 @@ export class Player {
       this.speed = d.speed;
       this.health = d.health;
     } else {
-      this.id = 0;
+      this.id = "none";
       this.x = 0;
       this.y = 0;
       this.heading = 0;
@@ -43,36 +45,12 @@ export class Player {
     );
   }
 
-  render(ctx: CanvasRenderingContext2D, scale: number): void {
+  render(map: Map): void {
     if (this.health <= 0) {
       this.sprite = this.deadSprite;
     }
 
-    ctx.save();
-    ctx.translate(
-      this.x + Math.floor(this.sprite.width / scale / 2),
-      this.y + Math.floor(this.sprite.height / scale / 2)
-    );
-    ctx.rotate(((this.heading - 90) * Math.PI) / 180.0);
-
-    ctx.translate(
-      -(this.x + Math.floor(this.sprite.width / scale / 2)),
-      -(this.y + Math.floor(this.sprite.height / scale / 2))
-    );
-
-    ctx.drawImage(
-      this.sprite.sheet.img,
-      this.sprite.x,
-      this.sprite.y,
-      this.sprite.width,
-      this.sprite.height,
-      this.x,
-      this.y,
-      Math.floor(this.sprite.width / scale),
-      Math.floor(this.sprite.height / scale)
-    );
-
-    ctx.restore();
+    map.drawSprite(this.sprite, this.x, this.y, this.heading);
   }
 
   changeSpeed(n: number) {
@@ -108,7 +86,7 @@ export class Player {
 export type PlayerInTransit = {
   x: number;
   y: number;
-  id: number;
+  id: string;
   heading: number;
   speed: number;
   health: number;

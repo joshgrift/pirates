@@ -1,16 +1,3 @@
-import { Map } from "./Map";
-import { Sprite, Spritesheet } from "./Sprites";
-
-export type EntityInTransit = {
-  type: string;
-  x: number;
-  y: number;
-  health: number;
-  id: string;
-  speed: number;
-  heading: number;
-};
-
 export class Entity {
   x: number;
   y: number;
@@ -19,7 +6,7 @@ export class Entity {
   id: string;
   type: string;
   heading: number;
-  spritesheet: Spritesheet;
+  dead: Boolean = false;
 
   constructor(d: EntityInTransit) {
     this.type = d.type;
@@ -29,18 +16,12 @@ export class Entity {
     this.health = d.health;
     this.speed = d.speed;
     this.heading = d.heading;
-
-    this.spritesheet = new Spritesheet("./assets/ships.png");
   }
 
-  render(map: Map): void {
-    if (this.type == "explosion") {
-      map.drawSprite(
-        new Sprite(map.ENTITY_SHEET, 0, 0, 74, 75),
-        this.x,
-        this.y,
-        this.heading
-      );
+  tick(): void {
+    this.health--;
+    if (this.health <= 0) {
+      this.dead = true;
     }
   }
 
@@ -56,3 +37,13 @@ export class Entity {
     };
   }
 }
+
+export type EntityInTransit = {
+  type: string;
+  x: number;
+  y: number;
+  health: number;
+  id: string;
+  speed: number;
+  heading: number;
+};

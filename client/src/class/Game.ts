@@ -1,6 +1,7 @@
 import { Map } from "./Map";
 //import { World } from "./World";
 import { Player, PlayerInTransit } from "./Player";
+import { Entity, EntityInTransit } from "./WorldObjects";
 
 const TICK = 50; // should probably match server unless you're a chad
 
@@ -11,29 +12,19 @@ enum Status {
 }
 
 export class Game {
-  scale = 2;
-  canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
-  width: number = 600;
-  height: number = 600;
+  map: Map;
   keys: { [id: string]: Boolean } = {};
+
   players: Player[] = [];
+  entities: Entity[] = [];
+
   player: Player;
+
   socket: WebSocket;
   status: Status = Status.DISCONNECTED;
-  downloadedPlayers: Player[] = [];
 
   constructor(c: HTMLCanvasElement) {
-    this.canvas = c;
-    this.ctx = c.getContext("2d") as CanvasRenderingContext2D; // we know we will always get a context
-
-    //this.canvas.width = window.innerWidth;
-    //this.width = window.innerWidth;
-    //this.canvas.height = window.innerHeight;
-    //this.height = window.innerHeight;
-
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
+    this.map = new Map(c);
 
     this.player = new Player(null); // dummy player
 
@@ -60,15 +51,21 @@ export class Game {
   }
 
   handle(data: MessageEvent) {
-    let msg = JSON.parse(data.data) as PlayerInTransit[] | PlayerInTransit;
+    let msg = JSON.parse(data.data) as Payload | PlayerInTransit;
 
-    if (msg instanceof Array) {
+    if (this.status == Status.CONNECTED) {
+      this.player = new Player(msg as PlayerInTransit);
+      this.ready();
+      this.status = Status.READY;
+    } else {
       let tempPlayers: Player[] = [];
-      for (let p of msg) {
+      let foundMe = false;
+      for (let p of (msg as Payload).players) {
         if (p.id != this.player.id) {
           var player = new Player(p);
           tempPlayers.push(player);
         } else {
+          foundMe = true;
           this.player.x = p.x;
           this.player.y = p.y;
           this.player.heading = p.heading;
@@ -77,12 +74,15 @@ export class Game {
         }
       }
 
-      this.downloadedPlayers = tempPlayers;
-    } else {
-      if (this.status == Status.CONNECTED) {
-        this.player = new Player(msg);
-        this.ready();
-        this.status = Status.READY;
+      if (!foundMe && this.status == Status.READY) {
+        alert("You died");
+      }
+
+      this.players = tempPlayers;
+
+      this.entities = [];
+      for (let e of (msg as Payload).entities) {
+        this.entities.push(new Entity(e));
       }
     }
   }
@@ -113,20 +113,24 @@ export class Game {
 
   render(i: number) {
     if (this.status == Status.READY) {
-      if (this.downloadedPlayers.length > 0) {
-        this.players = this.downloadedPlayers;
-        this.downloadedPlayers = [];
-      }
-
-      this.ctx.clearRect(0, 0, this.width, this.height);
+      this.map.clear();
 
       this.players.forEach((player) => {
-        player.render(this.ctx, this.scale);
+        player.render(this.map);
       });
 
-      this.player.render(this.ctx, this.scale);
+      this.entities.forEach((entity) => {
+        entity.render(this.map);
+      });
+
+      this.player.render(this.map);
     }
 
     window.requestAnimationFrame(() => this.render(i + 1));
   }
 }
+
+type Payload = {
+  players: PlayerInTransit[];
+  entities: EntityInTransit[];
+};

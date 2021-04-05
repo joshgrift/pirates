@@ -1,7 +1,7 @@
 export type PlayerInTransit = {
   x: number;
   y: number;
-  id: number;
+  id: string;
   heading: number;
   speed: number;
   health: number;
@@ -10,10 +10,11 @@ export type PlayerInTransit = {
 export class Player {
   x: number;
   y: number;
-  id: number;
+  id: string;
   heading: number;
   speed: number;
   health: number;
+  dead: Boolean = false;
 
   constructor(p: PlayerInTransit) {
     this.x = p.x;
@@ -40,5 +41,9 @@ export class Player {
       speed: this.speed,
       health: this.health,
     };
+  }
+
+  kill() {
+    this.dead = true;
   }
 }
