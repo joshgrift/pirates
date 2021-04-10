@@ -1,15 +1,6 @@
+import { EntityInTransit, EntityType } from "../Protocol";
 import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
-
-export type EntityInTransit = {
-  type: string;
-  x: number;
-  y: number;
-  health: number;
-  id: string;
-  speed: number;
-  heading: number;
-};
 
 export class Entity {
   x: number;
@@ -17,7 +8,7 @@ export class Entity {
   speed: number;
   health: number;
   id: string;
-  type: string;
+  type: EntityType;
   heading: number;
   spritesheet: Spritesheet;
 
@@ -34,9 +25,16 @@ export class Entity {
   }
 
   render(map: Map): void {
-    if (this.type == "explosion") {
+    if (this.type == EntityType.SHIP_EXPLOSION) {
       map.drawSprite(
         new Sprite(map.ENTITY_SHEET, 0, 0, 74, 75),
+        this.x,
+        this.y,
+        this.heading
+      );
+    } else if (this.type == EntityType.CANNON_BALL) {
+      map.drawSprite(
+        new Sprite(map.ENTITY_SHEET, 120, 29, 10, 10),
         this.x,
         this.y,
         this.heading

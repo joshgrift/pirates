@@ -1,5 +1,5 @@
 import * as WebSocket from "ws";
-import { PlayerInTransit } from "./Player";
+import { ServerClientPayload } from "./Protocol";
 
 export class SocketServer {
   server: WebSocket.Server;
@@ -12,21 +12,11 @@ export class SocketServer {
     this.server.on("connection", callback);
   }
 
-  broadcast(message: Object) {
+  broadcast(payload: ServerClientPayload) {
     this.server.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(message));
+        client.send(JSON.stringify(payload));
       }
     });
   }
 }
-
-export enum PayloadType {
-  INIT,
-  UPDATE,
-}
-
-export type Payload = {
-  type: PayloadType;
-  data: PlayerInTransit[] | PlayerInTransit;
-};

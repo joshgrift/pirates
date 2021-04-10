@@ -1,5 +1,7 @@
 import { Sprite, Spritesheet } from "./Sprites";
 
+const DEBUG = true;
+
 export class Map {
   scale = 2;
   canvas: HTMLCanvasElement;
@@ -19,16 +21,18 @@ export class Map {
   }
 
   drawSprite(sprite: Sprite, x: number, y: number, heading: number = 0) {
+    let drawX = x - Math.floor(sprite.width / this.scale) / 2;
+    let drawY = y - Math.floor(sprite.height / this.scale) / 2;
     this.ctx.save();
     this.ctx.translate(
-      x + Math.floor(sprite.width / this.scale / 2),
-      y + Math.floor(sprite.height / this.scale / 2)
+      drawX + Math.floor(sprite.width / this.scale / 2),
+      drawY + Math.floor(sprite.height / this.scale / 2)
     );
     this.ctx.rotate(((heading - 90) * Math.PI) / 180.0);
 
     this.ctx.translate(
-      -(x + Math.floor(sprite.width / this.scale / 2)),
-      -(y + Math.floor(sprite.height / this.scale / 2))
+      -(drawX + Math.floor(sprite.width / this.scale / 2)),
+      -(drawY + Math.floor(sprite.height / this.scale / 2))
     );
 
     this.ctx.drawImage(
@@ -37,11 +41,21 @@ export class Map {
       sprite.y,
       sprite.width,
       sprite.height,
-      x,
-      y,
+      drawX,
+      drawY,
       Math.floor(sprite.width / this.scale),
       Math.floor(sprite.height / this.scale)
     );
+
+    if (DEBUG) {
+      this.ctx.strokeStyle = "red";
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, 35 / 2, 0, 2 * Math.PI);
+      this.ctx.stroke();
+
+      this.ctx.fillStyle = "black";
+      this.ctx.fillRect(x - 2, y - 2, 4, 4);
+    }
 
     this.ctx.restore();
   }

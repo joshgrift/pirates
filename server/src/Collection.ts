@@ -5,8 +5,12 @@ export class Collection<T> {
     this.data[id] = t;
   }
 
-  get(id: string): T {
-    return this.data[id];
+  get(id: string): T | null {
+    if (this.data[id]) {
+      return this.data[id];
+    } else {
+      return null;
+    }
   }
 
   remove(id: string) {

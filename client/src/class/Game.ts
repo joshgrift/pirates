@@ -1,88 +1,106 @@
+import { STATUS_CODES } from "node:http";
+import {
+  ClientServerPayload,
+  ServerClientPayload,
+  Skin,
+  TICK,
+} from "../Protocol";
 import { Map } from "./Map";
-//import { World } from "./World";
-import { Player, PlayerInTransit } from "./Player";
-import { Entity, EntityInTransit } from "./WorldObjects";
-
-const TICK = 50; // should probably match server unless you're a chad
+import { Player } from "./Player";
+import { Entity } from "./WorldObjects";
 
 enum Status {
   READY,
-  CONNECTED,
   DISCONNECTED,
 }
 
 export class Game {
+  readonly MAX_PINGS = 100;
+  last_ping: number = Date.now();
+  pings: number[] = [];
   map: Map;
-  keys: { [id: string]: Boolean } = {};
-
   players: Player[] = [];
   entities: Entity[] = [];
 
   player: Player;
+  keys: { [id: string]: Boolean } = {};
 
-  socket: WebSocket;
   status: Status = Status.DISCONNECTED;
+  socket: WebSocket;
 
   constructor(c: HTMLCanvasElement) {
+    this.socket = new WebSocket("ws://localhost:3000");
     this.map = new Map(c);
 
-    this.player = new Player(null); // dummy player
+    this.player = new Player({
+      x: 0,
+      y: 0,
+      speed: 0,
+      health: 100,
+      id: "player" + Date.now(),
+      heading: 90,
+      skin: Skin.BLUE,
+      dead: false,
+    });
+
+    this.socket.onopen = () => {
+      this.send(this.player.toJSON());
+    };
+
+    this.socket.onmessage = (d) => {
+      this.handle(d);
+      if (this.status == Status.DISCONNECTED) {
+        this.ready();
+      }
+    };
 
     document.addEventListener("keydown", (e) => {
+      if (e.key == " ") {
+        console.log("shoot");
+      }
       this.keys[e.key] = true;
     });
 
     document.addEventListener("keyup", (e) => {
       this.keys[e.key] = false;
     });
-
-    this.socket = new WebSocket("ws://localhost:3000");
-
-    this.socket.onopen = () => {
-      this.status = Status.CONNECTED;
-    };
-
-    this.socket.onmessage = (d) => this.handle(d);
   }
 
   ready() {
+    this.status = Status.READY;
     this.tick();
-    this.render(0);
+    this.render();
+  }
+
+  send(d: ClientServerPayload) {
+    this.socket.send(JSON.stringify(d));
   }
 
   handle(data: MessageEvent) {
-    let msg = JSON.parse(data.data) as Payload | PlayerInTransit;
+    this.pings.push(Date.now() - this.last_ping);
+    if (this.pings.length > this.MAX_PINGS) {
+      this.pings.shift();
+    }
+    this.last_ping = Date.now();
 
-    if (this.status == Status.CONNECTED) {
-      this.player = new Player(msg as PlayerInTransit);
-      this.ready();
-      this.status = Status.READY;
-    } else {
-      let tempPlayers: Player[] = [];
-      let foundMe = false;
-      for (let p of (msg as Payload).players) {
-        if (p.id != this.player.id) {
-          var player = new Player(p);
-          tempPlayers.push(player);
-        } else {
-          foundMe = true;
-          this.player.x = p.x;
-          this.player.y = p.y;
-          this.player.heading = p.heading;
-          this.player.speed = p.speed;
-          this.player.health = p.health;
-        }
-      }
+    let msg = JSON.parse(data.data) as ServerClientPayload;
 
-      if (!foundMe && this.status == Status.READY) {
-        alert("You died");
-      }
+    this.entities = [];
+    for (let e of msg.entities) {
+      this.entities.push(new Entity(e));
+    }
 
-      this.players = tempPlayers;
-
-      this.entities = [];
-      for (let e of (msg as Payload).entities) {
-        this.entities.push(new Entity(e));
+    this.players = [];
+    for (let p of msg.players) {
+      if (p.id != this.player.id) {
+        this.players.push(new Player(p));
+      } else {
+        this.player.dead = p.dead;
+        this.player.x = p.x;
+        this.player.y = p.y;
+        this.player.heading = p.heading;
+        this.player.speed = p.speed;
+        this.player.health = p.health;
       }
     }
   }
@@ -90,11 +108,11 @@ export class Game {
   tick() {
     if (this.status == Status.READY) {
       if (this.keys["w"]) {
-        this.player.changeSpeed(0.1);
+        this.player.accelerate(0.1);
       }
 
       if (this.keys["s"]) {
-        this.player.changeSpeed(-0.1);
+        this.player.accelerate(-0.1);
       }
 
       if (this.keys["d"]) {
@@ -105,13 +123,20 @@ export class Game {
         this.player.changeHeading(-1);
       }
 
-      this.socket.send(JSON.stringify(this.player));
+      this.send(this.player.toJSON());
+
+      setTimeout(() => this.tick(), TICK);
     }
 
-    setTimeout(() => this.tick(), TICK);
+    this.updateUIElement("#speed", this.player.speed);
+    this.updateUIElement("#acceleration", this.player.acceleration);
+    this.updateUIElement("#health", this.player.health);
+    this.updateUIElement("#heading", this.player.heading);
+    this.updateUIElement("#ping", avg(this.pings));
+    this.updateUIElement("#dead", this.player.dead ? 1 : 0);
   }
 
-  render(i: number) {
+  render() {
     if (this.status == Status.READY) {
       this.map.clear();
 
@@ -119,18 +144,34 @@ export class Game {
         player.render(this.map);
       });
 
+      this.player.render(this.map);
+
       this.entities.forEach((entity) => {
         entity.render(this.map);
       });
-
-      this.player.render(this.map);
     }
 
-    window.requestAnimationFrame(() => this.render(i + 1));
+    window.requestAnimationFrame(() => {
+      if (this.status == Status.READY) {
+        this.render();
+      }
+    });
+  }
+
+  updateUIElement(query: string, value: number) {
+    let e = document.querySelector(query);
+
+    if (e) {
+      e.innerHTML = Math.round(10 * value) / 10 + "";
+    }
   }
 }
 
-type Payload = {
-  players: PlayerInTransit[];
-  entities: EntityInTransit[];
-};
+function avg(d: number[]) {
+  var sum = 0;
+  for (let n of d) {
+    sum += n;
+  }
+
+  return Math.floor(sum / d.length);
+}
