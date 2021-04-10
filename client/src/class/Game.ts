@@ -111,6 +111,7 @@ export class Game {
         this.player.speed = p.speed;
         this.player.health = p.health;
         this.player.kills = p.kills;
+        this.player.deaths - p.deaths;
       }
     }
 

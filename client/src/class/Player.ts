@@ -81,6 +81,7 @@ export class Player {
     this.dead = d.dead;
     this.kills = d.kills;
     this.sprite = SPRITE[this.skin].alive;
+    this.deaths = d.deaths;
   }
 
   render(map: Map): void {

@@ -70,8 +70,8 @@ export class World {
         // collisions
         this.players.forEach((p2) => {
           if (p.collidingWith(p2)) {
-            p.damage(-10);
-            p2.damage(-10);
+            p.damage(-50);
+            p2.damage(-50);
 
             this.spawn(
               new Entity({
