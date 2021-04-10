@@ -1,6 +1,6 @@
 import { Sprite, Spritesheet } from "./Sprites";
 
-const DEBUG = true;
+const DEBUG = false;
 
 export class Map {
   scale = 2;

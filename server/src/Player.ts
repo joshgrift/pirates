@@ -13,6 +13,7 @@ export class Player {
   readonly RADIUS: number = 17.5;
   readonly WATER_BOI: number = 0.8;
   readonly MAX_ACC: number = 0.5;
+  readonly LOAD_TIME: number = 1000;
   x: number;
   y: number;
   id: string;
@@ -23,6 +24,8 @@ export class Player {
   skin: Skin;
   dead: boolean = false;
   cannon: CannonDirection = CannonDirection.OFF;
+  last_fired_left: number = 0;
+  last_fired_right: number = 0;
 
   constructor(p: playerConstructor) {
     this.id = p.id;
@@ -70,7 +73,24 @@ export class Player {
     }
   }
 
+  canFire(): boolean {
+    return (
+      (this.cannon == CannonDirection.LEFT &&
+        Date.now() - this.last_fired_left >= this.LOAD_TIME) ||
+      (this.cannon == CannonDirection.RIGHT &&
+        Date.now() - this.last_fired_right >= this.LOAD_TIME)
+    );
+  }
+
   fire() {
+    if (this.cannon == CannonDirection.RIGHT) {
+      this.last_fired_right = Date.now();
+    }
+
+    if (this.cannon == CannonDirection.LEFT) {
+      this.last_fired_left = Date.now();
+    }
+
     this.cannon = CannonDirection.OFF;
   }
 
@@ -85,6 +105,14 @@ export class Player {
       skin: this.skin,
       dead: this.dead,
     };
+  }
+
+  damage(n: number) {
+    this.health += n;
+
+    if (this.health <= 0) {
+      this.dead = true;
+    }
   }
 
   kill() {

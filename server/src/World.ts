@@ -1,3 +1,4 @@
+import e from "express";
 import { Collection } from "./Collection";
 import { Entity } from "./Entity";
 import { Player } from "./Player";
@@ -47,7 +48,7 @@ export class World {
         p.applyAcceleration();
 
         // shots
-        if (p.cannon != CannonDirection.OFF) {
+        if (p.canFire()) {
           let id = p.id + "shot" + Date.now();
 
           this.spawn(
@@ -57,7 +58,9 @@ export class World {
               x: p.x,
               y: p.y,
               speed: 10,
+              health: 20,
               heading: p.heading + p.cannon,
+              damage: 10,
             })
           );
 
@@ -88,6 +91,29 @@ export class World {
 
     this.entities.forEach((e) => {
       e.tick();
+
+      this.players.forEach((p) => {
+        if (e.collisionWith(p)) {
+          if (e.type == EntityType.CANNON_BALL) {
+            p.damage(-e.damage);
+            e.kill();
+
+            var ball = new Entity({
+              type: EntityType.SHIP_EXPLOSION,
+              x: e.x,
+              y: e.y,
+              speed: 0,
+              health: 10,
+              id: p.id + "and" + e.id + "explosion",
+              heading: 0,
+            });
+            ball.tick();
+
+            this.spawn(ball);
+          }
+        }
+      });
+
       if (e.dead) {
         this.entities.remove(e.id);
       }

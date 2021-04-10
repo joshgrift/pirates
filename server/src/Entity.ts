@@ -1,3 +1,4 @@
+import { Player } from "./Player";
 import { EntityInTransit, EntityType } from "./Protocol";
 
 type EntityConstructor = {
@@ -8,6 +9,7 @@ type EntityConstructor = {
   health?: number;
   speed: number;
   heading: number;
+  damage?: number;
 };
 
 export class Entity {
@@ -18,7 +20,9 @@ export class Entity {
   id: string;
   type: EntityType;
   heading: number;
+  damage: number = 0;
   dead: Boolean = false;
+  radius: number = 4;
 
   constructor(d: EntityConstructor) {
     this.type = d.type;
@@ -30,8 +34,26 @@ export class Entity {
       this.health = d.health;
     }
 
+    if (d.damage) {
+      this.damage = d.damage;
+    }
+
     this.speed = d.speed;
     this.heading = d.heading;
+  }
+
+  collisionWith(p: Player): boolean {
+    if (!p.dead) {
+      let distance = Math.sqrt(
+        Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2)
+      );
+
+      if (distance <= p.RADIUS + this.radius && this.health < 15) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   tick(): void {
@@ -44,6 +66,10 @@ export class Entity {
       this.x += this.speed * Math.cos((this.heading * Math.PI) / 180.0);
       this.y += this.speed * Math.sin((this.heading * Math.PI) / 180.0);
     }
+  }
+
+  kill() {
+    this.dead = true;
   }
 
   toJSON(): EntityInTransit {

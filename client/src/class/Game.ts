@@ -1,5 +1,5 @@
-import { STATUS_CODES } from "node:http";
 import {
+  CannonDirection,
   ClientServerPayload,
   ServerClientPayload,
   Skin,
@@ -55,9 +55,16 @@ export class Game {
     };
 
     document.addEventListener("keydown", (e) => {
-      if (e.key == " ") {
-        console.log("shoot");
+      if (e.key == ".") {
+        this.player.cannon = CannonDirection.RIGHT;
+        console.log(this.player.cannon);
       }
+
+      if (e.key == ",") {
+        this.player.cannon = CannonDirection.LEFT;
+        console.log(this.player.cannon);
+      }
+
       this.keys[e.key] = true;
     });
 
@@ -74,6 +81,7 @@ export class Game {
 
   send(d: ClientServerPayload) {
     this.socket.send(JSON.stringify(d));
+    this.player.cannon = CannonDirection.OFF;
   }
 
   handle(data: MessageEvent) {
