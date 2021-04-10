@@ -6,7 +6,7 @@ export class Map {
   scale = 2;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  width: number = 600;
+  width: number = 1200;
   height: number = 600;
 
   readonly ENTITY_SHEET: Spritesheet = new Spritesheet("./assets/ships.png");

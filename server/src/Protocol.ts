@@ -2,7 +2,7 @@
  * This file should stay in sync with the same file on the client. It
  * defines the communication protocol between the client and server.
  *
- * @version 0.1
+ * @version 0.2
  */
 
 /**
@@ -60,6 +60,11 @@ export type ClientServerPayload = {
    * Heading in degrees cause I'm funny like that
    */
   heading: number;
+
+  /**
+   * Skin
+   */
+  skin: Skin;
 };
 
 /**
@@ -74,6 +79,8 @@ export type PlayerInTransit = {
   health: number;
   skin: Skin;
   dead: boolean;
+  kills: number;
+  deaths: number;
 };
 
 /**
@@ -83,6 +90,8 @@ export enum Skin {
   RED,
   BLUE,
   GREEN,
+  YELLOW,
+  BLACK,
 }
 
 /**

@@ -3,7 +3,6 @@ import { Collection } from "./Collection";
 import { Entity } from "./Entity";
 import { Player } from "./Player";
 import {
-  CannonDirection,
   ClientServerPayload,
   EntityType,
   ServerClientPayload,
@@ -11,6 +10,8 @@ import {
 } from "./Protocol";
 
 export class World {
+  readonly TIMEOUT: number = 2000;
+  readonly RESPAWN_TIME: number = 5000;
   height: number = 600;
   width: number = 600;
   players: Collection<Player> = new Collection();
@@ -27,23 +28,21 @@ export class World {
         x: random(this.width),
         y: random(this.height),
         heading: 90,
-        skin: Skin.RED,
+        skin: update.skin,
       });
 
       this.players.add(update.id, player);
     }
 
     // update player with details
-    if (!player.dead) {
-      player.heading = update.heading;
-      player.cannon = update.cannon;
-      player.acceleration = update.acceleration;
-    }
+    player.update(update);
   }
 
   tick() {
     this.players.forEach((p) => {
-      if (!p.dead) {
+      if (Date.now() - p.last_ping_time > this.TIMEOUT) {
+        this.players.remove(p.id);
+      } else if (!p.dead) {
         p.move();
         p.applyAcceleration();
 
@@ -61,6 +60,7 @@ export class World {
               health: 20,
               heading: p.heading + p.cannon,
               damage: 10,
+              owner: p,
             })
           );
 
@@ -70,8 +70,8 @@ export class World {
         // collisions
         this.players.forEach((p2) => {
           if (p.collidingWith(p2)) {
-            p.kill();
-            p2.kill();
+            p.damage(-10);
+            p2.damage(-10);
 
             this.spawn(
               new Entity({
@@ -86,6 +86,10 @@ export class World {
             );
           }
         });
+      } else if (p.dead) {
+        if (Date.now() - p.death_time > this.RESPAWN_TIME) {
+          p.respawn(random(1200), random(600));
+        }
       }
     });
 
@@ -97,6 +101,13 @@ export class World {
           if (e.type == EntityType.CANNON_BALL) {
             p.damage(-e.damage);
             e.kill();
+
+            if (p.dead && e.owner) {
+              let killer = this.players.get(e.owner.id);
+              if (killer) {
+                killer.kills++;
+              }
+            }
 
             var ball = new Entity({
               type: EntityType.SHIP_EXPLOSION,

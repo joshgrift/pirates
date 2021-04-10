@@ -1,4 +1,10 @@
-import { CannonDirection, PlayerInTransit, Skin } from "./Protocol";
+import { HighlightSpanKind } from "typescript";
+import {
+  CannonDirection,
+  ClientServerPayload,
+  PlayerInTransit,
+  Skin,
+} from "./Protocol";
 
 type playerConstructor = {
   id: string;
@@ -26,6 +32,10 @@ export class Player {
   cannon: CannonDirection = CannonDirection.OFF;
   last_fired_left: number = 0;
   last_fired_right: number = 0;
+  last_ping_time: number = 0;
+  death_time: number = 0;
+  kills: number = 0;
+  deaths: number = 0;
 
   constructor(p: playerConstructor) {
     this.id = p.id;
@@ -33,6 +43,25 @@ export class Player {
     this.y = p.y;
     this.heading = p.heading;
     this.skin = p.skin;
+  }
+
+  update(p: ClientServerPayload) {
+    this.last_ping_time = Date.now();
+
+    if (!this.dead) {
+      this.heading = p.heading;
+
+      if (this.heading >= 360) {
+        this.heading = this.heading % 360;
+      }
+
+      if (this.heading <= -360) {
+        this.heading = this.heading % 360;
+      }
+
+      this.cannon = p.cannon;
+      this.acceleration = p.acceleration;
+    }
   }
 
   move() {
@@ -104,6 +133,8 @@ export class Player {
       health: this.health,
       skin: this.skin,
       dead: this.dead,
+      kills: this.kills,
+      deaths: this.deaths,
     };
   }
 
@@ -111,11 +142,22 @@ export class Player {
     this.health += n;
 
     if (this.health <= 0) {
-      this.dead = true;
+      this.kill();
     }
   }
 
   kill() {
     this.dead = true;
+    this.deaths++;
+    this.death_time = Date.now();
+  }
+
+  respawn(x: number, y: number) {
+    this.death_time = 0;
+    this.dead = false;
+    this.health = 100;
+    this.x = x;
+    this.y = y;
+    this.speed = 0;
   }
 }

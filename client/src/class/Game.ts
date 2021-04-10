@@ -28,8 +28,8 @@ export class Game {
   status: Status = Status.DISCONNECTED;
   socket: WebSocket;
 
-  constructor(c: HTMLCanvasElement) {
-    this.socket = new WebSocket("ws://localhost:3000");
+  constructor(c: HTMLCanvasElement, id: string, skin: Skin) {
+    this.socket = new WebSocket("ws://192.168.1.181:3000");
     this.map = new Map(c);
 
     this.player = new Player({
@@ -37,10 +37,12 @@ export class Game {
       y: 0,
       speed: 0,
       health: 100,
-      id: "player" + Date.now(),
+      id: id,
       heading: 90,
-      skin: Skin.BLUE,
+      skin: skin,
       dead: false,
+      kills: 0,
+      deaths: 0,
     });
 
     this.socket.onopen = () => {
@@ -76,7 +78,6 @@ export class Game {
   ready() {
     this.status = Status.READY;
     this.tick();
-    this.render();
   }
 
   send(d: ClientServerPayload) {
@@ -109,18 +110,21 @@ export class Game {
         this.player.heading = p.heading;
         this.player.speed = p.speed;
         this.player.health = p.health;
+        this.player.kills = p.kills;
       }
     }
+
+    this.render();
   }
 
   tick() {
     if (this.status == Status.READY) {
       if (this.keys["w"]) {
-        this.player.accelerate(0.1);
+        this.player.accelerate(0.01);
       }
 
       if (this.keys["s"]) {
-        this.player.accelerate(-0.1);
+        this.player.accelerate(-0.01);
       }
 
       if (this.keys["d"]) {
@@ -136,21 +140,37 @@ export class Game {
       setTimeout(() => this.tick(), TICK);
     }
 
-    this.updateUIElement("#speed", this.player.speed);
-    this.updateUIElement("#acceleration", this.player.acceleration);
-    this.updateUIElement("#health", this.player.health);
-    this.updateUIElement("#heading", this.player.heading);
-    this.updateUIElement("#ping", avg(this.pings));
-    this.updateUIElement("#dead", this.player.dead ? 1 : 0);
+    this.updateUIElement("#speed", decimal_round(this.player.speed) + "");
+    this.updateUIElement(
+      "#acceleration",
+      decimal_round(this.player.acceleration) + ""
+    );
+    this.updateUIElement("#health", this.player.health + "");
+    this.updateUIElement("#heading", this.player.heading + "");
+    this.updateUIElement("#ping", avg(this.pings) + "");
+    this.updateUIElement("#dead", this.player.dead + "");
+    this.updateUIElement("#x", decimal_round(this.player.x) + "");
+    this.updateUIElement("#y", decimal_round(this.player.y) + "");
+    this.updateUIElement("#kills", this.player.kills + "");
   }
 
   render() {
+    let list = "";
+    this.players.forEach((p) => {
+      list += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
+    });
+    list += `<li>${this.player.id} - ${this.player.kills} / ${this.player.deaths} K/D</li>`;
+    this.updateUIElement("#player_list", list);
+
     if (this.status == Status.READY) {
       this.map.clear();
 
+      let i = 0;
       this.players.forEach((player) => {
+        i++;
         player.render(this.map);
       });
+      console.log(i);
 
       this.player.render(this.map);
 
@@ -159,18 +179,18 @@ export class Game {
       });
     }
 
-    window.requestAnimationFrame(() => {
+    /*window.requestAnimationFrame(() => {
       if (this.status == Status.READY) {
         this.render();
       }
-    });
+    });*/
   }
 
-  updateUIElement(query: string, value: number) {
+  updateUIElement(query: string, value: string) {
     let e = document.querySelector(query);
 
     if (e) {
-      e.innerHTML = Math.round(10 * value) / 10 + "";
+      e.innerHTML = value;
     }
   }
 }
@@ -181,5 +201,9 @@ function avg(d: number[]) {
     sum += n;
   }
 
-  return Math.floor(sum / d.length);
+  return Math.round(sum / d.length);
+}
+
+function decimal_round(n: number) {
+  return Math.round(10 * n) / 10;
 }

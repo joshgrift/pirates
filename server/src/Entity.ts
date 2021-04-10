@@ -10,6 +10,7 @@ type EntityConstructor = {
   speed: number;
   heading: number;
   damage?: number;
+  owner?: Player;
 };
 
 export class Entity {
@@ -23,6 +24,7 @@ export class Entity {
   damage: number = 0;
   dead: Boolean = false;
   radius: number = 4;
+  owner: Player | null = null;
 
   constructor(d: EntityConstructor) {
     this.type = d.type;
@@ -32,6 +34,10 @@ export class Entity {
 
     if (d.health) {
       this.health = d.health;
+    }
+
+    if (d.owner) {
+      this.owner = d.owner;
     }
 
     if (d.damage) {
