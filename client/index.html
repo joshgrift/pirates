@@ -11,6 +11,9 @@
       
       canvas {
         background-color: #89cff0;
+        position: fixed;
+        left: 0;
+        top: 0;
       }
 
       #player_list{
@@ -18,11 +21,18 @@
         right: 10px;
         top: 10px;
       }
+
+      .inGameUi {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+      }
     </style>
   </head>
   <body>
+    <canvas width="0" height=0></canvas>
     <div class="ui">
-      Name: <input type="text" id="name"></input>
+      Name: <input maxlength="10" type="text" id="name"></input>
       Color: <select id="skin">
         <option value="0">RED</option>
         <option value="1">BLUE</option>
@@ -32,8 +42,8 @@
       </select>
       <button id="startButton">Play</button>
     </div>
+    
     <div class="inGameUi">
-      <canvas></canvas>
       <br>
       <span id="acceleration"></span> px/s/s =>
       <span id="speed"></span> px/s |
@@ -44,10 +54,8 @@
       <span id="x"></span>, <span id="y"></span> |
       dead: <span id="dead"></span>
       <br>
-      <ul id="player_list">
-      </ul>
-      </div>
     </div>
+    <ul id="player_list"></ul>
     <script src="dist/main.js"></script>
   </body>
 </html>

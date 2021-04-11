@@ -115,9 +115,16 @@ export class Game {
         this.player.speed = p.speed;
         this.player.health = p.health;
         this.player.kills = p.kills;
-        this.player.deaths - p.deaths;
+        this.player.deaths = p.deaths;
       }
     }
+
+    this.map.setView(
+      this.player.x,
+      this.player.y,
+      this.player.speed,
+      this.player.heading
+    );
 
     this.render();
   }
@@ -187,8 +194,7 @@ export class Game {
 
     /*window.requestAnimationFrame(() => {
       if (this.status == Status.READY) {
-        this.render();
-      }
+    }
     });*/
   }
 

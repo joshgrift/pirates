@@ -91,7 +91,7 @@ export class Player {
       Math.pow(t.x - this.x, 2) + Math.pow(t.y - this.y, 2)
     );
 
-    if (distance <= this.RADIUS + 16) {
+    if (distance <= this.RADIUS + 10) {
       return true;
     }
 
@@ -163,6 +163,7 @@ export class Player {
     this.dead = true;
     this.deaths++;
     this.death_time = Date.now();
+    console.log(this.deaths);
   }
 
   respawn(x: number, y: number) {

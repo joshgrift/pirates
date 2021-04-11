@@ -17,7 +17,11 @@ b?.addEventListener("click", (e) => {
   var s = document.getElementById("skin") as HTMLSelectElement;
 
   if (c && i && s) {
-    new Game(c, i.value, (parseInt(s.value) as any) as Skin);
+    try {
+      new Game(c, i.value, (parseInt(s.value) as any) as Skin);
+    } catch (e) {
+      console.log("error");
+    }
   }
 
   if (gameSection) {

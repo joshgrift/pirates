@@ -3,6 +3,7 @@ const path = require("path");
 module.exports = {
   mode: "development",
   entry: "./src/main.ts",
+  watch: true,
   module: {
     rules: [
       {

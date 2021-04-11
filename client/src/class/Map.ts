@@ -6,8 +6,10 @@ export class Map {
   scale = 2;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  width: number = 1200;
+  width: number = 600;
   height: number = 600;
+  offsetWidth: number = 0;
+  offsetHeight: number = 0;
 
   readonly ENTITY_SHEET: Spritesheet = new Spritesheet("./assets/ships.png");
   readonly TERRAIN_SHEET: Spritesheet = new Spritesheet("./assets/tiles.png");
@@ -16,13 +18,53 @@ export class Map {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D; // we know we will always get a context
 
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+
     this.canvas.width = this.width;
     this.canvas.height = this.height;
   }
 
+  setView(playerX: number, playerY: number, speed: number, angle: number) {
+    let xDiff = playerX - this.offsetWidth;
+    let yDiff = playerY - this.offsetHeight;
+
+    this.offsetWidth = playerX - this.width / 2;
+    this.offsetHeight = playerY - this.height / 2;
+
+    /*if (xDiff > this.width || xDiff < 0) {
+      this.offsetWidth = playerX - this.width / 2;
+    }
+
+    if (yDiff > this.height || yDiff < 0) {
+      this.offsetHeight = playerY - this.height / 2;
+    }
+
+    if (xDiff > (2 * this.width) / 3) {
+      this.offsetWidth += speed * Math.cos((angle * Math.PI) / 180.0);
+    }
+
+    if (xDiff < this.width / 3) {
+      this.offsetWidth -= speed * Math.cos((angle * Math.PI) / 180.0);
+    }
+
+    if (yDiff > (2 * this.height) / 3) {
+      this.offsetHeight += speed * Math.sin((angle * Math.PI) / 180.0);
+    }
+
+    if (yDiff < this.height / 3) {
+      this.offsetHeight -= speed * Math.sin((angle * Math.PI) / 180.0);
+    }*/
+  }
+
   drawSprite(sprite: Sprite, x: number, y: number, heading: number = 0) {
-    let drawX = x - Math.floor(sprite.width / this.scale) / 2;
-    let drawY = y - Math.floor(sprite.height / this.scale) / 2;
+    let drawX =
+      x - Math.floor(sprite.width / this.scale) / 2 - this.offsetWidth;
+    let drawY =
+      y - Math.floor(sprite.height / this.scale) / 2 - this.offsetHeight;
+    drawY = Math.round(drawY);
+    drawX = Math.round(drawX);
+
     this.ctx.save();
     this.ctx.translate(
       drawX + Math.floor(sprite.width / this.scale / 2),
@@ -63,4 +105,8 @@ export class Map {
   clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
+}
+
+function distance(x1: number, y1: number, x2: number, y2: number) {
+  return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(x2 - y2, 2));
 }

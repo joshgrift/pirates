@@ -152,6 +152,7 @@ export type TerrainInTransit = {
   x: number;
   y: number;
   type: TerrainType;
+  sprite: number;
 };
 
 /**
