@@ -1,4 +1,3 @@
-import { HighlightSpanKind } from "typescript";
 import {
   CannonDirection,
   ClientServerPayload,
@@ -163,7 +162,6 @@ export class Player {
     this.dead = true;
     this.deaths++;
     this.death_time = Date.now();
-    console.log(this.deaths);
   }
 
   respawn(x: number, y: number) {

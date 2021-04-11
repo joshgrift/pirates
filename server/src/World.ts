@@ -1,4 +1,5 @@
-import e from "express";
+import * as fs from "fs";
+import { parse } from "csv";
 import { Collection } from "./Collection";
 import { Entity } from "./Entity";
 import { Player } from "./Player";
@@ -7,20 +8,22 @@ import {
   EntityType,
   ServerClientPayload,
   TerrainInTransit,
+  TerrainType,
 } from "./Protocol";
+import { random } from "./util";
 
 export class World {
   readonly TIMEOUT: number = 2000;
-  readonly RESPAWN_TIME: number = 5000;
+  readonly RESPAWN_TIME: number = 1000;
   height: number = 600;
   width: number = 600;
   players: Collection<Player> = new Collection();
   entities: Collection<Entity> = new Collection();
   events: Collection<Event> = new Collection();
-  terrains: TerrainInTransit[];
+  terrains: TerrainInTransit[] = [];
 
-  constructor(map: TerrainInTransit[]) {
-    this.terrains = map;
+  constructor(mapPath: string) {
+    this.loadMap(mapPath);
   }
 
   updateFromPlayer(update: ClientServerPayload) {
@@ -30,13 +33,14 @@ export class World {
     if (!player) {
       player = new Player({
         id: update.id,
-        x: random(this.width),
-        y: random(this.height),
+        x: 0,
+        y: 0,
         heading: 90,
         skin: update.skin,
       });
 
       this.players.add(update.id, player);
+      this.spawnPlayer(player);
     }
 
     // update player with details
@@ -100,7 +104,7 @@ export class World {
         });
       } else if (p.dead) {
         if (Date.now() - p.death_time > this.RESPAWN_TIME) {
-          p.respawn(random(1200), random(600));
+          this.spawnPlayer(p);
         }
       }
     });
@@ -143,6 +147,71 @@ export class World {
     });
   }
 
+  spawnPlayer(player: Player) {
+    var safe = false;
+
+    while (!safe) {
+      player.x = random(this.width);
+      player.y = random(this.height);
+
+      safe = true;
+      this.players.forEach((p2) => {
+        if (player.collidingWith(p2)) {
+          safe = false;
+        }
+      });
+
+      this.terrains.forEach((t) => {
+        if (player.collidingWithT(t)) {
+          safe = false;
+        }
+      });
+
+      this.entities.forEach((e) => {
+        if (e.collisionWith(player)) {
+          safe = false;
+        }
+      });
+    }
+
+    player.respawn(player.x, player.y);
+  }
+
+  async loadMap(mapPath: string): Promise<void> {
+    const TILE_SIZE = 32;
+    var p = new Promise<void>((resolve, reject) => {
+      var y = 0;
+
+      fs.createReadStream(mapPath)
+        .pipe(new parse.Parser({}))
+        .on("data", (row: string[]) => {
+          let x = 0;
+          row.forEach((t) => {
+            if (parseInt(t) >= 0) {
+              this.terrains.push({
+                x: x * TILE_SIZE,
+                y: y * TILE_SIZE,
+                type: TerrainType.GRASS,
+                sprite: parseInt(t),
+              });
+            }
+            x++;
+          });
+          y++;
+          this.width = x * TILE_SIZE;
+          this.height = y * TILE_SIZE;
+        })
+        .on("end", () => {
+          resolve();
+        })
+        .on("error", () => {
+          reject();
+        });
+    });
+
+    return p;
+  }
+
   spawn(e: Entity) {
     this.entities.add(e.id, e);
   }
@@ -155,8 +224,4 @@ export class World {
       terrain: this.terrains,
     };
   }
-}
-
-function random(x: number) {
-  return Math.floor(x * Math.random());
 }
