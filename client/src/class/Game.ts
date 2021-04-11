@@ -7,7 +7,7 @@ import {
 } from "../Protocol";
 import { Map } from "./Map";
 import { Player } from "./Player";
-import { Entity } from "./WorldObjects";
+import { Entity, Terrain } from "./WorldObjects";
 
 enum Status {
   READY,
@@ -21,6 +21,7 @@ export class Game {
   map: Map;
   players: Player[] = [];
   entities: Entity[] = [];
+  terrain: Terrain[] = [];
 
   player: Player;
   keys: { [id: string]: Boolean } = {};
@@ -59,12 +60,10 @@ export class Game {
     document.addEventListener("keydown", (e) => {
       if (e.key == ".") {
         this.player.cannon = CannonDirection.RIGHT;
-        console.log(this.player.cannon);
       }
 
       if (e.key == ",") {
         this.player.cannon = CannonDirection.LEFT;
-        console.log(this.player.cannon);
       }
 
       this.keys[e.key] = true;
@@ -93,6 +92,11 @@ export class Game {
     this.last_ping = Date.now();
 
     let msg = JSON.parse(data.data) as ServerClientPayload;
+
+    this.terrain = [];
+    for (let t of msg.terrain) {
+      this.terrain.push(new Terrain(t));
+    }
 
     this.entities = [];
     for (let e of msg.entities) {
@@ -166,12 +170,13 @@ export class Game {
     if (this.status == Status.READY) {
       this.map.clear();
 
-      let i = 0;
+      this.terrain.forEach((t) => {
+        t.render(this.map);
+      });
+
       this.players.forEach((player) => {
-        i++;
         player.render(this.map);
       });
-      console.log(i);
 
       this.player.render(this.map);
 

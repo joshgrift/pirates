@@ -6,7 +6,8 @@ import {
   ClientServerPayload,
   EntityType,
   ServerClientPayload,
-  Skin,
+  TerrainInTransit,
+  TerrainType,
 } from "./Protocol";
 
 export class World {
@@ -86,6 +87,13 @@ export class World {
             );
           }
         });
+
+        // collision with terrain
+        WORLD_TERRAIN.forEach((t) => {
+          if (p.collidingWithT(t)) {
+            p.kill();
+          }
+        });
       } else if (p.dead) {
         if (Date.now() - p.death_time > this.RESPAWN_TIME) {
           p.respawn(random(1200), random(600));
@@ -140,10 +148,58 @@ export class World {
       players: this.players.toJSON(),
       entities: this.entities.toJSON(),
       events: [],
+      terrain: WORLD_TERRAIN,
     };
   }
 }
 
 function random(x: number) {
   return Math.floor(x * Math.random());
+}
+
+const T = 32;
+
+const WORLD_TERRAIN: TerrainInTransit[] = [
+  SAND(2, 3),
+  SAND(3, 3),
+  SAND(8, 3),
+  SAND(1, 4),
+  GRASS(2, 4),
+  GRASS(3, 4),
+  SAND(4, 4),
+  GRASS(8, 4),
+  SAND(1, 5),
+  GRASS(2, 5),
+  GRASS(4, 5),
+  SAND(4, 5),
+  SAND(2, 6),
+  SAND(3, 6),
+  SAND(4, 6),
+  SAND(3, 7),
+  GRASS(7, 8),
+  GRASS(8, 8),
+  GRASS(9, 8),
+  GRASS(7, 9),
+  GRASS(9, 9),
+  GRASS(7, 10),
+  GRASS(8, 10),
+  GRASS(9, 10),
+  SAND(8, 9),
+  SAND(7, 12),
+  SAND(8, 12),
+  SAND(9, 12),
+  SAND(7, 13),
+  GRASS(8, 13),
+  SAND(9, 13),
+  SAND(7, 14),
+  SAND(8, 14),
+  SAND(9, 14),
+];
+
+function GRASS(x: number, y: number): TerrainInTransit {
+  return { x: x * T, y: y * T, type: TerrainType.GRASS };
+}
+
+function SAND(x: number, y: number): TerrainInTransit {
+  return { x: x * T, y: y * T, type: TerrainType.SAND };
 }

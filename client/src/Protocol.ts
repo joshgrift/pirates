@@ -30,6 +30,11 @@ export type ServerClientPayload = {
    * Visual Explosions, shots fired sounds, notifications, death notification, etc.
    */
   events: EventsInTransit[];
+
+  /**
+   * Terrain. Ground, not ground, etc.
+   */
+  terrain: TerrainInTransit[];
 };
 
 /**
@@ -138,4 +143,21 @@ export enum CannonDirection {
   OFF,
   LEFT = 270,
   RIGHT = 90,
+}
+
+/**
+ * Terrain
+ */
+export type TerrainInTransit = {
+  x: number;
+  y: number;
+  type: TerrainType;
+};
+
+/**
+ * TerrainTypes
+ */
+export enum TerrainType {
+  SAND,
+  GRASS,
 }

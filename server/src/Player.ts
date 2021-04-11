@@ -4,6 +4,7 @@ import {
   ClientServerPayload,
   PlayerInTransit,
   Skin,
+  TerrainInTransit,
 } from "./Protocol";
 
 type playerConstructor = {
@@ -80,6 +81,18 @@ export class Player {
       if (distance <= this.RADIUS * 2) {
         return true;
       }
+    }
+
+    return false;
+  }
+
+  collidingWithT(t: TerrainInTransit): boolean {
+    let distance = Math.sqrt(
+      Math.pow(t.x - this.x, 2) + Math.pow(t.y - this.y, 2)
+    );
+
+    if (distance <= this.RADIUS + 16) {
+      return true;
     }
 
     return false;

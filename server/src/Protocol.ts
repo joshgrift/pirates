@@ -2,7 +2,7 @@
  * This file should stay in sync with the same file on the client. It
  * defines the communication protocol between the client and server.
  *
- * @version 0.2
+ * @version 0.3
  */
 
 /**
@@ -30,6 +30,11 @@ export type ServerClientPayload = {
    * Visual Explosions, shots fired sounds, notifications, death notification, etc.
    */
   events: EventsInTransit[];
+
+  /**
+   * Terrain. Ground, not ground, etc.
+   */
+  terrain: TerrainInTransit[];
 };
 
 /**
@@ -138,4 +143,21 @@ export enum CannonDirection {
   OFF,
   LEFT = 270,
   RIGHT = 90,
+}
+
+/**
+ * Terrain
+ */
+export type TerrainInTransit = {
+  x: number;
+  y: number;
+  type: TerrainType;
+};
+
+/**
+ * TerrainTypes
+ */
+export enum TerrainType {
+  SAND,
+  GRASS,
 }
