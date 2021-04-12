@@ -3,7 +3,7 @@ import {
   ClientServerPayload,
   PlayerInTransit,
   Skin,
-} from "../Protocol";
+} from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
 

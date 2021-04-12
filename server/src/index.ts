@@ -1,10 +1,11 @@
 import { SocketServer } from "./Socket";
 import { World } from "./World";
-import { ClientServerPayload, TICK } from "./Protocol";
+import { ClientServerPayload, TICK } from "../../shared/Protocol";
 
 const PORT = 3000;
 
 const world = new World("./map.csv");
+
 var s: SocketServer = new SocketServer(PORT, (ws) => {
   ws.on("message", function incoming(message) {
     world.updateFromPlayer(

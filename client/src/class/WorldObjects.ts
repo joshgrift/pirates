@@ -3,7 +3,7 @@ import {
   EntityType,
   TerrainInTransit,
   TerrainType,
-} from "../Protocol";
+} from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
 

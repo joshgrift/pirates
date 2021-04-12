@@ -1,5 +1,5 @@
 import { Game } from "./class/Game";
-import { Skin } from "./Protocol";
+import { Skin } from "../../shared/Protocol";
 
 let c = document.querySelector("canvas");
 

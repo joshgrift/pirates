@@ -2,13 +2,23 @@
  * This file should stay in sync with the same file on the client. It
  * defines the communication protocol between the client and server.
  *
- * @version 0.1
+ * @version 0.3
  */
 
 /**
  * Tick Speed in miliseconds
  */
 export const TICK = 50;
+
+/**
+ * Timeout in miliseconds
+ */
+export const TIMEOUT = 1000;
+
+/**
+ * Respawn delay
+ */
+export const RESPAWN_DELAY = 5000;
 
 /**
  * Package sent from Server to Client

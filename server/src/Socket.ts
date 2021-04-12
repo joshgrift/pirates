@@ -1,5 +1,5 @@
 import * as WebSocket from "ws";
-import { ServerClientPayload } from "./Protocol";
+import { ServerClientPayload } from "../../shared/Protocol";
 
 export class SocketServer {
   server: WebSocket.Server;

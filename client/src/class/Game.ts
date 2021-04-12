@@ -4,7 +4,7 @@ import {
   ServerClientPayload,
   Skin,
   TICK,
-} from "../Protocol";
+} from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Player } from "./Player";
 import { Entity, Terrain } from "./WorldObjects";

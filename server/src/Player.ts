@@ -1,34 +1,22 @@
+import { PlayerDef, ShipDef } from "../../shared/GameDefs";
 import {
   CannonDirection,
   ClientServerPayload,
   PlayerInTransit,
   Skin,
   TerrainInTransit,
-} from "./Protocol";
+} from "../../shared/Protocol";
+import { MapEntity } from "./MapObject";
 
 type playerConstructor = {
   id: string;
   x: number;
   y: number;
-  heading: number;
   skin: Skin;
 };
 
-export class Player {
-  readonly MAX_SPEED: number = 100;
-  readonly RADIUS: number = 17.5;
-  readonly WATER_BOI: number = 0.8;
-  readonly MAX_ACC: number = 0.5;
-  readonly LOAD_TIME: number = 1000;
-  x: number;
-  y: number;
-  id: string;
-  heading: number;
-  speed: number = 0;
-  acceleration: number = 0;
-  health: number = 100;
+export class Player extends MapEntity {
   skin: Skin;
-  dead: boolean = false;
   cannon: CannonDirection = CannonDirection.OFF;
   last_fired_left: number = 0;
   last_fired_right: number = 0;
@@ -36,12 +24,18 @@ export class Player {
   death_time: number = 0;
   kills: number = 0;
   deaths: number = 0;
+  def: PlayerDef;
 
   constructor(p: playerConstructor) {
-    this.id = p.id;
-    this.x = p.x;
-    this.y = p.y;
-    this.heading = p.heading;
+    super({
+      id: p.id,
+      x: p.x,
+      y: p.y,
+      def: ShipDef,
+    });
+
+    this.def = ShipDef;
+
     this.skin = p.skin;
   }
 
@@ -64,62 +58,16 @@ export class Player {
     }
   }
 
-  move() {
-    if (this.health > 0) {
-      this.x += this.speed * Math.cos((this.heading * Math.PI) / 180.0);
-      this.y += this.speed * Math.sin((this.heading * Math.PI) / 180.0);
-    }
-  }
-
-  collidingWith(p: Player): boolean {
-    if (p.id != this.id) {
-      let distance = Math.sqrt(
-        Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2)
-      );
-
-      if (distance <= this.RADIUS * 2) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  collidingWithT(t: TerrainInTransit): boolean {
-    let distance = Math.sqrt(
-      Math.pow(t.x - this.x, 2) + Math.pow(t.y - this.y, 2)
-    );
-
-    if (distance <= this.RADIUS + 10) {
-      return true;
-    }
-
-    return false;
-  }
-
-  applyAcceleration() {
-    if (this.acceleration > this.MAX_ACC) {
-      this.acceleration = this.MAX_ACC;
-    }
-
-    this.speed += this.acceleration;
-    this.speed *= this.WATER_BOI;
-
-    if (this.speed > this.MAX_SPEED) {
-      this.speed = this.MAX_SPEED;
-    }
-
-    if (this.speed < 0) {
-      this.speed = 0;
-    }
+  applyWaterEffect() {
+    this.speed *= this.def.waterResistenceFactor;
   }
 
   canFire(): boolean {
     return (
       (this.cannon == CannonDirection.LEFT &&
-        Date.now() - this.last_fired_left >= this.LOAD_TIME) ||
+        Date.now() - this.last_fired_left >= this.def.reloadTime) ||
       (this.cannon == CannonDirection.RIGHT &&
-        Date.now() - this.last_fired_right >= this.LOAD_TIME)
+        Date.now() - this.last_fired_right >= this.def.reloadTime)
     );
   }
 
@@ -135,29 +83,6 @@ export class Player {
     this.cannon = CannonDirection.OFF;
   }
 
-  toJSON(): PlayerInTransit {
-    return {
-      x: this.x,
-      y: this.y,
-      id: this.id,
-      heading: this.heading,
-      speed: this.speed,
-      health: this.health,
-      skin: this.skin,
-      dead: this.dead,
-      kills: this.kills,
-      deaths: this.deaths,
-    };
-  }
-
-  damage(n: number) {
-    this.health += n;
-
-    if (this.health <= 0) {
-      this.kill();
-    }
-  }
-
   kill() {
     this.dead = true;
     this.deaths++;
@@ -171,5 +96,20 @@ export class Player {
     this.x = x;
     this.y = y;
     this.speed = 0;
+  }
+
+  toJSON(): PlayerInTransit {
+    return {
+      x: this.x,
+      y: this.y,
+      id: this.id,
+      heading: this.heading,
+      speed: this.speed,
+      health: this.health,
+      skin: this.skin,
+      dead: this.dead,
+      kills: this.kills,
+      deaths: this.deaths,
+    };
   }
 }
