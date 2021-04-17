@@ -9,7 +9,7 @@
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":3, "sell":3},
         "cannon_balls": {"buy":1, "sell":0.5},
-        "bread": {"buy":2, "sell":3},
+        "bread": {"buy":2, "sell":1},
         "wood": {"buy":5, "sell":4}
       },
       "crew": {
