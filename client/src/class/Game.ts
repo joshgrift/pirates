@@ -1,6 +1,9 @@
 import {
   CannonDirection,
+  Cargo,
   ClientServerPayload,
+  PortAction,
+  PortActionType,
   ServerClientPayload,
   Skin,
   TICK,
@@ -181,6 +184,8 @@ export class Game {
 
       this.send(this.player.toJSON());
 
+      this.player.portAction = null;
+
       setTimeout(() => this.tick(), TICK);
     }
   }
@@ -264,6 +269,20 @@ export class Game {
 
   on(event: GameEvent, callback: (d: GameEventData) => void) {
     this.gameEventCallbacks[event] = callback;
+  }
+
+  buy(cargo: Cargo) {
+    this.player.portAction = {
+      type: PortActionType.BUY,
+      cargo: cargo,
+    };
+  }
+
+  sell(cargo: Cargo) {
+    this.player.portAction = {
+      type: PortActionType.SELL,
+      cargo: cargo,
+    };
   }
 }
 

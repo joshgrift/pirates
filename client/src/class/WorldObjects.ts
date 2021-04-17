@@ -114,7 +114,7 @@ export class Port {
   x: number;
   y: number;
   sprite: number;
-  store: { [id: number]: SellBuyPrice };
+  store: { [id: string]: SellBuyPrice };
   crew: CrewMemberInTransit[];
 
   constructor(id: string, d: PortInTransit) {

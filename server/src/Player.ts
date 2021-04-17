@@ -3,8 +3,8 @@ import {
   CannonDirection,
   ClientServerPayload,
   PlayerInTransit,
+  PortAction,
   Skin,
-  TerrainInTransit,
 } from "../../shared/Protocol";
 import { MapEntity } from "./MapObject";
 
@@ -25,6 +25,7 @@ export class Player extends MapEntity {
   kills: number = 0;
   deaths: number = 0;
   def: PlayerDef;
+  portAction: PortAction | null = null;
 
   constructor(p: playerConstructor) {
     super({
@@ -55,6 +56,7 @@ export class Player extends MapEntity {
 
       this.cannon = p.cannon;
       this.acceleration = p.acceleration;
+      this.portAction = p.portAction;
     }
   }
 

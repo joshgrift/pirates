@@ -101,6 +101,12 @@ export class World {
             p.damage(t.def.damage);
           }
         });
+
+        // portActions
+        if (p.portAction) {
+          console.log(p.portAction);
+          p.portAction = null;
+        }
       } else if (p.dead) {
         if (Date.now() - p.death_time > RESPAWN_DELAY) {
           this.spawnPlayer(p);

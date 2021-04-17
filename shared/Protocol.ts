@@ -85,6 +85,11 @@ export type ClientServerPayload = {
    * Skin
    */
   skin: Skin;
+
+  /**
+   * port action. Buy, sell, hire, fire, repair, etc.
+   */
+  portAction: PortAction | null;
 };
 
 /**
@@ -206,7 +211,7 @@ export type PortInTransit = {
   /**
    * sell and buy options
    */
-  store: { [id: number]: SellBuyPrice };
+  store: { [id: string]: SellBuyPrice };
 
   /**
    * Crew hiring options
@@ -218,9 +223,9 @@ export type PortInTransit = {
  * Inventory Item
  */
 export enum Cargo {
-  WOOD,
-  CANNON_BALL,
-  WHEAT,
+  WOOD = "wood",
+  CANNON_BALL = "cannon_ball",
+  WHEAT = "wheat",
 }
 
 /**
@@ -253,4 +258,24 @@ export type CrewMemberInTransit = {
 export type SellBuyPrice = {
   buy: number;
   sell: number;
+};
+
+/**
+ * Port action types
+ */
+export enum PortActionType {
+  SELL,
+  BUY,
+  HIRE,
+  FIRE,
+  REPAIR,
+}
+
+/**
+ * Actions at poort
+ */
+export type PortAction = {
+  type: PortActionType;
+  cargo?: Cargo;
+  crew?: CrewMemberInTransit;
 };

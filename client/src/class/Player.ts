@@ -2,6 +2,7 @@ import {
   CannonDirection,
   ClientServerPayload,
   PlayerInTransit,
+  PortAction,
   Skin,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
@@ -69,6 +70,7 @@ export class Player {
   dead: boolean = false;
   kills: number = 0;
   deaths: number = 0;
+  portAction: PortAction | null = null;
 
   constructor(d: PlayerInTransit) {
     this.id = d.id;
@@ -130,6 +132,7 @@ export class Player {
       cannon: this.cannon,
       key: "password",
       skin: this.skin,
+      portAction: this.portAction,
     };
   }
 }

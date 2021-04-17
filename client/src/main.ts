@@ -1,5 +1,5 @@
 import { Game, GameEvent } from "./class/Game";
-import { Skin } from "../../shared/Protocol";
+import { Cargo, Skin } from "../../shared/Protocol";
 
 let c = document.querySelector("canvas");
 
@@ -26,6 +26,39 @@ b?.addEventListener("click", (e) => {
       game.on(GameEvent.ARRIVE_PORT, (d) => {
         if (d.port && !openUI) {
           portUI.style.left = "0px";
+          portUI.innerHTML = `
+            <h1>${d.port.name}</h1>
+            <ul>
+              ${(() => {
+                let r = "";
+                for (var i in d.port.store) {
+                  r += `<li><b>${i}</b> <br> <span id="buy_${i}">b:${d.port.store[i].buy}</span> <span id="sell_${i}">s:${d.port.store[i].sell}</span></li>`;
+                }
+                return r;
+              })()}
+            </ul>
+          `;
+
+          for (var i in d.port.store) {
+            document.getElementById("buy_" + i)?.addEventListener(
+              "click",
+              (function (i) {
+                return function () {
+                  game.buy(i as Cargo);
+                };
+              })(i)
+            );
+
+            document.getElementById("sell_" + i)?.addEventListener(
+              "click",
+              (function (i) {
+                return function () {
+                  game.sell(i as Cargo);
+                };
+              })(i)
+            );
+          }
+
           openUI = "port";
         }
       });
@@ -46,12 +79,5 @@ b?.addEventListener("click", (e) => {
 
   if (startSection) {
     startSection.style.display = "none";
-  }
-});
-
-c?.addEventListener("click", (e) => {
-  var port = game.getPort();
-  if (port) {
-    alert(port);
   }
 });
