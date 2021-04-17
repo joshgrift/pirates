@@ -17,7 +17,8 @@ enum Status {
 }
 
 export enum GameEvent {
-  PORT,
+  ARRIVE_PORT,
+  LEAVE_PORT,
 }
 
 export class Game {
@@ -29,6 +30,8 @@ export class Game {
   entities: Entity[] = [];
   terrain: Terrain[] = [];
   ports: Port[] = [];
+
+  inPort: boolean = false;
 
   gameEventCallbacks: { [id: number]: (d: GameEventData) => void } = {};
 
@@ -146,10 +149,17 @@ export class Game {
 
   tick() {
     if (this.status == Status.READY) {
-      if (this.player.speed < 0.01) {
+      if (this.player.speed < 0.01 && !this.inPort) {
         var p = this.getPort();
         if (p) {
-          this.emit(GameEvent.PORT, { port: p });
+          this.emit(GameEvent.ARRIVE_PORT, { port: p });
+          this.inPort = true;
+        }
+      } else if (this.inPort) {
+        var port = this.getPort();
+        if (!port) {
+          this.emit(GameEvent.LEAVE_PORT, {});
+          this.inPort = false;
         }
       }
 

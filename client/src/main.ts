@@ -5,6 +5,7 @@ let c = document.querySelector("canvas");
 
 var startSection = document.querySelector(".ui") as HTMLElement;
 var gameSection = document.querySelector(".inGameUi") as HTMLElement;
+var portUI = document.querySelector(".port") as HTMLElement;
 let game: Game;
 
 let openUI: string | null = null;
@@ -22,10 +23,16 @@ b?.addEventListener("click", (e) => {
   if (c && i && s) {
     try {
       game = new Game(c, i.value, (parseInt(s.value) as any) as Skin);
-      game.on(GameEvent.PORT, (d) => {
+      game.on(GameEvent.ARRIVE_PORT, (d) => {
         if (d.port && !openUI) {
-          console.log(d.port);
+          portUI.style.left = "0px";
           openUI = "port";
+        }
+      });
+      game.on(GameEvent.LEAVE_PORT, (d) => {
+        if (openUI) {
+          portUI.style.left = "-200px";
+          openUI = null;
         }
       });
     } catch (e) {
