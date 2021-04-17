@@ -1,0 +1,84 @@
+@font-face {
+  font-family: comicMono;
+  src: url("../assets/ComicMono.ttf");
+}
+
+body {
+  margin: 0px;
+  font-family: comicMono;
+}
+
+#menu {
+  display: none;
+  &.open {
+    display: block;
+  }
+  text-align: center;
+  padding-top: 20%;
+}
+
+#game {
+  display: none;
+  &.open {
+    display: block;
+  }
+
+  #canvas {
+    background-color: #89cff0;
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
+
+  .player_list {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    list-style: none;
+  }
+
+  .stats {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+  }
+
+  .port {
+    position: fixed;
+    top: 0px;
+    left: -320px;
+    background-color: white;
+    transition: 1s ease all;
+    width: 280px;
+    padding: 20px;
+    height: calc(100vh - 40px);
+
+    &.open {
+      left: 0px;
+    }
+
+    h1 {
+      margin-top: 10px;
+      font-size: 20px;
+    }
+
+    .store {
+      font-size: 13px;
+      p.item {
+        height: 20px;
+        line-height: 20px;
+        padding: 0px;
+        display: grid;
+        grid-template-columns: 0.333fr 0.333fr 0.333fr;
+        button {
+          line-height: 10px;
+          padding: 0px;
+          height: 20px;
+          font-size: 10px;
+          margin-left: 5px;
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}

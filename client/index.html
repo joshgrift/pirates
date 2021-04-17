@@ -3,58 +3,26 @@
   <head>
     <title>Pirates</title>
     <meta charset="UTF-8">
-    
-    <style>
-      body {
-        margin: 0px;
-      }
-      
-      canvas {
-        background-color: #89cff0;
-        position: fixed;
-        left: 0;
-        top: 0;
-      }
-
-      #player_list{
-        position: absolute;
-        right: 10px;
-        top: 10px;
-      }
-
-      .inGameUi {
-        position: absolute;
-        bottom: 0px;
-        left: 0px;
-      }
-
-      .port {
-        position: absolute;
-        top: 0px;
-        left: -200px;
-        background-color: white;
-        transition: 1s ease all;
-        width: 200px;
-      }
-    </style>
   </head>
   <body>
-    <canvas width="0" height=0></canvas>
-    <div class="ui">
-      Name: <input maxlength="10" type="text" id="name"></input>
-      Color: <select id="skin">
+    <div id="menu" class="open">
+      <input placeholder="Name" maxlength="10" minlength="0" type="text" id="name"></input>
+      <select id="skin">
         <option value="0">RED</option>
         <option value="1">BLUE</option>
         <option value="2">GREEN</option>
         <option value="3">YELLOW</option>
         <option value="4">BLACK</option>
-      </select>
+      </select><br><br>
       <button id="startButton">Play</button>
     </div>
     
-    <div class="inGameUi"></div>
-    <ul id="player_list"></ul>
-    <div class="port"></div>
+    <div id="game">
+      <canvas id="canvas" width="0" height=0></canvas>
+      <ul class="player_list"></ul>
+      <div class="port"></div>
+      <div class="stats"></div>
+    </div>
     
     <script src="dist/main.js"></script>
   </body>

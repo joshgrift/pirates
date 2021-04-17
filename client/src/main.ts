@@ -1,110 +1,125 @@
+import "./style.scss";
 import { Game, GameEvent } from "./class/Game";
 import { Cargo, Skin } from "../../shared/Protocol";
 
-let c = document.querySelector("canvas");
+const DEBUG = false;
 
-var startSection = document.querySelector(".ui") as HTMLElement;
-var gameSection = document.querySelector(".inGameUi") as HTMLElement;
-var portUI = document.querySelector(".port") as HTMLElement;
-var playerList = document.querySelector("#player_list") as HTMLElement;
+// plz put your pitch forks down
+let $ = (q: string) => {
+  var e = document.querySelector(q);
+  if (e) {
+    return e;
+  } else {
+    throw Error("Can't find " + q);
+  }
+};
+
+const UI = {
+  canvas: $("#canvas") as HTMLCanvasElement,
+  menu: $("#menu") as HTMLDivElement,
+  game: $("#game") as HTMLDivElement,
+  playerList: $(".player_list") as HTMLUListElement,
+  port: $(".port") as HTMLDivElement,
+  stats: $(".stats") as HTMLDivElement,
+  startButton: $("#startButton") as HTMLButtonElement,
+  nameInput: $("#name") as HTMLInputElement,
+  skinInput: $("#skin") as HTMLSelectElement,
+};
+
 let game: Game;
+let portOpen = false;
 
-let openUI: string | null = null;
+UI.startButton?.addEventListener("click", (e) => {
+  game = new Game(
+    UI.canvas,
+    UI.nameInput.value,
+    (parseInt(UI.skinInput.value) as any) as Skin
+  );
 
-if (gameSection) {
-  gameSection.style.display = "none";
-}
+  UI.game.classList.add("open");
 
-var b = document.getElementById("startButton");
-
-b?.addEventListener("click", (e) => {
-  var i = document.getElementById("name") as HTMLInputElement;
-  var s = document.getElementById("skin") as HTMLSelectElement;
-
-  if (c && i && s) {
-    try {
-      game = new Game(c, i.value, (parseInt(s.value) as any) as Skin);
-      game.on(GameEvent.ARRIVE_PORT, (d) => {
-        if (d.port && !openUI) {
-          portUI.style.left = "0px";
-          portUI.innerHTML = `
-            <h1>${d.port.name}</h1>
-            <ul>
-              ${(() => {
-                let r = "";
-                for (var i in d.port.store) {
-                  r += `<li><b>${i}</b> <br> <span id="buy_${i}">b:${d.port.store[i].buy}</span> <span id="sell_${i}">s:${d.port.store[i].sell}</span></li>`;
-                }
-                return r;
-              })()}
-              <button id="repair_button">Repair (1 wood)</button>
-            </ul>
-          `;
-
-          for (var i in d.port.store) {
-            document.getElementById("buy_" + i)?.addEventListener(
-              "click",
-              (function (i) {
-                return function () {
-                  game.buy(i as Cargo);
-                };
-              })(i)
-            );
-
-            document.getElementById("sell_" + i)?.addEventListener(
-              "click",
-              (function (i) {
-                return function () {
-                  game.sell(i as Cargo);
-                };
-              })(i)
-            );
-          }
-
-          document
-            .getElementById("repair_button")
-            ?.addEventListener("click", () => {
-              game.repair();
-            });
-
-          openUI = "port";
-        }
-      });
-      game.on(GameEvent.LEAVE_PORT, (d) => {
-        if (openUI) {
-          portUI.style.left = "-200px";
-          openUI = null;
-        }
-      });
-
-      game.on(GameEvent.UI_UPDATE, (d) => {
-        if (d.ui) {
-          gameSection.innerHTML =
-            `${d.ui.acceleration} px/t^2 => ${d.ui.speed} px/t | ${d.ui.health}% | ${d.ui.heading} degrees | ${d.ui.ping} ms | ${d.ui.kills} kills | ${d.ui.x}, ${d.ui.y} | dead: ${d.ui.dead} | $${d.ui.money} <br>` +
-            `${JSON.stringify(d.ui.inventory)}`;
-          playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${
-            d.ui.deaths
-          } K/D</li>
+  game.on(GameEvent.ARRIVE_PORT, (d) => {
+    if (d.port && !portOpen) {
+      UI.port.classList.add("open");
+      UI.port.innerHTML = `
+        <h1>${d.port.name}</h1>
+        <div class='store'>
           ${(() => {
-            var r = "";
-            for (let p of d.ui.players) {
-              r += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
+            let r = "";
+            for (var i in d.port.store) {
+              r += `
+              <p class='item'>
+                <b>${i}</b>
+                <button id="buy_${i}">Buy (${d.port.store[i].buy})</button>
+                <button id="sell_${i}">Sell (${d.port.store[i].sell})</button>  
+              </p>`;
             }
             return r;
           })()}
-          `;
-        }
+        </div><br>
+        <button id="repair_button">Repair 1% (1 wood)</button>
+      `;
+
+      for (var i in d.port.store) {
+        $("#buy_" + i).addEventListener(
+          "click",
+          (function (i) {
+            return function () {
+              game.buy(i as Cargo);
+            };
+          })(i)
+        );
+
+        $("#sell_" + i).addEventListener(
+          "click",
+          (function (i) {
+            return function () {
+              game.sell(i as Cargo);
+            };
+          })(i)
+        );
+      }
+
+      $("#repair_button").addEventListener("click", () => {
+        game.repair();
       });
-    } catch (e) {
-      console.log("error");
+
+      portOpen = true;
     }
-  }
+  });
 
-  if (gameSection) {
-    gameSection.style.display = "block";
-  }
+  game.on(GameEvent.LEAVE_PORT, (d) => {
+    if (portOpen) {
+      UI.port.classList.remove("open");
+      portOpen = false;
+    }
+  });
 
-  if (startSection) {
-    startSection.style.display = "none";
-  }
+  game.on(GameEvent.UI_UPDATE, (d) => {
+    if (d.ui) {
+      if (DEBUG) {
+        UI.stats.innerHTML =
+          `${d.ui.acceleration} px/t^2 => ${d.ui.speed} px/t | ${d.ui.health}% | ${d.ui.heading} degrees | ${d.ui.ping} ms | ${d.ui.kills} kills | ${d.ui.x}, ${d.ui.y} | dead: ${d.ui.dead} | $${d.ui.money} <br>` +
+          `${JSON.stringify(d.ui.inventory)}`;
+      } else {
+        UI.stats.innerHTML = ` ${JSON.stringify(d.ui.inventory)} | $${
+          d.ui.money
+        }
+        <progress value="${d.ui.health}" max="100"></progress>`;
+      }
+      UI.playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${
+        d.ui.deaths
+      } K/D</li>
+      ${(() => {
+        var r = "";
+        for (let p of d.ui.players) {
+          r += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
+        }
+        return r;
+      })()}
+      `;
+    }
+  });
+
+  UI.menu.classList.remove("open");
 });

@@ -215,7 +215,7 @@ export class Game {
         kills: this.player.kills,
         players: this.players,
         heading: this.player.heading,
-        money: this.player.money,
+        money: decimal_round(this.player.money, 100),
         inventory: this.player.inventory,
       },
     });
@@ -310,8 +310,8 @@ function avg(d: number[]) {
   return Math.round(sum / d.length);
 }
 
-function decimal_round(n: number) {
-  return Math.round(10 * n) / 10;
+function decimal_round(n: number, i: number = 10) {
+  return Math.round(i * n) / i;
 }
 
 export type GameEventData = {
