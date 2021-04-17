@@ -7,11 +7,17 @@ import {
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Player } from "./Player";
-import { Entity, Terrain } from "./WorldObjects";
+import { Entity, Port, Terrain } from "./WorldObjects";
+import { distance, normalize } from "../../../shared/MyMath";
+import { PortDef, ShipDef } from "../../../shared/GameDefs";
 
 enum Status {
   READY,
   DISCONNECTED,
+}
+
+export enum GameEvent {
+  PORT,
 }
 
 export class Game {
@@ -22,6 +28,9 @@ export class Game {
   players: Player[] = [];
   entities: Entity[] = [];
   terrain: Terrain[] = [];
+  ports: Port[] = [];
+
+  gameEventCallbacks: { [id: number]: (d: GameEventData) => void } = {};
 
   player: Player;
   keys: { [id: string]: Boolean } = {};
@@ -127,11 +136,23 @@ export class Game {
       this.player.heading
     );
 
+    msg.ports.forEach((p) => {
+      let id = normalize(p.name);
+      this.ports.push(new Port(id, p));
+    });
+
     this.render();
   }
 
   tick() {
     if (this.status == Status.READY) {
+      if (this.player.speed < 0.01) {
+        var p = this.getPort();
+        if (p) {
+          this.emit(GameEvent.PORT, { port: p });
+        }
+      }
+
       if (this.keys["w"]) {
         this.player.accelerate(0.01);
       }
@@ -180,6 +201,19 @@ export class Game {
     }, 1000);
   }
 
+  getPort(): Port | null {
+    for (var p of this.ports) {
+      if (
+        distance(this.player.x, this.player.y, p.x, p.y) <
+        PortDef.radius + ShipDef.radius
+      ) {
+        return p;
+      }
+    }
+
+    return null;
+  }
+
   render() {
     if (this.status == Status.READY) {
       this.map.clear();
@@ -190,6 +224,10 @@ export class Game {
 
       this.players.forEach((player) => {
         player.render(this.map);
+      });
+
+      this.ports.forEach((port) => {
+        port.render(this.map);
       });
 
       this.player.render(this.map);
@@ -207,6 +245,16 @@ export class Game {
       e.innerHTML = value;
     }
   }
+
+  emit(event: GameEvent, d: GameEventData) {
+    if (this.gameEventCallbacks[event]) {
+      this.gameEventCallbacks[event](d);
+    }
+  }
+
+  on(event: GameEvent, callback: (d: GameEventData) => void) {
+    this.gameEventCallbacks[event] = callback;
+  }
 }
 
 function avg(d: number[]) {
@@ -221,3 +269,7 @@ function avg(d: number[]) {
 function decimal_round(n: number) {
   return Math.round(10 * n) / 10;
 }
+
+export type GameEventData = {
+  port?: Port;
+};

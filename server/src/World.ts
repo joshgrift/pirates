@@ -6,14 +6,16 @@ import { Player } from "./Player";
 import {
   ClientServerPayload,
   EntityType,
+  PortInTransit,
   RESPAWN_DELAY,
   ServerClientPayload,
   TerrainType,
   TIMEOUT,
 } from "../../shared/Protocol";
-import { random } from "../../shared/MyMath";
+import { normalize, random } from "../../shared/MyMath";
 import { TILE_SIZE } from "../../shared/GameDefs";
 import * as xml from "xml2js";
+import { Port } from "./MapObject";
 
 export class World {
   height: number = 600;
@@ -22,9 +24,10 @@ export class World {
   entities: Collection<Entity> = new Collection();
   events: Collection<Event> = new Collection();
   terrains: Terrain[] = [];
+  ports: Collection<Port> = new Collection();
 
-  constructor(mapPath: string) {
-    this.loadMap(mapPath);
+  constructor(mapPath: string, mapJSON: string) {
+    this.loadMap(mapPath, mapJSON);
   }
 
   updateFromPlayer(update: ClientServerPayload) {
@@ -172,12 +175,18 @@ export class World {
           safe = false;
         }
       });
+
+      this.ports.forEach((e) => {
+        if (player.collidingWith(e)) {
+          safe = false;
+        }
+      });
     }
 
     player.respawn(player.x, player.y);
   }
 
-  async loadMap(mapPath: string): Promise<void> {
+  async loadMap(mapPath: string, mapJSONPath: string): Promise<void> {
     var p = new Promise<void>((resolve, reject) => {
       let mapString = fs.readFileSync(mapPath, { encoding: "utf-8" });
       xml.parseString(mapString, (err, obj) => {
@@ -216,6 +225,13 @@ export class World {
       });
     });
 
+    var json = JSON.parse(fs.readFileSync(mapJSONPath, { encoding: "utf-8" }));
+
+    json.ports.forEach((p: PortInTransit) => {
+      let id = normalize(p.name);
+      this.ports.add(id, new Port(id, p));
+    });
+
     return p;
   }
 
@@ -229,6 +245,7 @@ export class World {
       entities: this.entities.toJSON(),
       events: [],
       terrain: this.terrains,
+      ports: this.ports.toJSON(),
     };
   }
 }

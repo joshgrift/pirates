@@ -1,6 +1,9 @@
 import {
+  CrewMemberInTransit,
   EntityInTransit,
   EntityType,
+  PortInTransit,
+  SellBuyPrice,
   TerrainInTransit,
   TerrainType,
 } from "../../../shared/Protocol";
@@ -102,5 +105,51 @@ export class Terrain {
       this.y,
       90
     );
+  }
+}
+
+export class Port {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  sprite: number;
+  store: { [id: number]: SellBuyPrice };
+  crew: CrewMemberInTransit[];
+
+  constructor(id: string, d: PortInTransit) {
+    this.id = id;
+    this.name = d.name;
+    this.x = d.x;
+    this.y = d.y;
+    this.store = d.store;
+    this.crew = d.crew;
+    this.sprite = d.sprite;
+  }
+
+  render(map: Map): void {
+    map.drawSprite(
+      new Sprite(
+        TILES_SHEET,
+        (this.sprite % 16) * T,
+        Math.floor(this.sprite / 16) * T,
+        T,
+        T
+      ),
+      this.x,
+      this.y,
+      90
+    );
+  }
+
+  toJSON(): PortInTransit {
+    return {
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      sprite: this.sprite,
+      store: this.store,
+      crew: this.crew,
+    };
   }
 }

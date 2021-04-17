@@ -1,5 +1,10 @@
 import { distance } from "../../shared/MyMath";
-import { MapEntityDef, MapObjectDef } from "../../shared/GameDefs";
+import { MapEntityDef, MapObjectDef, PortDef } from "../../shared/GameDefs";
+import {
+  CrewMemberInTransit,
+  PortInTransit,
+  SellBuyPrice,
+} from "../../shared/Protocol";
 
 export class MapObject {
   id: string;
@@ -94,5 +99,36 @@ export class MapEntity extends MapObject {
 
   kill() {
     this.dead = true;
+  }
+}
+
+export class Port extends MapObject {
+  name: string;
+  sprite: number;
+  store: { [id: number]: SellBuyPrice };
+  crew: CrewMemberInTransit[];
+
+  constructor(id: string, d: PortInTransit) {
+    super({
+      id: id,
+      x: d.x,
+      y: d.y,
+      def: PortDef,
+    });
+    this.name = d.name;
+    this.store = d.store;
+    this.crew = d.crew;
+    this.sprite = d.sprite;
+  }
+
+  toJSON(): PortInTransit {
+    return {
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      sprite: this.sprite,
+      store: this.store,
+      crew: this.crew,
+    };
   }
 }
