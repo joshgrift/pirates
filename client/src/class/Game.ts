@@ -53,7 +53,7 @@ export class Game {
       y: 0,
       speed: 0,
       health: 100,
-      id: id,
+      id: escape(id),
       heading: 90,
       skin: skin,
       dead: false,
@@ -312,6 +312,10 @@ function avg(d: number[]) {
 
 function decimal_round(n: number, i: number = 10) {
   return Math.round(i * n) / i;
+}
+
+function escape(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export type GameEventData = {
