@@ -62,6 +62,7 @@ body {
     position: fixed;
     bottom: 0px;
     right: 0px;
+    line-height: 16px;
   }
 
   .port {
@@ -101,5 +102,38 @@ body {
         }
       }
     }
+  }
+}
+
+i.inventory {
+  display: inline-block;
+  background: url("../assets/inventory.png") 0 0;
+  height: 16px;
+  width: 16px;
+  background-size: 256px auto;
+
+  &.cannon_ball {
+    background-position-y: -18 * 16px;
+    background-position-x: -5 * 16px;
+  }
+
+  &.wood {
+    background-position-y: -19 * 16px;
+    background-position-x: -11 * 16px;
+  }
+
+  &.wheat {
+    background-position-y: -20 * 16px;
+    background-position-x: -11 * 16px;
+  }
+
+  &.gold {
+    background-position-y: -17 * 16px;
+    background-position-x: -3 * 16px;
+  }
+
+  &.bread {
+    background-position-y: -14 * 16px;
+    background-position-x: -13 * 16px;
   }
 }

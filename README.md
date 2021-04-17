@@ -58,3 +58,11 @@ Buildings are loaded in a seperate json file. See an example in `/maps/`.
   - Unlock skins?
   - Sound Emotes?
 - Private Servers?
+
+## Acknowledgements
+
+- Ship/Terrain Assets - [Kenney.nl](https://kenney.nl/assets/pirate-pack)
+- Building Assets - [Kenney.nl](https://kenney.nl/assets/medieval-rts)
+- Emotes - [Kenney.nl](https://kenney.nl/assets/emotes-pack)
+- Font - [dtinth](https://dtinth.github.io/comic-mono-font/)
+- Inventory Items - [cheekyinkling (Shikashis)](https://cheekyinkling.itch.io/shikashis-fantasy-icons-pack)

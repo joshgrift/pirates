@@ -49,9 +49,9 @@ UI.startButton?.addEventListener("click", (e) => {
             for (var i in d.port.store) {
               r += `
               <p class='item'>
-                <b>${i}</b>
                 <button id="buy_${i}">Buy (${d.port.store[i].buy})</button>
                 <button id="sell_${i}">Sell (${d.port.store[i].sell})</button>  
+                <b><i class='inventory ${i}'></i></b>
               </p>`;
             }
             return r;
@@ -102,11 +102,15 @@ UI.startButton?.addEventListener("click", (e) => {
           `${d.ui.acceleration} px/t^2 => ${d.ui.speed} px/t | ${d.ui.health}% | ${d.ui.heading} degrees | ${d.ui.ping} ms | ${d.ui.kills} kills | ${d.ui.x}, ${d.ui.y} | dead: ${d.ui.dead} | $${d.ui.money} <br>` +
           `${JSON.stringify(d.ui.inventory)}`;
       } else {
-        UI.stats.innerHTML = ` ${JSON.stringify(d.ui.inventory)} | $${
-          d.ui.money
+        let inventory = "";
+
+        for (let i of Object.keys(d.ui.inventory)) {
+          inventory += ` <i class='inventory ${i}'></i> ${d.ui.inventory[i]}`;
         }
-        <progress value="${d.ui.health}" max="100"></progress>`;
+
+        UI.stats.innerHTML = `${inventory} | $${d.ui.money} <progress value="${d.ui.health}" max="100"></progress>`;
       }
+
       UI.playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${
         d.ui.deaths
       } K/D</li>
