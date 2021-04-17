@@ -26,9 +26,6 @@ export class Map {
   }
 
   setView(playerX: number, playerY: number, speed: number, angle: number) {
-    let xDiff = playerX - this.offsetWidth;
-    let yDiff = playerY - this.offsetHeight;
-
     this.offsetWidth = playerX - this.width / 2;
     this.offsetHeight = playerY - this.height / 2;
   }
@@ -48,19 +45,17 @@ export class Map {
       drawY = Math.round(drawY);
       drawX = Math.round(drawX);
 
-      if (heading) {
-        this.ctx.save();
-        this.ctx.translate(
-          drawX + Math.floor(sprite.width / this.scale / 2),
-          drawY + Math.floor(sprite.height / this.scale / 2)
-        );
-        this.ctx.rotate(((heading - 90) * Math.PI) / 180.0);
+      this.ctx.save();
+      this.ctx.translate(
+        drawX + Math.floor(sprite.width / this.scale / 2),
+        drawY + Math.floor(sprite.height / this.scale / 2)
+      );
+      this.ctx.rotate(((heading - 90) * Math.PI) / 180.0);
 
-        this.ctx.translate(
-          -(drawX + Math.floor(sprite.width / this.scale / 2)),
-          -(drawY + Math.floor(sprite.height / this.scale / 2))
-        );
-      }
+      this.ctx.translate(
+        -(drawX + Math.floor(sprite.width / this.scale / 2)),
+        -(drawY + Math.floor(sprite.height / this.scale / 2))
+      );
 
       this.ctx.drawImage(
         sprite.sheet.img,
@@ -84,9 +79,7 @@ export class Map {
         this.ctx.fillRect(x - 2, y - 2, 4, 4);
       }
 
-      if (heading) {
-        this.ctx.restore();
-      }
+      this.ctx.restore();
     }
   }
 
