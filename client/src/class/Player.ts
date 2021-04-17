@@ -35,7 +35,7 @@ SPRITE[Skin.BLUE] = {
 SPRITE[Skin.YELLOW] = {
   alive: new Sprite(SHIP_SHEET, 68, 307, 66, 113),
   damaged: new Sprite(SHIP_SHEET, 340, 115, 66, 113),
-  broken: new Sprite(SHIP_SHEET, 204, 230, 66, 113),
+  broken: new Sprite(SHIP_SHEET, 204, 345, 66, 113),
   dead: new Sprite(SHIP_SHEET, 136, 0, 66, 113),
 };
 

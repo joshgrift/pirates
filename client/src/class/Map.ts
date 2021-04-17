@@ -31,30 +31,6 @@ export class Map {
 
     this.offsetWidth = playerX - this.width / 2;
     this.offsetHeight = playerY - this.height / 2;
-
-    /*if (xDiff > this.width || xDiff < 0) {
-      this.offsetWidth = playerX - this.width / 2;
-    }
-
-    if (yDiff > this.height || yDiff < 0) {
-      this.offsetHeight = playerY - this.height / 2;
-    }
-
-    if (xDiff > (2 * this.width) / 3) {
-      this.offsetWidth += speed * Math.cos((angle * Math.PI) / 180.0);
-    }
-
-    if (xDiff < this.width / 3) {
-      this.offsetWidth -= speed * Math.cos((angle * Math.PI) / 180.0);
-    }
-
-    if (yDiff > (2 * this.height) / 3) {
-      this.offsetHeight += speed * Math.sin((angle * Math.PI) / 180.0);
-    }
-
-    if (yDiff < this.height / 3) {
-      this.offsetHeight -= speed * Math.sin((angle * Math.PI) / 180.0);
-    }*/
   }
 
   drawSprite(sprite: Sprite, x: number, y: number, heading: number = 0) {
@@ -117,8 +93,4 @@ export class Map {
   clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
-}
-
-function distance(x1: number, y1: number, x2: number, y2: number) {
-  return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(x2 - y2, 2));
 }
