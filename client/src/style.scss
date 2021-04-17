@@ -6,6 +6,7 @@
 body {
   margin: 0px;
   font-family: comicMono;
+  background-color: #89cff0;
 }
 
 #menu {
@@ -14,7 +15,28 @@ body {
     display: block;
   }
   text-align: center;
-  padding-top: 20%;
+  padding-top: 10%;
+
+  .version {
+    position: fixed;
+    bottom: 0px;
+    right: 5px;
+    a {
+      color: white !important;
+    }
+  }
+
+  .howto {
+    margin-top: 10%;
+    code {
+      background-color: grey;
+      color: white;
+      display: inline-block;
+      text-align: center;
+      width: 15px;
+      border-radius: 5px;
+    }
+  }
 }
 
 #game {
@@ -24,7 +46,6 @@ body {
   }
 
   #canvas {
-    background-color: #89cff0;
     position: fixed;
     left: 0;
     top: 0;
