@@ -33,10 +33,8 @@ Buildings are loaded in a seperate json file. See an example in `/maps/`.
 - Emotes
 - User Accounts
 - Buildings
-- Interacting with buildings
 - Sounds
 - UI overhaul
-- trading
 - Upgrades
   - Extra cannon
   - More cannon damage
@@ -47,7 +45,6 @@ Buildings are loaded in a seperate json file. See an example in `/maps/`.
   - Trade bonus
   - Medic and repairman
   - Dingy when your ship sinks
-- Inventory
 - Ship capacity
 - Quests
 - AI Ships
