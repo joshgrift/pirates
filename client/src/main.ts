@@ -37,6 +37,7 @@ b?.addEventListener("click", (e) => {
                 }
                 return r;
               })()}
+              <button id="repair_button">Repair (1 wood)</button>
             </ul>
           `;
 
@@ -59,6 +60,12 @@ b?.addEventListener("click", (e) => {
               })(i)
             );
           }
+
+          document
+            .getElementById("repair_button")
+            ?.addEventListener("click", () => {
+              game.repair();
+            });
 
           openUI = "port";
         }

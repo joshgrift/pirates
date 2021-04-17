@@ -15,7 +15,7 @@ import {
   TIMEOUT,
 } from "../../shared/Protocol";
 import { normalize, random } from "../../shared/MyMath";
-import { KILL_REWARD, TILE_SIZE } from "../../shared/GameDefs";
+import { KILL_REWARD, TILE_SIZE, WOOD_HEAL } from "../../shared/GameDefs";
 import * as xml from "xml2js";
 import { Port } from "./MapObject";
 
@@ -132,6 +132,13 @@ export class World {
                     p.inventory[p.portAction.cargo]--;
                     p.money += onPort.store[p.portAction.cargo].sell;
                   }
+                }
+              }
+
+              if (p.portAction.type == PortActionType.REPAIR) {
+                if (p.inventory[Cargo.WOOD] > 0 && p.health < 100) {
+                  p.health += WOOD_HEAL;
+                  p.inventory[Cargo.WOOD]--;
                 }
               }
 

@@ -287,6 +287,12 @@ export class Game {
       cargo: cargo,
     };
   }
+
+  repair() {
+    this.player.portAction = {
+      type: PortActionType.REPAIR,
+    };
+  }
 }
 
 function avg(d: number[]) {
