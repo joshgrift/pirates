@@ -13,7 +13,7 @@ export const TICK = 50;
 /**
  * Timeout in miliseconds
  */
-export const TIMEOUT = 1000;
+export const TIMEOUT = 10000;
 
 /**
  * Respawn delay
