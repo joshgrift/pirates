@@ -77,6 +77,7 @@ export class Game {
   ready() {
     this.status = Status.READY;
     this.tick();
+    this.uiUpdate();
   }
 
   send(d: ClientServerPayload) {
@@ -151,7 +152,9 @@ export class Game {
 
       setTimeout(() => this.tick(), TICK);
     }
+  }
 
+  uiUpdate() {
     this.updateUIElement("#speed", decimal_round(this.player.speed) + "");
     this.updateUIElement(
       "#acceleration",
@@ -164,9 +167,7 @@ export class Game {
     this.updateUIElement("#x", decimal_round(this.player.x) + "");
     this.updateUIElement("#y", decimal_round(this.player.y) + "");
     this.updateUIElement("#kills", this.player.kills + "");
-  }
 
-  render() {
     let list = "";
     this.players.forEach((p) => {
       list += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
@@ -174,6 +175,12 @@ export class Game {
     list += `<li>${this.player.id} - ${this.player.kills} / ${this.player.deaths} K/D</li>`;
     this.updateUIElement("#player_list", list);
 
+    setTimeout(() => {
+      this.uiUpdate();
+    }, 1000);
+  }
+
+  render() {
     if (this.status == Status.READY) {
       this.map.clear();
 
@@ -191,11 +198,6 @@ export class Game {
         entity.render(this.map);
       });
     }
-
-    /*window.requestAnimationFrame(() => {
-      if (this.status == Status.READY) {
-    }
-    });*/
   }
 
   updateUIElement(query: string, value: string) {
