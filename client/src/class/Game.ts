@@ -103,6 +103,7 @@ export class Game {
   }
 
   handle(data: MessageEvent) {
+    var start_time = Date.now();
     this.pings.push(Date.now() - this.last_ping);
     if (this.pings.length > this.MAX_PINGS) {
       this.pings.shift();
@@ -152,6 +153,11 @@ export class Game {
     });
 
     this.render();
+    var total_time = Date.now() - start_time;
+    if (total_time > 50) {
+      console.log("took " + total_time);
+      console.log(msg);
+    }
   }
 
   tick() {
@@ -216,7 +222,7 @@ export class Game {
 
     setTimeout(() => {
       this.uiUpdate();
-    }, 1000);
+    }, 200);
   }
 
   getPort(): Port | null {
