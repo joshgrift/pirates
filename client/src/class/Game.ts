@@ -2,7 +2,6 @@ import {
   CannonDirection,
   Cargo,
   ClientServerPayload,
-  PortAction,
   PortActionType,
   ServerClientPayload,
   Skin,
@@ -22,6 +21,7 @@ enum Status {
 export enum GameEvent {
   ARRIVE_PORT,
   LEAVE_PORT,
+  UI_UPDATE,
 }
 
 export class Game {
@@ -59,6 +59,8 @@ export class Game {
       dead: false,
       kills: 0,
       deaths: 0,
+      inventory: {},
+      money: 0,
     });
 
     this.socket.onopen = () => {
@@ -132,6 +134,8 @@ export class Game {
         this.player.health = p.health;
         this.player.kills = p.kills;
         this.player.deaths = p.deaths;
+        this.player.money = p.money;
+        this.player.inventory = p.inventory;
       }
     }
 
@@ -191,25 +195,24 @@ export class Game {
   }
 
   uiUpdate() {
-    this.updateUIElement("#speed", decimal_round(this.player.speed) + "");
-    this.updateUIElement(
-      "#acceleration",
-      decimal_round(this.player.acceleration) + ""
-    );
-    this.updateUIElement("#health", this.player.health + "");
-    this.updateUIElement("#heading", this.player.heading + "");
-    this.updateUIElement("#ping", avg(this.pings) + "");
-    this.updateUIElement("#dead", this.player.dead + "");
-    this.updateUIElement("#x", decimal_round(this.player.x) + "");
-    this.updateUIElement("#y", decimal_round(this.player.y) + "");
-    this.updateUIElement("#kills", this.player.kills + "");
-
-    let list = "";
-    this.players.forEach((p) => {
-      list += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
+    this.emit(GameEvent.UI_UPDATE, {
+      ui: {
+        playerID: this.player.id,
+        deaths: this.player.deaths,
+        speed: decimal_round(this.player.speed),
+        acceleration: decimal_round(this.player.acceleration),
+        health: this.player.health,
+        ping: avg(this.pings),
+        dead: this.player.dead,
+        x: decimal_round(this.player.x),
+        y: decimal_round(this.player.y),
+        kills: this.player.kills,
+        players: this.players,
+        heading: this.player.heading,
+        money: this.player.money,
+        inventory: this.player.inventory,
+      },
     });
-    list += `<li>${this.player.id} - ${this.player.kills} / ${this.player.deaths} K/D</li>`;
-    this.updateUIElement("#player_list", list);
 
     setTimeout(() => {
       this.uiUpdate();
@@ -301,4 +304,20 @@ function decimal_round(n: number) {
 
 export type GameEventData = {
   port?: Port;
+  ui?: {
+    playerID: string;
+    deaths: number;
+    speed: number;
+    acceleration: number;
+    health: number;
+    ping: number;
+    x: number;
+    y: number;
+    kills: number;
+    dead: boolean;
+    heading: number;
+    players: Player[];
+    money: number;
+    inventory: { [id: string]: number };
+  };
 };

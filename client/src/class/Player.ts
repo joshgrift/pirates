@@ -71,6 +71,8 @@ export class Player {
   kills: number = 0;
   deaths: number = 0;
   portAction: PortAction | null = null;
+  inventory: { [id: string]: number } = {};
+  money: number = 0;
 
   constructor(d: PlayerInTransit) {
     this.id = d.id;
@@ -84,6 +86,8 @@ export class Player {
     this.kills = d.kills;
     this.sprite = SPRITE[this.skin].alive;
     this.deaths = d.deaths;
+    this.money = d.money;
+    this.inventory = d.inventory;
   }
 
   render(map: Map): void {

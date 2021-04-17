@@ -1,4 +1,4 @@
-export class Collection<T> {
+export class Collection<T> implements Iterable<T> {
   data: { [id: string]: T } = {};
 
   add(id: string, t: T) {
@@ -21,6 +21,20 @@ export class Collection<T> {
     Object.keys(this.data).forEach((i: string) => {
       callback(this.data[i]);
     });
+  }
+
+  [Symbol.iterator]() {
+    let count: number = -1;
+
+    return {
+      next: () => {
+        count++;
+        return {
+          done: (count == Object.keys(this.data).length) as boolean,
+          value: this.data[Object.keys(this.data)[count]],
+        };
+      },
+    };
   }
 
   update(id: string, t: T) {

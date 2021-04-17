@@ -105,7 +105,7 @@ export class MapEntity extends MapObject {
 export class Port extends MapObject {
   name: string;
   sprite: number;
-  store: { [id: number]: SellBuyPrice };
+  store: { [id: string]: SellBuyPrice };
   crew: CrewMemberInTransit[];
 
   constructor(id: string, d: PortInTransit) {

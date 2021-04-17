@@ -6,6 +6,7 @@ import { Player } from "./Player";
 import {
   ClientServerPayload,
   EntityType,
+  PortActionType,
   PortInTransit,
   RESPAWN_DELAY,
   ServerClientPayload,
@@ -13,7 +14,7 @@ import {
   TIMEOUT,
 } from "../../shared/Protocol";
 import { normalize, random } from "../../shared/MyMath";
-import { TILE_SIZE } from "../../shared/GameDefs";
+import { KILL_REWARD, TILE_SIZE } from "../../shared/GameDefs";
 import * as xml from "xml2js";
 import { Port } from "./MapObject";
 
@@ -104,7 +105,37 @@ export class World {
 
         // portActions
         if (p.portAction) {
-          console.log(p.portAction);
+          var onPort: Port | null = null;
+
+          for (let port of this.ports) {
+            if (p.collidingWith(port)) {
+              onPort = port;
+
+              if (p.portAction.type == PortActionType.BUY) {
+                if (p.portAction.cargo) {
+                  if (p.inventory[p.portAction.cargo] != null) {
+                    p.inventory[p.portAction.cargo]++;
+                  } else {
+                    p.inventory[p.portAction.cargo] = 1;
+                  }
+
+                  p.money -= onPort.store[p.portAction.cargo].buy;
+                }
+              }
+
+              if (p.portAction.type == PortActionType.SELL) {
+                if (p.portAction.cargo) {
+                  if (p.inventory[p.portAction.cargo]) {
+                    p.inventory[p.portAction.cargo]--;
+                    p.money += onPort.store[p.portAction.cargo].sell;
+                  }
+                }
+              }
+
+              break;
+            }
+          }
+
           p.portAction = null;
         }
       } else if (p.dead) {
@@ -131,6 +162,7 @@ export class World {
                   let killer = this.players.get(e.owner.id);
                   if (killer) {
                     killer.kills++;
+                    killer.money += KILL_REWARD;
                   }
                 }
 

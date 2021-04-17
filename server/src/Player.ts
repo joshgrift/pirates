@@ -26,6 +26,8 @@ export class Player extends MapEntity {
   deaths: number = 0;
   def: PlayerDef;
   portAction: PortAction | null = null;
+  inventory: { [id: string]: number } = {};
+  money: number = 0;
 
   constructor(p: playerConstructor) {
     super({
@@ -36,7 +38,6 @@ export class Player extends MapEntity {
     });
 
     this.def = ShipDef;
-
     this.skin = p.skin;
   }
 
@@ -112,6 +113,8 @@ export class Player extends MapEntity {
       dead: this.dead,
       kills: this.kills,
       deaths: this.deaths,
+      money: this.money,
+      inventory: this.inventory,
     };
   }
 }

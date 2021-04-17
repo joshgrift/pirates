@@ -106,6 +106,8 @@ export type PlayerInTransit = {
   dead: boolean;
   kills: number;
   deaths: number;
+  money: number;
+  inventory: { [id: string]: number };
 };
 
 /**

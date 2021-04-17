@@ -6,6 +6,7 @@ let c = document.querySelector("canvas");
 var startSection = document.querySelector(".ui") as HTMLElement;
 var gameSection = document.querySelector(".inGameUi") as HTMLElement;
 var portUI = document.querySelector(".port") as HTMLElement;
+var playerList = document.querySelector("#player_list") as HTMLElement;
 let game: Game;
 
 let openUI: string | null = null;
@@ -66,6 +67,25 @@ b?.addEventListener("click", (e) => {
         if (openUI) {
           portUI.style.left = "-200px";
           openUI = null;
+        }
+      });
+
+      game.on(GameEvent.UI_UPDATE, (d) => {
+        if (d.ui) {
+          gameSection.innerHTML =
+            `${d.ui.acceleration} px/t^2 => ${d.ui.speed} px/t | ${d.ui.health}% | ${d.ui.heading} degrees | ${d.ui.ping} ms | ${d.ui.kills} kills | ${d.ui.x}, ${d.ui.y} | dead: ${d.ui.dead} | $${d.ui.money} <br>` +
+            `${JSON.stringify(d.ui.inventory)}`;
+          playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${
+            d.ui.deaths
+          } K/D</li>
+          ${(() => {
+            var r = "";
+            for (let p of d.ui.players) {
+              r += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
+            }
+            return r;
+          })()}
+          `;
         }
       });
     } catch (e) {
