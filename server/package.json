@@ -19,6 +19,11 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "websocket": "^1.0.33",
-    "ws": "^7.4.4"
+    "ws": "^7.4.4",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@types/xml2js": "^0.4.8"
   }
 }

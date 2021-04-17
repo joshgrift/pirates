@@ -20,7 +20,13 @@ Protocol is defined in `Protocol.ts` in both client and server. These files shou
 
 ## Maps
 
-Maps are created with [Tiled](https://thorbjorn.itch.io/tiled). Use `map.tmx` template when creating maps. Use pirates.tsx as the tileset. To copy the map into the world, export the map as a csv and tileset as json and copy both in the server directory.
+Maps are created with [Tiled](https://thorbjorn.itch.io/tiled). Use the `pirates.tsx` tileset and create a map of any set size with the following settings:
+![maps/tiled_settings.png]
+Size is optional. Server will merge all layers into terrain for world. Load the `.tmx` file into the server. Pirates does not support rotation at this time.
+
+### Buildings
+
+Buildings are loaded in a seperate json file. See an example in `/maps/`.
 
 ## Bucket List
 

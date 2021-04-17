@@ -4,7 +4,7 @@ import { ClientServerPayload, TICK } from "../../shared/Protocol";
 
 const PORT = 3000;
 
-const world = new World("./map.csv");
+const world = new World("../maps/tiny_map.tmx");
 
 var s: SocketServer = new SocketServer(PORT, (ws) => {
   ws.on("message", function incoming(message) {

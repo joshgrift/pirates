@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { parse } from "csv";
+import csvParse from "csv-parse/lib/sync";
 import { Collection } from "./Collection";
 import { Entity, Terrain } from "./Entity";
 import { Player } from "./Player";
@@ -13,6 +13,7 @@ import {
 } from "../../shared/Protocol";
 import { random } from "../../shared/MyMath";
 import { TILE_SIZE } from "../../shared/GameDefs";
+import * as xml from "xml2js";
 
 export class World {
   height: number = 600;
@@ -178,35 +179,41 @@ export class World {
 
   async loadMap(mapPath: string): Promise<void> {
     var p = new Promise<void>((resolve, reject) => {
-      var y = 0;
+      let mapString = fs.readFileSync(mapPath, { encoding: "utf-8" });
+      xml.parseString(mapString, (err, obj) => {
+        if (err) {
+          reject(err);
+        }
 
-      fs.createReadStream(mapPath)
-        .pipe(new parse.Parser({}))
-        .on("data", (row: string[]) => {
-          let x = 0;
-          row.forEach((t) => {
-            if (parseInt(t) >= 0) {
-              this.terrains.push(
-                new Terrain({
-                  x: x * TILE_SIZE,
-                  y: y * TILE_SIZE,
-                  type: TerrainType.GRASS,
-                  sprite: parseInt(t),
-                })
-              );
+        obj.map.layer.forEach((layer: any) => {
+          var y = 0;
+          var x = 0;
+
+          csvParse(layer.data[0]._.trimStart().trimEnd() + ",").forEach(
+            (row: string[]) => {
+              x = 0;
+              row.forEach((t: string) => {
+                if (parseInt(t) > 0) {
+                  this.terrains.push(
+                    new Terrain({
+                      x: x * TILE_SIZE,
+                      y: y * TILE_SIZE,
+                      type: TerrainType.GRASS,
+                      sprite: parseInt(t) - 1,
+                    })
+                  );
+                }
+                x++;
+              });
+              y++;
             }
-            x++;
-          });
-          y++;
+          );
           this.width = x * TILE_SIZE;
           this.height = y * TILE_SIZE;
-        })
-        .on("end", () => {
-          resolve();
-        })
-        .on("error", () => {
-          reject();
         });
+
+        resolve();
+      });
     });
 
     return p;
