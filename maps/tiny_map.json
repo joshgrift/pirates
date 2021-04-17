@@ -8,7 +8,7 @@
       "store": {
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":3, "sell":3},
-        "cannon_balls": {"buy":1, "sell":0.5},
+        "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":5, "sell":4}
       },

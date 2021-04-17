@@ -1,7 +1,9 @@
 import { EntityType, TerrainType } from "./Protocol";
 
 export const TILE_SIZE: number = 32;
-export const KILL_REWARD: number = 10;
+export const KILL_REWARD: number = 25;
+export const STARTING_CANNON_BALLS: number = 100;
+export const WOOD_HEAL: number = 1;
 
 /** Types **/
 export class MapObjectDef {

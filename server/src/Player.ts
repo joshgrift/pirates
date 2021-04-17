@@ -1,10 +1,15 @@
-import { PlayerDef, ShipDef } from "../../shared/GameDefs";
+import {
+  PlayerDef,
+  ShipDef,
+  STARTING_CANNON_BALLS,
+} from "../../shared/GameDefs";
 import {
   CannonDirection,
   ClientServerPayload,
   PlayerInTransit,
   PortAction,
   Skin,
+  Cargo,
 } from "../../shared/Protocol";
 import { MapEntity } from "./MapObject";
 
@@ -67,10 +72,11 @@ export class Player extends MapEntity {
 
   canFire(): boolean {
     return (
-      (this.cannon == CannonDirection.LEFT &&
+      ((this.cannon == CannonDirection.LEFT &&
         Date.now() - this.last_fired_left >= this.def.reloadTime) ||
-      (this.cannon == CannonDirection.RIGHT &&
-        Date.now() - this.last_fired_right >= this.def.reloadTime)
+        (this.cannon == CannonDirection.RIGHT &&
+          Date.now() - this.last_fired_right >= this.def.reloadTime)) &&
+      this.inventory[Cargo.CANNON_BALL] > 0
     );
   }
 
@@ -84,6 +90,7 @@ export class Player extends MapEntity {
     }
 
     this.cannon = CannonDirection.OFF;
+    this.inventory[Cargo.CANNON_BALL]--;
   }
 
   kill() {
@@ -99,6 +106,9 @@ export class Player extends MapEntity {
     this.x = x;
     this.y = y;
     this.speed = 0;
+    this.money = 0;
+    this.inventory = {};
+    this.inventory[Cargo.CANNON_BALL] = STARTING_CANNON_BALLS;
   }
 
   toJSON(): PlayerInTransit {

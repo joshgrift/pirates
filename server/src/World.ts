@@ -4,6 +4,7 @@ import { Collection } from "./Collection";
 import { Entity, Terrain } from "./Entity";
 import { Player } from "./Player";
 import {
+  Cargo,
   ClientServerPayload,
   EntityType,
   PortActionType,
