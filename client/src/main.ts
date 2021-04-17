@@ -2,7 +2,7 @@ import "./style.scss";
 import { Game, GameEvent } from "./class/Game";
 import { Cargo, Skin } from "../../shared/Protocol";
 
-const DEBUG = false;
+const DEBUG = true;
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -108,7 +108,7 @@ UI.startButton?.addEventListener("click", (e) => {
           inventory += ` <i class='inventory ${i}'></i> ${d.ui.inventory[i]}`;
         }
 
-        UI.stats.innerHTML = `${inventory} | $${d.ui.money} <progress value="${d.ui.health}" max="100"></progress>`;
+        UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.money} <progress value="${d.ui.health}" max="100"></progress>`;
       }
 
       UI.playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${

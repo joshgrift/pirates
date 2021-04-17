@@ -136,4 +136,9 @@ i.inventory {
     background-position-y: -14 * 16px;
     background-position-x: -13 * 16px;
   }
+
+  &.money {
+    background-position-y: -12 * 16px;
+    background-position-x: -10 * 16px;
+  }
 }

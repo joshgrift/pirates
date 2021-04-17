@@ -1,4 +1,8 @@
 import {
+  SPRITE_SHEET_HEIGHT,
+  SPRITE_SHEET_WIDTH,
+} from "../../../shared/GameDefs";
+import {
   CrewMemberInTransit,
   EntityInTransit,
   EntityType,
@@ -29,12 +33,6 @@ SPRITE.ENTITY[EntityType.SHIP_EXPLOSION] = [
 
 SPRITE.ENTITY[EntityType.CANNON_BALL] = [
   new Sprite(SHIP_SHEET, 120, 29, 10, 10),
-];
-
-SPRITE.TERRAIN[TerrainType.SAND] = [];
-
-SPRITE.TERRAIN[TerrainType.GRASS] = [
-  new Sprite(TILES_SHEET, 6 * T, 1 * T, T, T),
 ];
 
 export class Entity {
@@ -90,14 +88,11 @@ export class Terrain {
   }
 
   render(map: Map): void {
-    /*console.log(
-      `${this.sprite} : ${this.sprite % 15}, ${Math.floor(this.sprite / 15)}`
-    );*/
     map.drawSprite(
       new Sprite(
         TILES_SHEET,
-        (this.sprite % 16) * T,
-        Math.floor(this.sprite / 16) * T,
+        (this.sprite % SPRITE_SHEET_WIDTH) * T,
+        Math.floor(this.sprite / SPRITE_SHEET_HEIGHT) * T,
         T,
         T
       ),

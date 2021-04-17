@@ -2,15 +2,78 @@
   "ports":[
     {
       "name":"Port of Santiago",
-      "x": 544,
-      "y": 406,
-      "sprite":12,
+      "x": 2880,
+      "y": 2656,
+      "sprite":4,
+      "store": {
+        "wheat": {"buy":10, "sell":9},
+        "gold": {"buy":3, "sell":3},
+        "cannon_ball": {"buy":0.1, "sell":0.1},
+        "bread": {"buy":3, "sell":2},
+        "wood": {"buy":5, "sell":4}
+      },
+      "crew": {
+        "john": 100
+      }
+    },
+    {
+      "name":"Port of Bombados",
+      "x": 1728,
+      "y": 2848,
+      "sprite":4,
       "store": {
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":3, "sell":3},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":2, "sell":1},
+        "wood": {"buy":6, "sell":4}
+      },
+      "crew": {
+        "john": 100
+      }
+    },
+    {
+      "name":"Port of Almarty",
+      "x": 1568,
+      "y": 1568,
+      "sprite":4,
+      "store": {
+        "wheat": {"buy":10, "sell":9},
+        "gold": {"buy":2, "sell":0},
+        "cannon_ball": {"buy":0.1, "sell":0.1},
+        "bread": {"buy":2, "sell":1},
         "wood": {"buy":5, "sell":4}
+      },
+      "crew": {
+        "john": 100
+      }
+    },
+    {
+      "name":"nate's Port",
+      "x": 1216,
+      "y": 416,
+      "sprite":4,
+      "store": {
+        "wheat": {"buy":10, "sell":9},
+        "gold": {"buy":3, "sell":3},
+        "cannon_ball": {"buy":0.1, "sell":0.1},
+        "bread": {"buy":2, "sell":1},
+        "wood": {"buy":2, "sell":2}
+      },
+      "crew": {
+        "john": 100
+      }
+    },
+    {
+      "name":"Benorito",
+      "x": 2816,
+      "y": 416,
+      "sprite":4,
+      "store": {
+        "wheat": {"buy":10, "sell":9},
+        "gold": {"buy":3, "sell":3},
+        "cannon_ball": {"buy":0.1, "sell":0.1},
+        "wood": {"buy":2, "sell":1}
       },
       "crew": {
         "john": 100
@@ -40,4 +103,3 @@
     }
   ]
 }
-
