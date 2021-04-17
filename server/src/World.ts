@@ -113,13 +113,15 @@ export class World {
 
               if (p.portAction.type == PortActionType.BUY) {
                 if (p.portAction.cargo) {
-                  if (p.inventory[p.portAction.cargo] != null) {
-                    p.inventory[p.portAction.cargo]++;
-                  } else {
-                    p.inventory[p.portAction.cargo] = 1;
-                  }
+                  if (p.money - onPort.store[p.portAction.cargo].buy >= 0) {
+                    if (p.inventory[p.portAction.cargo] != null) {
+                      p.inventory[p.portAction.cargo]++;
+                    } else {
+                      p.inventory[p.portAction.cargo] = 1;
+                    }
 
-                  p.money -= onPort.store[p.portAction.cargo].buy;
+                    p.money -= onPort.store[p.portAction.cargo].buy;
+                  }
                 }
               }
 
@@ -151,7 +153,7 @@ export class World {
       e.applySpeed();
 
       this.players.forEach((p) => {
-        if (e.collidingWith(p)) {
+        if (e.collidingWith(p) && !p.dead) {
           if (e.type == EntityType.CANNON_BALL) {
             if (e.owner) {
               if ((e.owner.id as string) != p.id) {
