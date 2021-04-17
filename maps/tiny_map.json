@@ -1,0 +1,43 @@
+{
+  "ports":[
+    {
+      "name":"Port of Santiago",
+      "x": 544,
+      "y": 576,
+      "sprite":12,
+      "store": {
+        "wheat":-1,
+        "gold": 5,
+        "cannon_balls": 0,
+        "bread": 5,
+        "wood": 10
+      },
+      "crew": {
+        "john": 100
+      }
+    }
+  ],
+  "crew":[
+    {
+      "name":"Philip",
+      "bonus":4,
+      "cost": 100
+    },
+    {
+      "name":"Ben",
+      "bonus":3,
+      "cost": 100
+    },
+    {
+      "name":"Nathan",
+      "bonus":0,
+      "cost": 100
+    },
+    {
+      "name":"Josh",
+      "bonus":8,
+      "cost": 100
+    }
+  ]
+}
+

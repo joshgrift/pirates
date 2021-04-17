@@ -55,3 +55,8 @@ export const ShipDef: PlayerDef = {
   reloadTime: 1000,
   waterResistenceFactor: 0.8,
 };
+
+export const PortDef: MapObjectDef = {
+  radius: 30,
+  damage: 0,
+};

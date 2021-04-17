@@ -45,6 +45,11 @@ export type ServerClientPayload = {
    * Terrain. Ground, not ground, etc.
    */
   terrain: TerrainInTransit[];
+
+  /**
+   * Ports.
+   */
+  ports: PortInTransit[];
 };
 
 /**
@@ -172,3 +177,80 @@ export enum TerrainType {
   SAND,
   GRASS,
 }
+
+/**
+ * Ports
+ */
+
+export type PortInTransit = {
+  /**
+   * It's the name of the port. Comon' man, it's not that hard.
+   */
+  name: string;
+
+  /**
+   * x position on the world map
+   */
+  x: number;
+
+  /**
+   * y position on the world map
+   */
+  y: number;
+
+  /**
+   * sprite location
+   */
+  sprite: number;
+
+  /**
+   * sell and buy options
+   */
+  store: { [id: number]: SellBuyPrice };
+
+  /**
+   * Crew hiring options
+   */
+  crew: CrewMemberInTransit[];
+};
+
+/**
+ * Inventory Item
+ */
+export enum Cargo {
+  WOOD,
+  CANNON_BALL,
+  WHEAT,
+}
+
+/**
+ * Crew Options
+ */
+export enum CrewBonus {
+  EXTRA_CANNON,
+  MORE_DAMAGE,
+  MORE_HEALTH,
+  MORE_CAPACITY,
+  FAST_BOI,
+  MORE_ACCELERATION,
+  BETTER_TRADE,
+  MEDIC,
+  MORE_RANGE,
+}
+
+/**
+ * Crew member in transit
+ */
+export type CrewMemberInTransit = {
+  name: string;
+  bonus: CrewBonus;
+  cost: number;
+};
+
+/**
+ * Type to indicate price adjustments when buying and selling
+ */
+export type SellBuyPrice = {
+  buy: number;
+  sell: number;
+};
