@@ -150,8 +150,8 @@ export class World {
     var safe = false;
 
     while (!safe) {
-      player.x = random(this.width);
-      player.y = random(this.height);
+      player.x = random(this.width - 2 * TILE_SIZE) + TILE_SIZE;
+      player.y = random(this.height - 2 * TILE_SIZE) + TILE_SIZE;
 
       safe = true;
       this.players.forEach((p2) => {
