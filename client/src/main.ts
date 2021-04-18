@@ -1,6 +1,12 @@
 import "./style.scss";
 import { Game, GameEvent } from "./class/Game";
-import { Cargo, Skin } from "../../shared/Protocol";
+import {
+  Cargo,
+  InitReturnPayload,
+  InitSetupPayload,
+  Skin,
+} from "../../shared/Protocol";
+import { start } from "node:repl";
 
 const DEBUG = true;
 
@@ -29,12 +35,23 @@ const UI = {
 let game: Game;
 let portOpen = false;
 
-UI.startButton?.addEventListener("click", (e) => {
-  game = new Game(
-    UI.canvas,
-    UI.nameInput.value,
-    (parseInt(UI.skinInput.value) as any) as Skin
-  );
+async function startGame() {
+  const skin = (parseInt(UI.skinInput.value) as any) as Skin;
+
+  var result = await fetch("/join", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+    },
+    body: JSON.stringify({
+      name: UI.nameInput.value,
+      skin: skin,
+    } as InitSetupPayload),
+  });
+
+  var json: InitReturnPayload = (await result.json()) as InitReturnPayload;
+
+  game = new Game(UI.canvas, json, skin);
 
   UI.game.classList.add("open");
 
@@ -126,4 +143,6 @@ UI.startButton?.addEventListener("click", (e) => {
   });
 
   UI.menu.classList.remove("open");
-});
+}
+
+UI.startButton?.addEventListener("click", startGame);

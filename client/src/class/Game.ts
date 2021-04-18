@@ -2,6 +2,7 @@ import {
   CannonDirection,
   Cargo,
   ClientServerPayload,
+  InitReturnPayload,
   PortActionType,
   ServerClientPayload,
   Skin,
@@ -44,16 +45,25 @@ export class Game {
   status: Status = Status.DISCONNECTED;
   socket: WebSocket;
 
-  constructor(c: HTMLCanvasElement, id: string, skin: Skin) {
-    this.socket = new WebSocket("ws://192.168.1.181:3000");
+  constructor(c: HTMLCanvasElement, load: InitReturnPayload, skin: Skin) {
+    this.socket = new WebSocket(load.address);
     this.map = new Map(c);
+
+    for (let t of load.terrain) {
+      this.terrain.push(new Terrain(t));
+    }
+
+    load.ports.forEach((p) => {
+      let id = normalize(p.name);
+      this.ports.push(new Port(id, p));
+    });
 
     this.player = new Player({
       x: 0,
       y: 0,
       speed: 0,
       health: 100,
-      id: escape(id),
+      id: load.id,
       heading: 90,
       skin: skin,
       dead: false,
@@ -112,11 +122,6 @@ export class Game {
 
     let msg = JSON.parse(data.data) as ServerClientPayload;
 
-    this.terrain = [];
-    for (let t of msg.terrain) {
-      this.terrain.push(new Terrain(t));
-    }
-
     this.entities = [];
     for (let e of msg.entities) {
       this.entities.push(new Entity(e));
@@ -146,11 +151,6 @@ export class Game {
       this.player.speed,
       this.player.heading
     );
-
-    msg.ports.forEach((p) => {
-      let id = normalize(p.name);
-      this.ports.push(new Port(id, p));
-    });
 
     this.render();
     var total_time = Date.now() - start_time;

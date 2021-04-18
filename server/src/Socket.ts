@@ -3,7 +3,6 @@ import { ServerClientPayload } from "../../shared/Protocol";
 
 export class SocketServer {
   server: WebSocket.Server;
-
   constructor(port: number, callback: (ws: WebSocket) => void) {
     this.server = new WebSocket.Server({
       port: port,

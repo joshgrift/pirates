@@ -44,6 +44,7 @@ export class Player extends MapEntity {
 
     this.def = ShipDef;
     this.skin = p.skin;
+    this.last_ping_time = Date.now();
   }
 
   update(p: ClientServerPayload) {

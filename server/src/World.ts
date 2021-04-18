@@ -7,6 +7,8 @@ import {
   Cargo,
   ClientServerPayload,
   EntityType,
+  InitReturnPayload,
+  InitSetupPayload,
   PortActionType,
   PortInTransit,
   RESPAWN_DELAY,
@@ -32,24 +34,33 @@ export class World {
     this.loadMap(mapPath, mapJSON);
   }
 
+  createPlayer(data: InitSetupPayload): string {
+    let id = "p" + Date.now();
+
+    let player = new Player({
+      id: id,
+      x: 0,
+      y: 0,
+      skin: data.skin,
+    });
+
+    this.players.add(id, player);
+    this.spawnPlayer(player);
+
+    return id;
+  }
+
   updateFromPlayer(update: ClientServerPayload) {
     var player = this.players.get(update.id);
+    console.log(this.players);
 
-    // if player doesn't exist, add player
-    if (!player) {
-      player = new Player({
-        id: update.id,
-        x: 0,
-        y: 0,
-        skin: update.skin,
-      });
-
-      this.players.add(update.id, player);
-      this.spawnPlayer(player);
+    if (player) {
+      player.update(update);
+    } else {
+      /*console.log(
+        "Player " + update.id + " tried to update, but does not exist"
+      );*/
     }
-
-    // update player with details
-    player.update(update);
   }
 
   tick() {
@@ -287,13 +298,11 @@ export class World {
     this.entities.add(e.id, e);
   }
 
-  toJSON(): ServerClientPayload {
+  toServerClientPayload(): ServerClientPayload {
     return {
       players: this.players.toJSON(),
       entities: this.entities.toJSON(),
       events: [],
-      terrain: this.terrains,
-      ports: this.ports.toJSON(),
     };
   }
 }

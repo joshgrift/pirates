@@ -134,8 +134,6 @@ export class Player {
       heading: this.heading,
       acceleration: this.acceleration,
       cannon: this.cannon,
-      key: "password",
-      skin: this.skin,
       portAction: this.portAction,
     };
   }

@@ -21,6 +21,46 @@ export const TIMEOUT = 10000;
 export const RESPAWN_DELAY = 5000;
 
 /**
+ * Init payload. Sent as POST request to server at /join
+ */
+export type InitSetupPayload = {
+  /**
+   * What do you wish to be called?
+   */
+  name: string;
+
+  /**
+   * Skin
+   */
+  skin: Skin;
+};
+
+/**
+ * Init payload. Returned from POST request to /join
+ */
+export type InitReturnPayload = {
+  /**
+   * Terrain. Ground, not ground, etc.
+   */
+  terrain: TerrainInTransit[];
+
+  /**
+   * Ports.
+   */
+  ports: PortInTransit[];
+
+  /**
+   * PlayerId
+   */
+  id: string;
+
+  /**
+   * ip address and port for server connection
+   */
+  address: string;
+};
+
+/**
  * Package sent from Server to Client
  */
 export type ServerClientPayload = {
@@ -40,16 +80,6 @@ export type ServerClientPayload = {
    * Visual Explosions, shots fired sounds, notifications, death notification, etc.
    */
   events: EventsInTransit[];
-
-  /**
-   * Terrain. Ground, not ground, etc.
-   */
-  terrain: TerrainInTransit[];
-
-  /**
-   * Ports.
-   */
-  ports: PortInTransit[];
 };
 
 /**
@@ -60,11 +90,6 @@ export type ClientServerPayload = {
    * Which player are you? Be honest.
    */
   id: string;
-
-  /**
-   * What's the password? Now we know if you were honest.
-   */
-  key: string;
 
   /**
    * Current acceleration in px/tick
@@ -80,11 +105,6 @@ export type ClientServerPayload = {
    * Heading in degrees cause I'm funny like that
    */
   heading: number;
-
-  /**
-   * Skin
-   */
-  skin: Skin;
 
   /**
    * port action. Buy, sell, hire, fire, repair, etc.
