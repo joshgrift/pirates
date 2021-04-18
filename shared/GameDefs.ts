@@ -6,7 +6,7 @@ export const STARTING_CANNON_BALLS: number = 100;
 export const WOOD_HEAL: number = 5;
 export const SPRITE_SHEET_WIDTH: number = 25;
 export const SPRITE_SHEET_HEIGHT: number = 25;
-export const TREASURE_CHANCE: number = 100;
+export const TREASURE_CHANCE: number = 300;
 export const TREASURE_REWARD_MAX: number = 20;
 
 /** Types **/

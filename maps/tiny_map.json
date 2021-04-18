@@ -7,7 +7,7 @@
       "sprite":4,
       "store": {
         "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":3, "sell":3},
+        "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":3, "sell":2},
         "wood": {"buy":5, "sell":4}
@@ -23,7 +23,7 @@
       "sprite":4,
       "store": {
         "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":3, "sell":3},
+        "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":6, "sell":4}
@@ -39,7 +39,7 @@
       "sprite":4,
       "store": {
         "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":2, "sell":0},
+        "gold": {"buy":12, "sell":10},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":5, "sell":4}
@@ -55,7 +55,7 @@
       "sprite":4,
       "store": {
         "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":3, "sell":3},
+        "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":2, "sell":2}
@@ -71,7 +71,7 @@
       "sprite":4,
       "store": {
         "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":3, "sell":3},
+        "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "wood": {"buy":2, "sell":1}
       },

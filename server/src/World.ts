@@ -239,7 +239,6 @@ export class World {
 
       if (safe) {
         this.spawn(treasure);
-        console.log("spawned treasure");
       }
     }
   }
