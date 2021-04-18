@@ -6,9 +6,8 @@ import {
   InitSetupPayload,
   Skin,
 } from "../../shared/Protocol";
-import { start } from "node:repl";
 
-const DEBUG = true;
+const DEBUG = false;
 
 // plz put your pitch forks down
 let $ = (q: string) => {

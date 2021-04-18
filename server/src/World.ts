@@ -52,14 +52,13 @@ export class World {
 
   updateFromPlayer(update: ClientServerPayload) {
     var player = this.players.get(update.id);
-    console.log(this.players);
 
     if (player) {
       player.update(update);
     } else {
-      /*console.log(
+      console.log(
         "Player " + update.id + " tried to update, but does not exist"
-      );*/
+      );
     }
   }
 
