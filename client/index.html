@@ -34,7 +34,63 @@
     <div id="game">
       <canvas id="canvas" width="0" height=0></canvas>
       <ul class="player_list"></ul>
-      <div class="port"></div>
+      <div id="port">
+        <div id="title">
+          <h2>Port of Almaty</h2>
+        </div>
+      
+        <div id="shelf">
+          <div class="tabs">
+            <div class="tab" @click="changeTab('store')" :class="{ active: isActive('store') }">Store</div>
+            <div class="tab" @click="changeTab('crew')" :class="{ active: isActive('crew') }">Crew</div>
+            <div class="tab" @click="changeTab('ship')" :class="{ active: isActive('ship') }">Ship</div>
+          </div>
+          <div class="tab_content store" v-if="isActive('store')">
+            <div v-for="item in items" :key="item.id" class="item">
+              <span class="icon">
+                <i class="inventory" :class='item.id'></i>
+              </span>
+              <span class="quantity">
+                {{ item.quantity }}
+              </span>
+              <span class="button" @click='buy(item.id)'>
+                <span>buy x{{ amount }}</span>
+                <span class='price'>${{ item.price.buy * amount }}</span>
+              </span>
+              <span class="button" @click='sell(item.id)'>
+                <span>sell x{{ amount }}</span>
+                <span class='price'>${{ item.price.sell * amount}}</span>
+              </span>
+            </div>
+          </div>
+          <div class="tab_content crew" v-if="isActive('crew')">
+            <div class="crew_member" v-for='crew in crews' :key="crew.id">
+              <div class="title">
+                <img :src="crew.url" width="50" height="50" />
+                <div class="name">
+                  <h3>{{crew.name}}</h3>
+                  <p>{{crew.description}}</p>
+                </div>
+                <span class="button" :class="{fire: crew.fire}">{{ crew.fire ? "Fire" : "Hire"}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="tab_content ship" v-if="isActive('ship')">
+            <div class="button" @click='repair()'>
+              Repair 5% for 1 wood
+            </div>
+          </div>
+        </div>
+      
+        <div id="info">
+          <img src="" width=64 height=64>
+          <div>
+            <h3>Pearl of the Sea</h3>
+            <p>100 / 100 Capcity</p>
+            <p>1/4 crew</p>
+          </div>
+        </div>
+      </div>
       <div class="stats"></div>
     </div>
     

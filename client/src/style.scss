@@ -1,3 +1,13 @@
+$soft: #f4f3e8;
+$primary_action: #2f240a;
+$primary_text: white;
+$accent: #9b978e;
+$accent_text: black;
+$error: #cf5e53;
+$error_text: #ffffff;
+
+$sea: #89cff0;
+
 @font-face {
   font-family: comicMono;
   src: url("../assets/ComicMono.ttf");
@@ -6,7 +16,8 @@
 body {
   margin: 0px;
   font-family: comicMono;
-  background-color: #89cff0;
+  background-color: $sea;
+  color: $primary_action;
 }
 
 #menu {
@@ -65,11 +76,13 @@ body {
     line-height: 16px;
   }
 
-  .port {
+  #port {
+    display: grid;
+    grid-template-rows: 0.1fr auto 64px;
+    background-color: $soft;
     position: fixed;
     top: 0px;
     left: -320px;
-    background-color: white;
     transition: 1s ease all;
     width: 280px;
     padding: 20px;
@@ -79,27 +92,139 @@ body {
       left: 0px;
     }
 
-    h1 {
-      margin-top: 10px;
-      font-size: 20px;
+    #title {
     }
 
-    .store {
-      font-size: 13px;
-      p.item {
-        height: 20px;
-        line-height: 20px;
-        padding: 0px;
-        display: grid;
-        grid-template-columns: 0.333fr 0.333fr 0.333fr;
-        button {
-          line-height: 10px;
-          padding: 0px;
-          height: 20px;
-          font-size: 10px;
-          margin-left: 5px;
-          margin-right: 5px;
+    #shelf {
+      .tabs {
+        margin-bottom: 10px;
+        border-bottom: 1px solid $primary_action;
+
+        .tab {
+          display: inline-block;
+          padding: 5px;
+          margin: 5px;
+          margin-bottom: 0px;
+          border-top: 1px solid $primary_action;
+          border-left: 1px solid $primary_action;
+          border-right: 1px solid $primary_action;
+          color: $primary_action;
+          cursor: pointer;
         }
+
+        .tab.active {
+          background-color: $primary_action;
+          color: $primary_text;
+        }
+      }
+
+      .store {
+        font-size: 13px;
+
+        .item {
+          margin-bottom: 15px;
+          height: 20px;
+          line-height: 20px;
+          padding: 0px;
+          display: grid;
+          grid-template-columns: 0.1fr 0.2fr 0.35fr 0.35fr;
+
+          .icon,
+          .quantity {
+            padding: 2px;
+          }
+
+          .button {
+            span {
+              background-color: $primary_action;
+              cursor: pointer;
+              color: $primary_text;
+              padding: 5px;
+            }
+
+            span.price {
+              background-color: $accent;
+            }
+          }
+        }
+      }
+
+      .crew {
+        .crew_member {
+          margin-bottom: 10px;
+        }
+
+        .title {
+          display: grid;
+          grid-template-columns: 60px auto 60px;
+
+          img {
+            float: left;
+            margin-right: 10px;
+          }
+
+          .name {
+            h3 {
+              margin: 0px;
+              font-size: 15px;
+              line-height: 30px;
+            }
+
+            p {
+              line-height: 20px;
+              font-size: 12px;
+              margin: 0px;
+            }
+          }
+
+          .button {
+            display: inline-block;
+            float: right;
+            background-color: $primary_action;
+            cursor: pointer;
+            color: $primary_text;
+            padding: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+
+            &.fire {
+              color: $error-text;
+              background-color: $error;
+            }
+          }
+        }
+      }
+
+      .ship {
+        .button {
+          background-color: $primary_action;
+          cursor: pointer;
+          color: $primary_text;
+          padding: 5px;
+          margin-top: 10px;
+          margin-bottom: 10px;
+          text-align: center;
+        }
+      }
+    }
+
+    #info {
+      padding: 10px;
+      font-size: 12px;
+      img {
+        float: left;
+        margin-right: 10px;
+      }
+
+      h3 {
+        margin: 0px;
+        font-size: 15px;
+      }
+
+      p {
+        margin: 0px;
+        margin-top: 5px;
       }
     }
   }

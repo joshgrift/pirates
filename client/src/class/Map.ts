@@ -48,8 +48,8 @@ export class Map {
         x - Math.floor(sprite.width / this.scale) / 2 - this.offsetWidth;
       let drawY =
         y - Math.floor(sprite.height / this.scale) / 2 - this.offsetHeight;
-      drawY = Math.round(drawY);
-      drawX = Math.round(drawX);
+      drawY = Math.floor(drawY);
+      drawX = Math.floor(drawX);
 
       this.ctx.save();
       this.ctx.translate(

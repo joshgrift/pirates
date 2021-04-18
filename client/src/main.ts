@@ -4,8 +4,10 @@ import {
   Cargo,
   InitReturnPayload,
   InitSetupPayload,
+  SellBuyPrice,
   Skin,
 } from "../../shared/Protocol";
+import { createApp } from "vue";
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -22,7 +24,7 @@ const UI = {
   menu: $("#menu") as HTMLDivElement,
   game: $("#game") as HTMLDivElement,
   playerList: $(".player_list") as HTMLUListElement,
-  port: $(".port") as HTMLDivElement,
+  port: $("#port") as HTMLDivElement,
   stats: $(".stats") as HTMLDivElement,
   startButton: $("#startButton") as HTMLButtonElement,
   nameInput: $("#name") as HTMLInputElement,
@@ -31,6 +33,71 @@ const UI = {
 
 let game: Game;
 let portOpen = false;
+
+type CargoItem = {
+  id: string;
+  price: SellBuyPrice;
+};
+
+type PortAppData = {
+  amount: number;
+  activeTab: string;
+  items: CargoItem[];
+  crews: {
+    id: string;
+    name: string;
+    description: string;
+    url: string;
+    fire: boolean;
+  }[];
+};
+
+var app = createApp({
+  data: function (): PortAppData {
+    return {
+      amount: 1,
+      activeTab: "ship",
+      items: [],
+      crews: [
+        {
+          id: "bob",
+          name: "Bob",
+          description: "increases capacity 10%",
+          url: "",
+          fire: false,
+        },
+        {
+          id: "sam",
+          name: "Sam",
+          description: "increases range by 10%",
+          url: "",
+          fire: true,
+        },
+      ],
+    };
+  },
+  methods: {
+    changeTab: function (newtab: string) {
+      this.activeTab = newtab;
+    },
+    isActive: function (tab: string) {
+      return this.activeTab == tab;
+    },
+    buy: function (i: Cargo) {
+      game.buy(i);
+    },
+    sell: function (i: Cargo) {
+      game.sell(i);
+    },
+    repair: function () {
+      game.repair();
+    },
+  },
+}).mount("#port");
+
+function appData(): PortAppData {
+  return app.$data as PortAppData;
+}
 
 async function startGame() {
   const skin = (parseInt(UI.skinInput.value) as any) as Skin;
@@ -55,48 +122,15 @@ async function startGame() {
   game.on(GameEvent.ARRIVE_PORT, (d) => {
     if (d.port && !portOpen) {
       UI.port.classList.add("open");
-      UI.port.innerHTML = `
-        <h1>${d.port.name}</h1>
-        <div class='store'>
-          ${(() => {
-            let r = "";
-            for (var i in d.port.store) {
-              r += `
-              <p class='item'>
-                <button id="buy_${i}">Buy (${d.port.store[i].buy})</button>
-                <button id="sell_${i}">Sell (${d.port.store[i].sell})</button>  
-                <b><i class='inventory ${i}'></i></b>
-              </p>`;
-            }
-            return r;
-          })()}
-        </div><br>
-        <button id="repair_button">Repair 1% (1 wood)</button>
-      `;
 
+      let items: CargoItem[] = [];
       for (var i in d.port.store) {
-        $("#buy_" + i).addEventListener(
-          "click",
-          (function (i) {
-            return function () {
-              game.buy(i as Cargo);
-            };
-          })(i)
-        );
-
-        $("#sell_" + i).addEventListener(
-          "click",
-          (function (i) {
-            return function () {
-              game.sell(i as Cargo);
-            };
-          })(i)
-        );
+        items.push({
+          id: i,
+          price: d.port.store[i],
+        });
       }
-
-      $("#repair_button").addEventListener("click", () => {
-        game.repair();
-      });
+      appData().items = items;
 
       portOpen = true;
     }

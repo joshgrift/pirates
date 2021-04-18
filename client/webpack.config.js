@@ -30,6 +30,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".scss"],
+    alias: {
+      vue: path.resolve(__dirname, "node_modules/vue/dist/vue.esm-bundler.js"),
+    },
   },
   output: {
     filename: "main.js",
