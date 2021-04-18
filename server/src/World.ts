@@ -47,6 +47,8 @@ export class World {
     this.players.add(id, player);
     this.spawnPlayer(player);
 
+    console.log(id + " joined");
+
     return id;
   }
 
@@ -65,6 +67,7 @@ export class World {
   tick() {
     this.players.forEach((p) => {
       if (Date.now() - p.last_ping_time > TIMEOUT) {
+        console.log(p.id + " removed");
         this.players.remove(p.id);
       } else if (!p.dead) {
         p.applyAcceleration();
