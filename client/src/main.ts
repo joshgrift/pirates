@@ -7,8 +7,6 @@ import {
   Skin,
 } from "../../shared/Protocol";
 
-const DEBUG = false;
-
 // plz put your pitch forks down
 let $ = (q: string) => {
   var e = document.querySelector(q);
@@ -113,7 +111,7 @@ async function startGame() {
 
   game.on(GameEvent.UI_UPDATE, (d) => {
     if (d.ui) {
-      if (DEBUG) {
+      if (game.DEBUG) {
         UI.stats.innerHTML =
           `${d.ui.acceleration} px/t^2 => ${d.ui.speed} px/t | ${d.ui.health}% | ${d.ui.heading} degrees | ${d.ui.ping} ms | ${d.ui.kills} kills | ${d.ui.x}, ${d.ui.y} | dead: ${d.ui.dead} | $${d.ui.money} <br>` +
           `${JSON.stringify(d.ui.inventory)}`;

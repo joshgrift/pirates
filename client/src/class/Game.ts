@@ -27,6 +27,7 @@ export enum GameEvent {
 
 export class Game {
   readonly MAX_PINGS = 100;
+  DEBUG = false;
   last_ping: number = Date.now();
   pings: number[] = [];
   map: Map;
@@ -93,6 +94,10 @@ export class Game {
         this.player.cannon = CannonDirection.LEFT;
       }
 
+      if (e.key == "\\") {
+        this.DEBUG = !this.DEBUG;
+      }
+
       this.keys[e.key] = true;
     });
 
@@ -149,7 +154,8 @@ export class Game {
       this.player.x,
       this.player.y,
       this.player.speed,
-      this.player.heading
+      this.player.heading,
+      this.DEBUG
     );
 
     this.render();

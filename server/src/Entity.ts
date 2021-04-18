@@ -7,7 +7,6 @@ import {
 } from "../../shared/Protocol";
 import { MapEntity, MapObject } from "./MapObject";
 import { EntityDefs, TerrainDefs } from "../../shared/GameDefs";
-import { runInThisContext } from "node:vm";
 
 type EntityConstructor = {
   id: string;

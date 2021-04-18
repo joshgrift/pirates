@@ -1,8 +1,7 @@
 import { Sprite, Spritesheet } from "./Sprites";
 
-const DEBUG = false;
-
 export class Map {
+  DEBUG = false;
   scale = 2;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -25,9 +24,16 @@ export class Map {
     this.canvas.height = this.height;
   }
 
-  setView(playerX: number, playerY: number, speed: number, angle: number) {
+  setView(
+    playerX: number,
+    playerY: number,
+    speed: number,
+    angle: number,
+    debug: boolean = false
+  ) {
     this.offsetWidth = playerX - this.width / 2;
     this.offsetHeight = playerY - this.height / 2;
+    this.DEBUG = debug;
   }
 
   drawSprite(sprite: Sprite, x: number, y: number, heading: number = 0) {
@@ -69,10 +75,10 @@ export class Map {
         Math.floor(sprite.height / this.scale)
       );
 
-      if (DEBUG) {
+      if (this.DEBUG && false) {
         this.ctx.strokeStyle = "red";
         this.ctx.beginPath();
-        this.ctx.arc(x, y, 35 / 2, 0, 2 * Math.PI);
+        this.ctx.arc(x, y, 35, 0, 2 * Math.PI);
         this.ctx.stroke();
 
         this.ctx.fillStyle = "black";
