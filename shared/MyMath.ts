@@ -1,5 +1,5 @@
 export function random(x: number) {
-  return Math.floor(x * Math.random());
+  return Math.ceil(x * Math.random());
 }
 
 export function distance(x1: number, y1: number, x2: number, y2: number) {

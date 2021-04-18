@@ -17,7 +17,13 @@ import {
   TIMEOUT,
 } from "../../shared/Protocol";
 import { normalize, random } from "../../shared/MyMath";
-import { KILL_REWARD, TILE_SIZE, WOOD_HEAL } from "../../shared/GameDefs";
+import {
+  KILL_REWARD,
+  TILE_SIZE,
+  TREASURE_CHANCE,
+  TREASURE_REWARD_MAX,
+  WOOD_HEAL,
+} from "../../shared/GameDefs";
 import * as xml from "xml2js";
 import { Port } from "./MapObject";
 
@@ -201,6 +207,9 @@ export class World {
                 this.spawn(boom);
               }
             }
+          } else if (e.type == EntityType.TREASURE) {
+            p.money += random(TREASURE_REWARD_MAX);
+            this.entities.remove(e.id);
           }
         }
       });
@@ -209,6 +218,30 @@ export class World {
         this.entities.remove(e.id);
       }
     });
+
+    // spawn random items
+    if (random(TREASURE_CHANCE) == 1) {
+      var treasure = new Entity({
+        type: EntityType.TREASURE,
+        x: random(this.width),
+        y: random(this.height),
+        id: Date.now() + "treasure",
+        heading: 0,
+      });
+
+      var safe = true;
+      for (var e of this.entities) {
+        if (e.collidingWith(treasure)) {
+          safe = false;
+          break;
+        }
+      }
+
+      if (safe) {
+        this.spawn(treasure);
+        console.log("spawned treasure");
+      }
+    }
   }
 
   spawnPlayer(player: Player) {

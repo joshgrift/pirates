@@ -1,11 +1,13 @@
 import { EntityType, TerrainType } from "./Protocol";
 
 export const TILE_SIZE: number = 32;
-export const KILL_REWARD: number = 25;
+export const KILL_REWARD: number = 100;
 export const STARTING_CANNON_BALLS: number = 100;
-export const WOOD_HEAL: number = 1;
+export const WOOD_HEAL: number = 5;
 export const SPRITE_SHEET_WIDTH: number = 25;
 export const SPRITE_SHEET_HEIGHT: number = 25;
+export const TREASURE_CHANCE: number = 100;
+export const TREASURE_REWARD_MAX: number = 20;
 
 /** Types **/
 export class MapObjectDef {
@@ -47,6 +49,14 @@ EntityDefs[EntityType.SHIP_EXPLOSION] = {
   radius: 15,
   damage: 0,
   health: 10,
+  maxSpeed: 0,
+  maxAcceleration: 0,
+};
+
+EntityDefs[EntityType.TREASURE] = {
+  radius: 15,
+  damage: 0,
+  health: 1000,
   maxSpeed: 0,
   maxAcceleration: 0,
 };

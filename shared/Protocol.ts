@@ -148,6 +148,7 @@ export enum EntityType {
   CANNON_BALL,
   SHIP_EXPLOSION,
   CANNON_IMPACT,
+  TREASURE,
 }
 
 /**
