@@ -10,6 +10,7 @@ import {
   PortAction,
   Skin,
   Cargo,
+  CrewMemberInTransit,
 } from "../../shared/Protocol";
 import { MapEntity } from "./MapObject";
 
@@ -33,6 +34,7 @@ export class Player extends MapEntity {
   portAction: PortAction | null = null;
   inventory: { [id: string]: number } = {};
   money: number = 0;
+  crew: CrewMemberInTransit[] = [];
 
   constructor(p: playerConstructor) {
     super({
@@ -126,6 +128,7 @@ export class Player extends MapEntity {
       deaths: this.deaths,
       money: this.money,
       inventory: this.inventory,
+      crew: this.crew,
     };
   }
 }

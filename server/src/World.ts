@@ -6,8 +6,8 @@ import { Player } from "./Player";
 import {
   Cargo,
   ClientServerPayload,
+  CrewMemberInTransit,
   EntityType,
-  InitReturnPayload,
   InitSetupPayload,
   PortActionType,
   PortInTransit,
@@ -33,8 +33,8 @@ export class World {
   players: Collection<Player> = new Collection();
   entities: Collection<Entity> = new Collection();
   events: Collection<Event> = new Collection();
-  terrains: Terrain[] = [];
   ports: Collection<Port> = new Collection();
+  terrains: Terrain[] = [];
 
   constructor(mapPath: string, mapJSON: string) {
     this.loadMap(mapPath, mapJSON);
@@ -158,6 +158,24 @@ export class World {
                 if (p.inventory[Cargo.WOOD] > 0 && p.health < 100) {
                   p.health += WOOD_HEAL;
                   p.inventory[Cargo.WOOD]--;
+                }
+              }
+
+              if (p.portAction.type == PortActionType.HIRE) {
+                if (p.portAction.crewId) {
+                  let crew: CrewMemberInTransit | null = null;
+
+                  for (var c of onPort.crew) {
+                    if ((c.id = p.portAction.crewId)) {
+                      crew = c;
+                      break;
+                    }
+                  }
+
+                  if (crew) {
+                    p.crew.push(crew);
+                    console.log(crew);
+                  }
                 }
               }
 

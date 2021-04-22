@@ -36,7 +36,7 @@
       <ul class="player_list"></ul>
       <div id="port">
         <div id="title">
-          <h2>Port of Almaty</h2>
+          <h2>{{ name }}</h2>
         </div>
       
         <div id="shelf">
@@ -71,7 +71,7 @@
                   <h3>{{crew.name}}</h3>
                   <p>{{crew.description}}</p>
                 </div>
-                <span class="button" :class="{fire: crew.fire}">{{ crew.fire ? "Fire" : "Hire"}}</span>
+                <span class="button" @click='hire(crew.id)' :class="{fire: crew.cost == -1}">{{ crew.cost == -1 ? "Fire" : "Hire"}}</span>
               </div>
             </div>
           </div>
@@ -85,9 +85,9 @@
         <div id="info">
           <img src="" width=64 height=64>
           <div>
-            <h3>Pearl of the Sea</h3>
-            <p>100 / 100 Capcity</p>
-            <p>1/4 crew</p>
+            <h3>{{ player_name }}</h3>
+            <p>{{ cargo_count }} / {{ cargo_capacity }} Capcity</p>
+            <p>{{ crew_count }} / {{ crew_capacity }} crew</p>
           </div>
         </div>
       </div>

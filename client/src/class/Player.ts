@@ -1,6 +1,7 @@
 import {
   CannonDirection,
   ClientServerPayload,
+  CrewMemberInTransit,
   PlayerInTransit,
   PortAction,
   Skin,
@@ -73,6 +74,7 @@ export class Player {
   portAction: PortAction | null = null;
   inventory: { [id: string]: number } = {};
   money: number = 0;
+  crew: CrewMemberInTransit[] = [];
 
   constructor(d: PlayerInTransit) {
     this.id = d.id;
@@ -88,6 +90,7 @@ export class Player {
     this.deaths = d.deaths;
     this.money = d.money;
     this.inventory = d.inventory;
+    this.crew = d.crew;
   }
 
   render(map: Map): void {

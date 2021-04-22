@@ -2,6 +2,7 @@ import "./style.scss";
 import { Game, GameEvent } from "./class/Game";
 import {
   Cargo,
+  CrewMemberInTransit,
   InitReturnPayload,
   InitSetupPayload,
   SellBuyPrice,
@@ -43,37 +44,28 @@ type PortAppData = {
   amount: number;
   activeTab: string;
   items: CargoItem[];
-  crews: {
-    id: string;
-    name: string;
-    description: string;
-    url: string;
-    fire: boolean;
-  }[];
+  crews: CrewMemberInTransit[];
+  name: string;
+  player_name: string;
+  cargo_capacity: number;
+  cargo_count: number;
+  crew_capacity: number;
+  crew_count: number;
 };
 
 var app = createApp({
   data: function (): PortAppData {
     return {
+      name: "",
+      player_name: "",
       amount: 1,
-      activeTab: "ship",
+      activeTab: "store",
       items: [],
-      crews: [
-        {
-          id: "bob",
-          name: "Bob",
-          description: "increases capacity 10%",
-          url: "",
-          fire: false,
-        },
-        {
-          id: "sam",
-          name: "Sam",
-          description: "increases range by 10%",
-          url: "",
-          fire: true,
-        },
-      ],
+      crews: [],
+      cargo_capacity: 100,
+      cargo_count: 10,
+      crew_capacity: 4,
+      crew_count: 1,
     };
   },
   methods: {
@@ -91,6 +83,9 @@ var app = createApp({
     },
     repair: function () {
       game.repair();
+    },
+    hire: function (id: string) {
+      game.hire(id);
     },
   },
 }).mount("#port");
@@ -113,6 +108,8 @@ async function startGame() {
     } as InitSetupPayload),
   });
 
+  appData().player_name = UI.nameInput.value;
+
   var json: InitReturnPayload = (await result.json()) as InitReturnPayload;
 
   game = new Game(UI.canvas, json, skin);
@@ -123,6 +120,8 @@ async function startGame() {
     if (d.port && !portOpen) {
       UI.port.classList.add("open");
 
+      appData().name = d.port.name;
+
       let items: CargoItem[] = [];
       for (var i in d.port.store) {
         items.push({
@@ -131,6 +130,9 @@ async function startGame() {
         });
       }
       appData().items = items;
+
+      updateCrewList(d.port.crew);
+      updateCrewList(game.player.crew);
 
       portOpen = true;
     }
@@ -159,13 +161,15 @@ async function startGame() {
         UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.money} <progress value="${d.ui.health}" max="100"></progress>`;
       }
 
+      updateCrewList(game.player.crew);
+
       UI.playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${
         d.ui.deaths
       } K/D</li>
       ${(() => {
         var r = "";
         for (let p of d.ui.players) {
-          r += `<li>${p.id} - ${p.kills} / ${p.deaths} K/D</li>`;
+          r += `<li>${p} - ${p.kills} / ${p.deaths} K/D</li>`;
         }
         return r;
       })()}
@@ -177,3 +181,20 @@ async function startGame() {
 }
 
 UI.startButton?.addEventListener("click", startGame);
+
+function updateCrewList(crew: CrewMemberInTransit[]) {
+  for (var c of crew) {
+    var found = false;
+    for (var c2 in appData().crews) {
+      if (c.id == appData().crews[c2].id) {
+        c.cost = -1;
+        appData().crews[c2] = c;
+        found = true;
+      }
+    }
+
+    if (!found) {
+      appData().crews.push(c);
+    }
+  }
+}

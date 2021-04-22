@@ -72,6 +72,7 @@ export class Game {
       deaths: 0,
       inventory: {},
       money: 0,
+      crew: [],
     });
 
     this.socket.onopen = () => {
@@ -147,6 +148,7 @@ export class Game {
         this.player.deaths = p.deaths;
         this.player.money = p.money;
         this.player.inventory = p.inventory;
+        this.player.crew = p.crew;
       }
     }
 
@@ -303,6 +305,13 @@ export class Game {
   repair() {
     this.player.portAction = {
       type: PortActionType.REPAIR,
+    };
+  }
+
+  hire(id: string) {
+    this.player.portAction = {
+      type: PortActionType.HIRE,
+      crewId: id,
     };
   }
 }

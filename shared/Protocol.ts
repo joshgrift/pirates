@@ -128,6 +128,7 @@ export type PlayerInTransit = {
   deaths: number;
   money: number;
   inventory: { [id: string]: number };
+  crew: CrewMemberInTransit[];
 };
 
 /**
@@ -270,9 +271,12 @@ export enum CrewBonus {
  * Crew member in transit
  */
 export type CrewMemberInTransit = {
+  id: string;
   name: string;
   bonus: CrewBonus;
+  description: string;
   cost: number;
+  sprite: number;
 };
 
 /**
@@ -300,5 +304,5 @@ export enum PortActionType {
 export type PortAction = {
   type: PortActionType;
   cargo?: Cargo;
-  crew?: CrewMemberInTransit;
+  crewId?: string;
 };

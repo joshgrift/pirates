@@ -12,9 +12,14 @@
         "bread": {"buy":3, "sell":2},
         "wood": {"buy":5, "sell":4}
       },
-      "crew": {
-        "john": 100
-      }
+      "crew": [{
+        "id":"josh2",
+        "name":"Josh2",
+        "description":"idk, some kid",
+        "bonus":8,
+        "cost": 100,
+        "sprite": 1
+      }]
     },
     {
       "name":"Port of Bombados",
@@ -28,9 +33,14 @@
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":6, "sell":4}
       },
-      "crew": {
-        "john": 100
-      }
+      "crew": [{
+        "id":"josh",
+        "name":"Josh",
+        "description":"idk, some kid",
+        "bonus":8,
+        "cost": 100,
+        "sprite": 1
+      }]
     },
     {
       "name":"Port of Almarty",
@@ -44,9 +54,16 @@
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":5, "sell":4}
       },
-      "crew": {
-        "john": 100
-      }
+      "crew": [
+        {
+          "id":"nathan",
+          "name":"Nathan",
+          "description":"idk, some kid",
+          "bonus":0,
+          "cost": 100,
+          "sprite": 1
+        }
+      ]
     },
     {
       "name":"nate's Port",
@@ -60,9 +77,14 @@
         "bread": {"buy":2, "sell":1},
         "wood": {"buy":2, "sell":2}
       },
-      "crew": {
-        "john": 100
-      }
+      "crew": [{
+        "id":"ben",
+        "name":"Ben",
+        "description":"idk, some kid",
+        "bonus":3,
+        "cost": 100,
+        "sprite": 1
+      }]
     },
     {
       "name":"Benorito",
@@ -75,31 +97,16 @@
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "wood": {"buy":2, "sell":1}
       },
-      "crew": {
-        "john": 100
-      }
-    }
-  ],
-  "crew":[
-    {
-      "name":"Philip",
-      "bonus":4,
-      "cost": 100
-    },
-    {
-      "name":"Ben",
-      "bonus":3,
-      "cost": 100
-    },
-    {
-      "name":"Nathan",
-      "bonus":0,
-      "cost": 100
-    },
-    {
-      "name":"Josh",
-      "bonus":8,
-      "cost": 100
+      "crew": [
+        {
+          "id":"philip",
+          "name":"Philip",
+          "bonus":4,
+          "description":"idk, some kid",
+          "cost": 100,
+          "sprite": 1
+        }
+      ]
     }
   ]
 }

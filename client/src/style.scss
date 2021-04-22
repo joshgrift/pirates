@@ -92,9 +92,6 @@ body {
       left: 0px;
     }
 
-    #title {
-    }
-
     #shelf {
       .tabs {
         margin-bottom: 10px;
@@ -178,7 +175,6 @@ body {
           }
 
           .button {
-            display: inline-block;
             float: right;
             background-color: $primary_action;
             cursor: pointer;
