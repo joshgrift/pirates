@@ -221,6 +221,7 @@ export enum EntityType {
   SHIP_EXPLOSION,
   CANNON_IMPACT,
   TREASURE,
+  UPGRADED_CANNON_BALL,
 }
 
 /**
@@ -283,15 +284,14 @@ export enum Cargo {
  * Crew Options
  */
 export enum CrewBonus {
-  EXTRA_CANNON,
   MORE_DAMAGE,
   MORE_HEALTH,
-  MORE_CAPACITY,
   FAST_BOI,
-  MORE_ACCELERATION,
-  BETTER_TRADE,
   MEDIC,
-  MORE_RANGE,
+  MORE_RANGE, // TODO
+  EXTRA_CANNON, // TODO
+  BETTER_TRADE, // TODO
+  MORE_CAPACITY, // TODO
 }
 
 /**

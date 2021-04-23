@@ -34,6 +34,9 @@ SPRITE.ENTITY[EntityType.CANNON_BALL] = [
   new Sprite(SHIP_SHEET, 120, 29, 10, 10),
 ];
 
+SPRITE.ENTITY[EntityType.UPGRADED_CANNON_BALL] = [
+  new Sprite(SHIP_SHEET, 120, 29, 10, 10),
+];
 SPRITE.ENTITY[EntityType.TREASURE] = [new Sprite(SHIP_SHEET, 567, 467, 24, 24)];
 
 export class Entity {

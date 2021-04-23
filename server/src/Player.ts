@@ -1,9 +1,13 @@
 import {
+  HEALTH,
   PlayerDef,
   RESPAWN_DELAY,
   ShipDef,
   STARTING_CANNON_BALLS,
   STARTING_MONEY,
+  UPGRADE_MAX_HEALTH,
+  UPGRADE_MEDIC_HEAL_PER_TICK,
+  UPGRADE_WATER_RESISTANCE,
 } from "../../shared/GameDefs";
 import {
   ClientServerPayload,
@@ -15,6 +19,7 @@ import {
   CrewInTransit,
   TIMEOUT,
   CannonSlot,
+  CrewBonus,
 } from "../../shared/Protocol";
 import { Collection } from "./Collection";
 import { MapEntity, MapObject } from "./MapObject";
@@ -38,6 +43,7 @@ export class Player extends MapEntity {
   money: number = STARTING_MONEY;
 
   def: PlayerDef;
+  maxHealth: number;
 
   inventory: { [id: string]: number } = {};
   cannons: { [id: number]: Cannon } = {};
@@ -66,6 +72,8 @@ export class Player extends MapEntity {
       slot: CannonSlot.RIGHT,
       lastFireTime: 0,
     };
+
+    this.maxHealth = this.def.maxHealth;
   }
 
   update(p: ClientServerPayload) {
@@ -74,18 +82,14 @@ export class Player extends MapEntity {
     this.actions = p.actions;
   }
 
-  applyWaterEffect() {
-    this.speed *= this.def.waterResistenceFactor;
-  }
-
-  canFire(slot: CannonSlot): boolean {
+  canShoot(slot: CannonSlot): boolean {
     return (
       Date.now() - this.cannons[slot].lastFireTime >= this.def.reloadTime &&
       this.inventory[Cargo.CANNON_BALL] > 0
     );
   }
 
-  fire(slot: CannonSlot) {
+  shoot(slot: CannonSlot) {
     this.cannons[slot].lastFireTime = Date.now();
     this.inventory[Cargo.CANNON_BALL]--;
   }
@@ -99,7 +103,7 @@ export class Player extends MapEntity {
   respawn(x: number, y: number) {
     this.death_time = 0;
     this.dead = false;
-    this.health = 100;
+    this.health = HEALTH;
     this.x = x;
     this.y = y;
     this.speed = 0;
@@ -134,6 +138,31 @@ export class Player extends MapEntity {
   }
 
   /**
+   * Hire Crew Member
+   * @param crew
+   */
+  hire(crew: CrewInTransit) {
+    this.crew.add(crew.id, crew);
+    this.money -= crew.cost;
+
+    if (crew.bonus == CrewBonus.MORE_HEALTH) {
+      this.heal(UPGRADE_MAX_HEALTH - this.def.maxHealth);
+    }
+  }
+
+  /**
+   * Remove crew member
+   * @param crew
+   */
+  fire(crew: CrewInTransit) {
+    this.crew.remove(crew.id);
+
+    if (crew.bonus == CrewBonus.MORE_HEALTH) {
+      this.damage(UPGRADE_MAX_HEALTH - this.def.maxHealth);
+    }
+  }
+
+  /**
    * Export Player as PlayerInTransit
    * @returns
    */
@@ -163,6 +192,61 @@ export class Player extends MapEntity {
   bounce(e: MapObject) {
     this.x -= this.speed * Math.cos((this.heading * Math.PI) / 180.0);
     this.y -= this.speed * Math.sin((this.heading * Math.PI) / 180.0);
+  }
+
+  /**
+   * Apply any healing effects
+   */
+  applyHealEffects() {
+    if (
+      !this.dead &&
+      this.health + UPGRADE_MEDIC_HEAL_PER_TICK <= this.def.maxHealth &&
+      this.hasBonus(CrewBonus.MEDIC)
+    ) {
+      this.health += UPGRADE_MEDIC_HEAL_PER_TICK;
+    }
+  }
+
+  /**
+   * Apply water resistence to player
+   */
+  applyWaterEffect() {
+    if (this.hasBonus(CrewBonus.FAST_BOI)) {
+      this.speed *= UPGRADE_WATER_RESISTANCE;
+    } else {
+      this.speed *= this.def.waterResistenceFactor;
+    }
+  }
+
+  /**
+   * Heal player n amount
+   * @param n
+   */
+  heal(n: number) {
+    let maxHealth = this.def.maxHealth;
+
+    if (this.hasBonus(CrewBonus.MORE_HEALTH)) {
+      maxHealth = UPGRADE_MAX_HEALTH;
+    }
+
+    if (this.health + n < maxHealth) {
+      this.health += n;
+    } else {
+      this.health = maxHealth;
+    }
+  }
+  /**
+   * Does this player have bonus c
+   * @param c
+   * @return true if the player has the bonus
+   */
+  hasBonus(bonus: CrewBonus): boolean {
+    for (var c of this.crew) {
+      if ((c.bonus = bonus)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

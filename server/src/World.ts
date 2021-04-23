@@ -17,6 +17,7 @@ import {
   TIMEOUT,
   Action,
   ActionType,
+  CrewBonus,
 } from "../../shared/Protocol";
 
 import {
@@ -75,6 +76,12 @@ export class World {
       player.y = random(this.height - 2 * TILE_SIZE) + TILE_SIZE;
 
       safe = true;
+      /**this.ports.forEach((e) => {
+        if (player.collidingWith(e)) {
+          safe = true;
+        }
+      });**/
+
       this.players.forEach((p2) => {
         if (player.collidingWith(p2)) {
           safe = false;
@@ -88,12 +95,6 @@ export class World {
       });
 
       this.entities.forEach((e) => {
-        if (player.collidingWith(e)) {
-          safe = false;
-        }
-      });
-
-      this.ports.forEach((e) => {
         if (player.collidingWith(e)) {
           safe = false;
         }
@@ -188,11 +189,17 @@ export class World {
 
         switch (action.type) {
           case ActionType.SHOOT:
-            if (action.cannon && player.canFire(action.cannon)) {
+            if (action.cannon && player.canShoot(action.cannon)) {
+              var type = EntityType.CANNON_BALL;
+
+              if (player.hasBonus(CrewBonus.MORE_DAMAGE)) {
+                type = EntityType.UPGRADED_CANNON_BALL;
+              }
+
               this.spawn(
                 new Entity({
                   id: player.id + "shot" + Date.now(),
-                  type: EntityType.CANNON_BALL,
+                  type: type,
                   x: player.x,
                   y: player.y,
                   heading: player.heading + action.cannon,
@@ -200,7 +207,7 @@ export class World {
                 })
               );
 
-              player.fire(action.cannon);
+              player.shoot(action.cannon);
             }
             break;
 
@@ -242,7 +249,7 @@ export class World {
 
             if (port) {
               if (player.inventory[Cargo.WOOD] > 0 && player.health < 100) {
-                player.health += WOOD_HEAL;
+                player.heal(WOOD_HEAL);
                 player.inventory[Cargo.WOOD]--;
               }
             }
@@ -252,14 +259,13 @@ export class World {
             port = this.getPort(player);
 
             if (port && action.crew && player.money >= action.crew.cost) {
-              player.crew.add(action.crew.id, action.crew);
-              player.money -= action.crew.cost;
+              player.hire(action.crew);
             }
             break;
 
           case ActionType.FIRE:
             if (action.crew && player.crew.get(action.crew.id)) {
-              player.crew.remove(action.crew.id);
+              player.fire(action.crew);
             }
             break;
         }
@@ -268,6 +274,7 @@ export class World {
       player.applyAcceleration();
       player.applySpeed();
       player.applyWaterEffect();
+      player.applyHealEffects();
 
       this.checkCollisions(player);
     }
@@ -312,7 +319,10 @@ export class World {
     // entity collision
     for (let e of this.entities) {
       if (player.collidingWith(e) && !player.dead) {
-        if (e.type == EntityType.CANNON_BALL) {
+        if (
+          e.type == EntityType.CANNON_BALL ||
+          e.type == EntityType.UPGRADED_CANNON_BALL
+        ) {
           if (e.owner) {
             if ((e.owner.id as string) != player.id) {
               player.damage(e.def.damage);

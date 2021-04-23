@@ -17,6 +17,11 @@ export const SPRITE_SHEET_HEIGHT: number = 25;
 export const TREASURE_CHANCE: number = 300;
 export const TREASURE_REWARD_MAX: number = 20;
 export const RESPAWN_DELAY = 5000;
+export const HEALTH = 100;
+
+export const UPGRADE_MEDIC_HEAL_PER_TICK = 0.005; // about 1 a second
+export const UPGRADE_MAX_HEALTH = 150;
+export const UPGRADE_WATER_RESISTANCE = 0.9;
 
 /** Types **/
 export class MapObjectDef {
@@ -33,6 +38,7 @@ export class MapEntityDef extends MapObjectDef {
 export class PlayerDef extends MapEntityDef {
   reloadTime: number = 0;
   waterResistenceFactor: number = 0;
+  maxHealth: number = 0;
 }
 
 /** Definitions **/
@@ -49,6 +55,15 @@ EntityDefs[EntityType.CANNON_BALL] = {
   maxSpeed: 10,
   maxAcceleration: 0,
 };
+
+EntityDefs[EntityType.UPGRADED_CANNON_BALL] = {
+  radius: 10,
+  damage: 20,
+  health: 20,
+  maxSpeed: 10,
+  maxAcceleration: 0,
+};
+
 EntityDefs[EntityType.SHIP_EXPLOSION] = {
   radius: 15,
   damage: 0,
@@ -71,6 +86,7 @@ export const ShipDef: PlayerDef = {
   health: 100,
   maxSpeed: 3,
   maxAcceleration: 0.5,
+  maxHealth: 100,
   reloadTime: 1000,
   waterResistenceFactor: 0.85,
 };

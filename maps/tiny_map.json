@@ -16,7 +16,7 @@
         "id":"josh2",
         "name":"Josh2",
         "description":"idk, some kid",
-        "bonus":8,
+        "bonus":4,
         "cost": 100,
         "sprite": "a"
       }]
@@ -37,7 +37,7 @@
         "id":"josh",
         "name":"Josh",
         "description":"idk, some kid",
-        "bonus":8,
+        "bonus":4,
         "cost": 100,
         "sprite": "b"
       }]
@@ -59,7 +59,7 @@
           "id":"nathan",
           "name":"Nathan",
           "description":"idk, some kid",
-          "bonus":0,
+          "bonus":4,
           "cost": 100,
           "sprite": "c"
         }
@@ -81,7 +81,7 @@
         "id":"ben",
         "name":"Ben",
         "description":"idk, some kid",
-        "bonus":3,
+        "bonus":4,
         "cost": 100,
         "sprite": "d"
       }]
