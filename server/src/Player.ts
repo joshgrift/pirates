@@ -110,6 +110,7 @@ export class Player extends MapEntity {
     this.money = STARTING_MONEY;
     this.inventory = {};
     this.inventory[Cargo.CANNON_BALL] = STARTING_CANNON_BALLS;
+    this.crew = new Collection();
   }
 
   /**

@@ -15,8 +15,8 @@
       "crew": [{
         "id":"josh2",
         "name":"Josh2",
-        "description":"idk, some kid",
-        "bonus":4,
+        "description":"Moar Damage",
+        "bonus":0,
         "cost": 100,
         "sprite": "a"
       }]
@@ -30,14 +30,14 @@
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
-        "bread": {"buy":2, "sell":1},
+        "bread": {"buy":10, "sell":3},
         "wood": {"buy":6, "sell":4}
       },
       "crew": [{
         "id":"josh",
         "name":"Josh",
-        "description":"idk, some kid",
-        "bonus":4,
+        "description":"Heals your ship slowly over time",
+        "bonus":3,
         "cost": 100,
         "sprite": "b"
       }]
@@ -51,22 +51,22 @@
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":12, "sell":10},
         "cannon_ball": {"buy":0.1, "sell":0.1},
-        "bread": {"buy":2, "sell":1},
+        "bread": {"buy":4, "sell":1},
         "wood": {"buy":5, "sell":4}
       },
       "crew": [
         {
           "id":"nathan",
           "name":"Nathan",
-          "description":"idk, some kid",
-          "bonus":4,
+          "description":"Makes you faster",
+          "bonus":2,
           "cost": 100,
           "sprite": "c"
         }
       ]
     },
     {
-      "name":"nate's Port",
+      "name":"Nate's Port",
       "x": 1216,
       "y": 416,
       "sprite":4,
@@ -80,8 +80,8 @@
       "crew": [{
         "id":"ben",
         "name":"Ben",
-        "description":"idk, some kid",
-        "bonus":4,
+        "description":"Gives you 150% health",
+        "bonus":1,
         "cost": 100,
         "sprite": "d"
       }]
@@ -101,8 +101,8 @@
         {
           "id":"philip",
           "name":"Philip",
-          "bonus":4,
-          "description":"idk, some kid",
+          "bonus":0,
+          "description":"Upgrades your damage",
           "cost": 100,
           "sprite": "e"
         }
