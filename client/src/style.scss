@@ -153,7 +153,7 @@ body {
 
         .title {
           display: grid;
-          grid-template-columns: 60px auto 60px;
+          grid-template-columns: 60px auto 80px;
 
           img {
             float: left;
@@ -164,29 +164,39 @@ body {
             h3 {
               margin: 0px;
               font-size: 15px;
-              line-height: 30px;
+              line-height: 25px;
             }
 
             p {
-              line-height: 20px;
+              line-height: 12px;
               font-size: 12px;
               margin: 0px;
             }
           }
 
           .button {
-            float: right;
-            background-color: $primary_action;
-            cursor: pointer;
-            color: $primary_text;
-            padding: 5px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            text-align: center;
+            margin-top: 0px;
+
+            span {
+              background-color: $primary_action;
+              cursor: pointer;
+              color: $primary_text;
+              padding: 4px;
+              text-align: center;
+              display: block;
+            }
 
             &.fire {
-              color: $error-text;
-              background-color: $error;
+              margin-top: 12px;
+
+              span {
+                color: $error-text;
+                background-color: $error;
+              }
+            }
+
+            span.price {
+              background-color: $accent;
             }
           }
         }

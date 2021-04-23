@@ -71,7 +71,10 @@
                   <h3>{{crew.name}}</h3>
                   <p>{{crew.description}}</p>
                 </div>
-                <span class="button" @click='hire(crew)'>Hire</span>
+                <span class="button" @click='hire(crew)'>
+                  <span>Hire</span>
+                  <span class='price'>${{ crew.cost }}</span>
+                </span>
               </div>
             </div>
             <div class="crew_member" v-for='crew in myCrew' :key="crew.id">
@@ -81,7 +84,9 @@
                   <h3>{{crew.name}}</h3>
                   <p>{{crew.description}}</p>
                 </div>
-                <span class="button fire" @click='fire(crew)'>Fire</span>
+                <span class="button fire" @click='fire(crew)'>
+                  <span>Fire</span>
+                </span>
               </div>
             </div>
           </div>
