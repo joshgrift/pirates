@@ -163,27 +163,25 @@ async function startGame() {
     if (d.ui) {
       if (game.DEBUG) {
         UI.stats.innerHTML =
-          `${d.ui.acceleration} px/t^2 => ${d.ui.speed} px/t | ${d.ui.health}% | ${d.ui.heading} degrees | ${d.ui.ping} ms | ${d.ui.kills} kills | ${d.ui.x}, ${d.ui.y} | dead: ${d.ui.dead} | $${d.ui.money} <br>` +
-          `${JSON.stringify(d.ui.inventory)}`;
+          `${d.ui.player.acceleration} px/t^2 => ${d.ui.player.speed} px/t | ${d.ui.player.health}% | ${d.ui.player.heading} degrees | ${d.ui.ping} ms | ${d.ui.player.kills} kills | ${d.ui.player.x}, ${d.ui.player.y} | dead: ${d.ui.player.dead} | $${d.ui.player.money} <br>` +
+          `${JSON.stringify(d.ui.player.inventory)}`;
       } else {
         let inventory = "";
 
-        for (let i of Object.keys(d.ui.inventory)) {
-          inventory += ` <i class='inventory ${i}'></i> ${d.ui.inventory[i]}`;
+        for (let i of Object.keys(d.ui.player.inventory)) {
+          inventory += ` <i class='inventory ${i}'></i> ${d.ui.player.inventory[i]}`;
         }
 
-        UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.money} <progress value="${d.ui.health}" max="100"></progress>`;
+        UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.player.money} <progress value="${d.ui.player.health}" max="100"></progress>`;
       }
 
       updateCrewList(game.player.crew);
 
-      UI.playerList.innerHTML = `<li>${d.ui.playerID} - ${d.ui.kills} / ${
-        d.ui.deaths
-      } K/D</li>
+      UI.playerList.innerHTML = `
       ${(() => {
         var r = "";
         for (let p of d.ui.ships) {
-          r += `<li>${p} - ${p.kills} / ${p.deaths} K/D</li>`;
+          r += `<li>${p.name} - ${p.kills} / ${p.deaths} K/D</li>`;
         }
         return r;
       })()}

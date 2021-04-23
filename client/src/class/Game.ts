@@ -209,20 +209,9 @@ export class Game {
   uiUpdate() {
     this.emit(GameEvent.UI_UPDATE, {
       ui: {
-        playerID: this.player.id,
-        deaths: this.player.deaths,
-        speed: decimalRound(this.player.speed),
-        acceleration: decimalRound(this.player.acceleration),
-        health: this.player.health,
+        player: this.player,
         ping: avg(this.pings),
-        dead: this.player.dead,
-        x: decimalRound(this.player.x),
-        y: decimalRound(this.player.y),
-        kills: this.player.kills,
         ships: this.ships,
-        heading: this.player.heading,
-        money: decimalRound(this.player.money, 2),
-        inventory: this.player.inventory,
       },
     });
 
@@ -294,19 +283,8 @@ export class Game {
 export type GameEventData = {
   port?: Port;
   ui?: {
-    playerID: string;
-    deaths: number;
-    speed: number;
-    acceleration: number;
-    health: number;
-    ping: number;
-    x: number;
-    y: number;
-    kills: number;
-    dead: boolean;
-    heading: number;
     ships: Ship[];
-    money: number;
-    inventory: { [id: string]: number };
+    ping: number;
+    player: Player;
   };
 };
