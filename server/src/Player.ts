@@ -219,6 +219,15 @@ export class Player extends MapEntity {
   }
 
   /**
+   * change money by n
+   * @param n
+   */
+  doTransaction(n: number) {
+    // round to fix float errors
+    this.money = Math.round((this.money + n) * 100) / 100;
+  }
+
+  /**
    * Heal player n amount
    * @param n
    */

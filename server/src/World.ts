@@ -228,7 +228,7 @@ export class World {
                   player.inventory[action.cargo] = 1;
                 }
 
-                player.money -= port.store[action.cargo].buy;
+                player.doTransaction(-port.store[action.cargo].buy);
               }
             }
             break;
@@ -239,7 +239,7 @@ export class World {
             if (port && action.cargo) {
               if (player.inventory[action.cargo]) {
                 player.inventory[action.cargo]--;
-                player.money += port.store[action.cargo].sell;
+                player.doTransaction(port.store[action.cargo].sell);
               }
             }
             break;
@@ -332,7 +332,7 @@ export class World {
                 let killer = this.players.get(e.owner.id);
                 if (killer) {
                   killer.kills++;
-                  killer.money += KILL_REWARD;
+                  killer.doTransaction(KILL_REWARD);
                 }
               }
 
@@ -349,7 +349,7 @@ export class World {
             }
           }
         } else if (e.type == EntityType.TREASURE) {
-          player.money += random(TREASURE_REWARD_MAX);
+          player.doTransaction(random(TREASURE_REWARD_MAX));
           this.entities.remove(e.id);
         }
       }
