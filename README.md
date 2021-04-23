@@ -50,3 +50,4 @@ Maps have a corresponding .json file that includes crew options, ports, and othe
 - Emotes - [Kenney.nl](https://kenney.nl/assets/emotes-pack)
 - Font - [dtinth](https://dtinth.github.io/comic-mono-font/)
 - Inventory Items - [cheekyinkling (Shikashis)](https://cheekyinkling.itch.io/shikashis-fantasy-icons-pack)
+- Characters - [illustmaker](https://illustmaker.abi-station.com/index_en.shtml)

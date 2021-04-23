@@ -18,7 +18,7 @@
         "description":"idk, some kid",
         "bonus":8,
         "cost": 100,
-        "sprite": 1
+        "sprite": "a"
       }]
     },
     {
@@ -39,7 +39,7 @@
         "description":"idk, some kid",
         "bonus":8,
         "cost": 100,
-        "sprite": 1
+        "sprite": "b"
       }]
     },
     {
@@ -61,7 +61,7 @@
           "description":"idk, some kid",
           "bonus":0,
           "cost": 100,
-          "sprite": 1
+          "sprite": "c"
         }
       ]
     },
@@ -83,7 +83,7 @@
         "description":"idk, some kid",
         "bonus":3,
         "cost": 100,
-        "sprite": 1
+        "sprite": "d"
       }]
     },
     {
@@ -104,7 +104,7 @@
           "bonus":4,
           "description":"idk, some kid",
           "cost": 100,
-          "sprite": 1
+          "sprite": "e"
         }
       ]
     }

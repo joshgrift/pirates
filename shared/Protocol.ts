@@ -303,7 +303,7 @@ export type CrewInTransit = {
   bonus: CrewBonus;
   description: string;
   cost: number;
-  sprite: number;
+  sprite: string;
 };
 
 /**

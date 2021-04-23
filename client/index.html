@@ -66,7 +66,7 @@
           <div class="tab_content crew" v-if="isActive('crew')">
             <div class="crew_member" v-for='crew in crew' :key="crew.id" v-if="!existsIn(crew.id,myCrew)">
               <div class="title" v-if="!existsIn(crew.id,myCrew)">
-                <img :src="crew.url" width="50" height="50" />
+                <img :src="'/assets/characters/' + crew.sprite + '.png'" width="50" height="50" />
                 <div class="name">
                   <h3>{{crew.name}}</h3>
                   <p>{{crew.description}}</p>
@@ -76,7 +76,7 @@
             </div>
             <div class="crew_member" v-for='crew in myCrew' :key="crew.id">
               <div class="title">
-                <img :src="crew.url" width="50" height="50" />
+                <img :src="'/assets/characters/' + crew.sprite + '.png'" width="50" height="50" />
                 <div class="name">
                   <h3>{{crew.name}}</h3>
                   <p>{{crew.description}}</p>
