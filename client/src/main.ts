@@ -31,6 +31,8 @@ const UI = {
   startButton: $("#startButton") as HTMLButtonElement,
   nameInput: $("#name") as HTMLInputElement,
   skinInput: $("#skin") as HTMLSelectElement,
+  map: $(".map") as HTMLDivElement,
+  mapCanvas: $(".map canvas") as HTMLCanvasElement,
 };
 
 let game: Game;
@@ -41,7 +43,7 @@ type CargoItem = {
   price: SellBuyPrice;
 };
 
-type PortAppData = {
+type AppData = {
   amount: number;
   activeTab: string;
   items: CargoItem[];
@@ -53,10 +55,11 @@ type PortAppData = {
   cargo_count: number;
   crew_capacity: number;
   crew_count: number;
+  map_enabled: boolean;
 };
 
 var app = createApp({
-  data: function (): PortAppData {
+  data: function (): AppData {
     return {
       name: "",
       player_name: "",
@@ -69,6 +72,7 @@ var app = createApp({
       cargo_count: 10,
       crew_capacity: 4,
       crew_count: 1,
+      map_enabled: false,
     };
   },
   methods: {
@@ -120,8 +124,8 @@ var app = createApp({
   },
 }).mount("#port");
 
-function appData(): PortAppData {
-  return app.$data as PortAppData;
+function appData(): AppData {
+  return app.$data as AppData;
 }
 
 async function startGame() {
@@ -142,7 +146,7 @@ async function startGame() {
 
   var json: InitReturnPayload = (await result.json()) as InitReturnPayload;
 
-  game = new Game(UI.canvas, json, skin, UI.nameInput.value);
+  game = new Game(UI.canvas, UI.mapCanvas, json, skin, UI.nameInput.value);
 
   UI.game.classList.add("open");
 
@@ -159,12 +163,20 @@ async function startGame() {
           price: d.port.store[i],
         });
       }
-      appData().items = items;
 
+      appData().items = items;
       appData().crew = d.port.crew;
       appData().myCrew = game.player.crew;
 
       portOpen = true;
+    }
+  });
+
+  game.on(GameEvent.OPEN_MAP, (d) => {
+    if (UI.map.classList.contains("open")) {
+      UI.map.classList.remove("open");
+    } else {
+      UI.map.classList.add("open");
     }
   });
 

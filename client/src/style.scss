@@ -234,6 +234,20 @@ body {
       }
     }
   }
+
+  .map {
+    position: fixed;
+    top: 0px;
+    right: -500px;
+    transition: 1s ease all;
+    width: 500px;
+    height: 500px;
+    background-color: $soft;
+
+    &.open {
+      right: 0px;
+    }
+  }
 }
 
 i.inventory {

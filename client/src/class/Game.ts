@@ -14,6 +14,7 @@ import { Player, Ship } from "./Player";
 import { Entity, Port, Terrain } from "./WorldObjects";
 import { avg, decimalRound, distance, packString } from "../../../shared/Util";
 import { PortDef, ShipDef } from "../../../shared/GameDefs";
+import { Minimap } from "./MiniMap";
 
 enum Status {
   READY,
@@ -24,6 +25,7 @@ export enum GameEvent {
   ARRIVE_PORT,
   LEAVE_PORT,
   UI_UPDATE,
+  OPEN_MAP,
 }
 
 export class Game {
@@ -48,8 +50,11 @@ export class Game {
   status: Status = Status.DISCONNECTED;
   socket: WebSocket;
 
+  miniMap: Minimap;
+
   constructor(
     c: HTMLCanvasElement,
+    mapCanvas: HTMLCanvasElement,
     load: InitReturnPayload,
     skin: Skin,
     name: string
@@ -60,6 +65,8 @@ export class Game {
     for (let t of load.terrain) {
       this.terrain.push(new Terrain(t));
     }
+
+    this.miniMap = new Minimap(mapCanvas, this.terrain);
 
     load.ports.forEach((p) => {
       let id = packString(p.name);
@@ -111,6 +118,10 @@ export class Game {
 
       if (e.key == "\\") {
         this.DEBUG = !this.DEBUG;
+      }
+
+      if (e.key == "m") {
+        this.emit(GameEvent.OPEN_MAP, {});
       }
 
       this.keys[e.key] = true;
@@ -214,6 +225,8 @@ export class Game {
         ships: this.ships,
       },
     });
+
+    this.miniMap.render(this.ships, this.player, this.ports);
 
     setTimeout(() => {
       this.uiUpdate();
