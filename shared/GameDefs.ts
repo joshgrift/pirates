@@ -1,4 +1,11 @@
-import { EntityType, TerrainType } from "./Protocol";
+/**
+ * This file describes different game definitions to keep content consistent
+ * between client and server. Ex: How much damage does a cannonball do?
+ *
+ * Sprites are not included here, but in the client. Sprites are not needed on a server.
+ */
+
+import { EntityType } from "./Protocol";
 
 export const TILE_SIZE: number = 32;
 export const KILL_REWARD: number = 100;
@@ -8,6 +15,7 @@ export const SPRITE_SHEET_WIDTH: number = 25;
 export const SPRITE_SHEET_HEIGHT: number = 25;
 export const TREASURE_CHANCE: number = 300;
 export const TREASURE_REWARD_MAX: number = 20;
+export const RESPAWN_DELAY = 5000;
 
 /** Types **/
 export class MapObjectDef {
@@ -27,14 +35,9 @@ export class PlayerDef extends MapEntityDef {
 }
 
 /** Definitions **/
-export let TerrainDefs: { [id: number]: MapObjectDef } = {};
-TerrainDefs[TerrainType.GRASS] = {
+export let TerrainDef: MapObjectDef = {
   radius: 10,
   damage: 20,
-};
-TerrainDefs[TerrainType.SAND] = {
-  radius: 10,
-  damage: 10,
 };
 
 export let EntityDefs: { [id: number]: MapEntityDef } = {};

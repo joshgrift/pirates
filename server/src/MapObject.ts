@@ -1,7 +1,7 @@
-import { distance } from "../../shared/MyMath";
+import { distance } from "../../shared/Util";
 import { MapEntityDef, MapObjectDef, PortDef } from "../../shared/GameDefs";
 import {
-  CrewMemberInTransit,
+  CrewInTransit,
   PortInTransit,
   SellBuyPrice,
 } from "../../shared/Protocol";
@@ -106,7 +106,7 @@ export class Port extends MapObject {
   name: string;
   sprite: number;
   store: { [id: string]: SellBuyPrice };
-  crew: CrewMemberInTransit[];
+  crew: CrewInTransit[];
 
   constructor(id: string, d: PortInTransit) {
     super({

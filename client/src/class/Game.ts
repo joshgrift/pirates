@@ -1,17 +1,18 @@
 import {
-  CannonDirection,
+  Action,
+  ActionType,
+  CannonSlot,
   Cargo,
   ClientServerPayload,
   InitReturnPayload,
-  PortActionType,
   ServerClientPayload,
   Skin,
   TICK,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
-import { Player } from "./Player";
+import { Player, Ship } from "./Player";
 import { Entity, Port, Terrain } from "./WorldObjects";
-import { distance, normalize } from "../../../shared/MyMath";
+import { avg, decimalRound, distance, packString } from "../../../shared/Util";
 import { PortDef, ShipDef } from "../../../shared/GameDefs";
 
 enum Status {
@@ -30,8 +31,9 @@ export class Game {
   DEBUG = false;
   last_ping: number = Date.now();
   pings: number[] = [];
+
   map: Map;
-  players: Player[] = [];
+  ships: Ship[] = [];
   entities: Entity[] = [];
   terrain: Terrain[] = [];
   ports: Port[] = [];
@@ -46,7 +48,12 @@ export class Game {
   status: Status = Status.DISCONNECTED;
   socket: WebSocket;
 
-  constructor(c: HTMLCanvasElement, load: InitReturnPayload, skin: Skin) {
+  constructor(
+    c: HTMLCanvasElement,
+    load: InitReturnPayload,
+    skin: Skin,
+    name: string
+  ) {
     this.socket = new WebSocket(load.address);
     this.map = new Map(c);
 
@@ -55,11 +62,12 @@ export class Game {
     }
 
     load.ports.forEach((p) => {
-      let id = normalize(p.name);
+      let id = packString(p.name);
       this.ports.push(new Port(id, p));
     });
 
     this.player = new Player({
+      name: name,
       x: 0,
       y: 0,
       speed: 0,
@@ -80,7 +88,7 @@ export class Game {
     };
 
     this.socket.onmessage = (d) => {
-      this.handle(d);
+      this.handle(JSON.parse(d.data) as ServerClientPayload);
       if (this.status == Status.DISCONNECTED) {
         this.ready();
       }
@@ -88,11 +96,17 @@ export class Game {
 
     document.addEventListener("keydown", (e) => {
       if (e.key == ".") {
-        this.player.cannon = CannonDirection.RIGHT;
+        this.doAction({
+          type: ActionType.SHOOT,
+          cannon: CannonSlot.RIGHT,
+        });
       }
 
       if (e.key == ",") {
-        this.player.cannon = CannonDirection.LEFT;
+        this.doAction({
+          type: ActionType.SHOOT,
+          cannon: CannonSlot.LEFT,
+        });
       }
 
       if (e.key == "\\") {
@@ -115,42 +129,26 @@ export class Game {
 
   send(d: ClientServerPayload) {
     this.socket.send(JSON.stringify(d));
-    this.player.cannon = CannonDirection.OFF;
   }
 
-  handle(data: MessageEvent) {
-    var start_time = Date.now();
+  handle(msg: ServerClientPayload) {
     this.pings.push(Date.now() - this.last_ping);
     if (this.pings.length > this.MAX_PINGS) {
       this.pings.shift();
     }
     this.last_ping = Date.now();
 
-    let msg = JSON.parse(data.data) as ServerClientPayload;
-
     this.entities = [];
     for (let e of msg.entities) {
       this.entities.push(new Entity(e));
     }
 
-    this.players = [];
-    for (let p of msg.players) {
-      if (p.id != this.player.id) {
-        this.players.push(new Player(p));
-      } else {
-        this.player.dead = p.dead;
-        this.player.x = p.x;
-        this.player.y = p.y;
-        this.player.heading = p.heading;
-        this.player.speed = p.speed;
-        this.player.health = p.health;
-        this.player.kills = p.kills;
-        this.player.deaths = p.deaths;
-        this.player.money = p.money;
-        this.player.inventory = p.inventory;
-        this.player.crew = p.crew;
-      }
+    this.ships = [];
+    for (let ship of msg.ships) {
+      this.ships.push(new Ship(ship));
     }
+
+    this.player.update(msg.player);
 
     this.map.setView(
       this.player.x,
@@ -161,11 +159,6 @@ export class Game {
     );
 
     this.render();
-    var total_time = Date.now() - start_time;
-    if (total_time > 50) {
-      console.log("took " + total_time);
-      console.log(msg);
-    }
   }
 
   tick() {
@@ -193,16 +186,21 @@ export class Game {
       }
 
       if (this.keys["d"]) {
-        this.player.changeHeading(1);
+        this.doAction({
+          type: ActionType.TURN,
+          direction: 1,
+        });
       }
 
       if (this.keys["a"]) {
-        this.player.changeHeading(-1);
+        this.doAction({
+          type: ActionType.TURN,
+          direction: -1,
+        });
       }
 
       this.send(this.player.toJSON());
-
-      this.player.portAction = null;
+      this.player.actions = [];
 
       setTimeout(() => this.tick(), TICK);
     }
@@ -213,17 +211,17 @@ export class Game {
       ui: {
         playerID: this.player.id,
         deaths: this.player.deaths,
-        speed: decimal_round(this.player.speed),
-        acceleration: decimal_round(this.player.acceleration),
+        speed: decimalRound(this.player.speed),
+        acceleration: decimalRound(this.player.acceleration),
         health: this.player.health,
         ping: avg(this.pings),
         dead: this.player.dead,
-        x: decimal_round(this.player.x),
-        y: decimal_round(this.player.y),
+        x: decimalRound(this.player.x),
+        y: decimalRound(this.player.y),
         kills: this.player.kills,
-        players: this.players,
+        ships: this.ships,
         heading: this.player.heading,
-        money: decimal_round(this.player.money, 100),
+        money: decimalRound(this.player.money, 2),
         inventory: this.player.inventory,
       },
     });
@@ -254,8 +252,8 @@ export class Game {
         t.render(this.map);
       });
 
-      this.players.forEach((player) => {
-        player.render(this.map);
+      this.ships.forEach((ship) => {
+        ship.render(this.map);
       });
 
       this.ports.forEach((port) => {
@@ -288,49 +286,9 @@ export class Game {
     this.gameEventCallbacks[event] = callback;
   }
 
-  buy(cargo: Cargo) {
-    this.player.portAction = {
-      type: PortActionType.BUY,
-      cargo: cargo,
-    };
+  doAction(action: Action) {
+    this.player.actions.push(action);
   }
-
-  sell(cargo: Cargo) {
-    this.player.portAction = {
-      type: PortActionType.SELL,
-      cargo: cargo,
-    };
-  }
-
-  repair() {
-    this.player.portAction = {
-      type: PortActionType.REPAIR,
-    };
-  }
-
-  hire(id: string) {
-    this.player.portAction = {
-      type: PortActionType.HIRE,
-      crewId: id,
-    };
-  }
-}
-
-function avg(d: number[]) {
-  var sum = 0;
-  for (let n of d) {
-    sum += n;
-  }
-
-  return Math.round(sum / d.length);
-}
-
-function decimal_round(n: number, i: number = 10) {
-  return Math.round(i * n) / i;
-}
-
-function escape(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export type GameEventData = {
@@ -347,7 +305,7 @@ export type GameEventData = {
     kills: number;
     dead: boolean;
     heading: number;
-    players: Player[];
+    ships: Ship[];
     money: number;
     inventory: { [id: string]: number };
   };

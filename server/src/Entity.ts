@@ -3,10 +3,9 @@ import {
   EntityInTransit,
   EntityType,
   TerrainInTransit,
-  TerrainType,
 } from "../../shared/Protocol";
 import { MapEntity, MapObject } from "./MapObject";
-import { EntityDefs, TerrainDefs } from "../../shared/GameDefs";
+import { EntityDefs, TerrainDef } from "../../shared/GameDefs";
 
 type EntityConstructor = {
   id: string;
@@ -64,18 +63,16 @@ export class Entity extends MapEntity {
 }
 
 export class Terrain extends MapObject {
-  type: TerrainType;
   sprite: number;
 
-  constructor(d: { type: TerrainType; x: number; y: number; sprite: number }) {
+  constructor(d: TerrainInTransit) {
     super({
       id: d.x + "" + d.y,
       x: d.x,
       y: d.y,
-      def: TerrainDefs[d.type],
+      def: TerrainDef,
     });
 
-    this.type = d.type;
     this.sprite = d.sprite;
   }
 
@@ -84,7 +81,6 @@ export class Terrain extends MapObject {
       sprite: this.sprite,
       x: this.x,
       y: this.y,
-      type: this.type,
     };
   }
 }

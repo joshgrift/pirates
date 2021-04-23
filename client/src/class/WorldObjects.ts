@@ -3,13 +3,12 @@ import {
   SPRITE_SHEET_WIDTH,
 } from "../../../shared/GameDefs";
 import {
-  CrewMemberInTransit,
+  CrewInTransit,
   EntityInTransit,
   EntityType,
   PortInTransit,
   SellBuyPrice,
   TerrainInTransit,
-  TerrainType,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
@@ -79,13 +78,11 @@ export class Entity {
 export class Terrain {
   x: number;
   y: number;
-  type: TerrainType;
   sprite: number;
 
   constructor(t: TerrainInTransit) {
     this.x = t.x;
     this.y = t.y;
-    this.type = t.type;
     this.sprite = t.sprite;
   }
 
@@ -112,7 +109,7 @@ export class Port {
   y: number;
   sprite: number;
   store: { [id: string]: SellBuyPrice };
-  crew: CrewMemberInTransit[];
+  crew: CrewInTransit[];
 
   constructor(id: string, d: PortInTransit) {
     this.id = id;

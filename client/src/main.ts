@@ -1,8 +1,9 @@
 import "./style.scss";
 import { Game, GameEvent } from "./class/Game";
 import {
+  ActionType,
   Cargo,
-  CrewMemberInTransit,
+  CrewInTransit,
   InitReturnPayload,
   InitSetupPayload,
   SellBuyPrice,
@@ -44,7 +45,7 @@ type PortAppData = {
   amount: number;
   activeTab: string;
   items: CargoItem[];
-  crews: CrewMemberInTransit[];
+  crews: CrewInTransit[];
   name: string;
   player_name: string;
   cargo_capacity: number;
@@ -76,16 +77,29 @@ var app = createApp({
       return this.activeTab == tab;
     },
     buy: function (i: Cargo) {
-      game.buy(i);
+      game.doAction({
+        type: ActionType.BUY,
+        cargo: i,
+        count: 1,
+      });
     },
     sell: function (i: Cargo) {
-      game.sell(i);
+      game.doAction({
+        type: ActionType.SELL,
+        cargo: i,
+        count: 1,
+      });
     },
     repair: function () {
-      game.repair();
+      game.doAction({
+        type: ActionType.REPAIR,
+      });
     },
-    hire: function (id: string) {
-      game.hire(id);
+    hire: function (crew: CrewInTransit) {
+      game.doAction({
+        type: ActionType.HIRE,
+        crew: crew,
+      });
     },
   },
 }).mount("#port");
@@ -112,7 +126,7 @@ async function startGame() {
 
   var json: InitReturnPayload = (await result.json()) as InitReturnPayload;
 
-  game = new Game(UI.canvas, json, skin);
+  game = new Game(UI.canvas, json, skin, UI.nameInput.value);
 
   UI.game.classList.add("open");
 
@@ -168,7 +182,7 @@ async function startGame() {
       } K/D</li>
       ${(() => {
         var r = "";
-        for (let p of d.ui.players) {
+        for (let p of d.ui.ships) {
           r += `<li>${p} - ${p.kills} / ${p.deaths} K/D</li>`;
         }
         return r;
@@ -182,7 +196,7 @@ async function startGame() {
 
 UI.startButton?.addEventListener("click", startGame);
 
-function updateCrewList(crew: CrewMemberInTransit[]) {
+function updateCrewList(crew: CrewInTransit[]) {
   for (var c of crew) {
     var found = false;
     for (var c2 in appData().crews) {

@@ -1,37 +1,29 @@
 /**
- * This file should stay in sync with the same file on the client. It
- * defines the communication protocol between the client and server.
+ * This is the protocol definition for communication between server and client. It should
+ * be included by both server and client to keep types in sync.
  *
- * @version 0.3
+ * Initialize Connection: (REST)
+ * -> POST /join {InitSetup}
+ * <- {InitReturnPayload}
+ *
+ * The client sends the following every TICK to which to the server responds
+ * -> {ClientServerPayload}
+ * <- {ServerClientPayload}
+ *
+ * The types for these requests follow.
  */
 
-/**
- * Tick Speed in miliseconds
- */
+/** Tick Speed in miliseconds */
 export const TICK = 50;
 
-/**
- * Timeout in miliseconds
- */
+/** Timeout in miliseconds */
 export const TIMEOUT = 10000;
-
-/**
- * Respawn delay
- */
-export const RESPAWN_DELAY = 5000;
 
 /**
  * Init payload. Sent as POST request to server at /join
  */
 export type InitSetupPayload = {
-  /**
-   * What do you wish to be called?
-   */
   name: string;
-
-  /**
-   * Skin
-   */
   skin: Skin;
 };
 
@@ -39,24 +31,13 @@ export type InitSetupPayload = {
  * Init payload. Returned from POST request to /join
  */
 export type InitReturnPayload = {
-  /**
-   * Terrain. Ground, not ground, etc.
-   */
   terrain: TerrainInTransit[];
-
-  /**
-   * Ports.
-   */
   ports: PortInTransit[];
 
-  /**
-   * PlayerId
-   */
+  /** PlayerId */
   id: string;
 
-  /**
-   * ip address and port for server connection
-   */
+  /** ip address and port for server connection */
   address: string;
 };
 
@@ -65,58 +46,148 @@ export type InitReturnPayload = {
  */
 export type ServerClientPayload = {
   /**
-   * Players are human controlled ships and characters.
+   * Information about current player
    */
-  players: PlayerInTransit[];
+  player: PlayerInTransit;
 
   /**
-   * Entites are anything that interacts with players. If it doesn't, but it might, it exists as an entity.
+   * Ships are other players
+   */
+  ships: ShipInTransit[];
+
+  /**
+   * Entites are anything that probably interact with players.
    * Cannon balls, debree, etc.
    */
   entities: EntityInTransit[];
-
-  /**
-   * These include important game factors that do not physically interact with players.
-   * Visual Explosions, shots fired sounds, notifications, death notification, etc.
-   */
-  events: EventsInTransit[];
 };
 
 /**
  * Package sent from client to server
  */
 export type ClientServerPayload = {
-  /**
-   * Which player are you? Be honest.
-   */
+  /** Who are you? */
   id: string;
 
-  /**
-   * Current acceleration in px/tick
-   */
+  /** Current acceleration in px/tick */
   acceleration: number;
 
   /**
-   * Cannons firing
+   * Actions committed. This includes heading change,
+   * firing cannons, selling items, hiring crew, etc.
    */
-  cannon: CannonDirection;
-
-  /**
-   * Heading in degrees cause I'm funny like that
-   */
-  heading: number;
-
-  /**
-   * port action. Buy, sell, hire, fire, repair, etc.
-   */
-  portAction: PortAction | null;
+  actions: Action[];
 };
 
 /**
- * Player Data while in transit
+ * Action committed by player
+ */
+export type Action = {
+  type: ActionType;
+
+  /**
+   * If type is HIRE or FIRE, we include a crewId
+   */
+  crew?: CrewInTransit;
+
+  /**
+   * Which cannon is involved
+   */
+  cannon?: CannonSlot;
+
+  /**
+   * Turning and firing require a direction
+   */
+  direction?: number;
+
+  /**
+   * CargoID if we do something related to CarGo
+   */
+  cargo?: Cargo;
+
+  /**
+   * If something needs a total count, we include this.
+   * Such as buying cargo in build
+   */
+  count?: number;
+};
+
+export enum CannonSlot {
+  LEFT = 270,
+  RIGHT = 90,
+  FRONT = 180,
+}
+
+/**
+ * Action types. The required fields in Action are specified.
+ */
+export enum ActionType {
+  /**
+   * Turn the ship.
+   * @requires direction
+   */
+  TURN,
+
+  /**
+   * Shoot Cannons
+   * @requires direction
+   */
+  SHOOT,
+
+  /**
+   * Sell Cargo
+   * @requires cargo
+   * @requires count
+   */
+  SELL,
+
+  /**
+   * Buy Cargo
+   * @requires cargo
+   * @requires count
+   */
+  BUY,
+
+  /**
+   * Hire Crew
+   * @requires crewId
+   */
+  HIRE,
+
+  /**
+   * Fire Crew
+   * @requires crewId
+   */
+  FIRE,
+
+  /**
+   * Repair Ship
+   */
+  REPAIR,
+}
+
+/**
+ * Ship data while in transit
+ */
+export type ShipInTransit = {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  heading: number;
+  health: number;
+  skin: Skin;
+  dead: boolean;
+  kills: number;
+  deaths: number;
+};
+
+/**
+ * Player in transit
  */
 export type PlayerInTransit = {
   id: string;
+  name: string;
   x: number;
   y: number;
   heading: number;
@@ -128,7 +199,7 @@ export type PlayerInTransit = {
   deaths: number;
   money: number;
   inventory: { [id: string]: number };
-  crew: CrewMemberInTransit[];
+  crew: CrewInTransit[];
 };
 
 /**
@@ -166,65 +237,21 @@ export type EntityInTransit = {
 };
 
 /**
- * Event data while in transit
- */
-export type EventsInTransit = {
-  event: EventType;
-  description: string;
-};
-
-/**
- * Event Types
- */
-export enum EventType {
-  DEATH,
-}
-
-/**
- * Cannon direction
- */
-export enum CannonDirection {
-  OFF,
-  LEFT = 270,
-  RIGHT = 90,
-}
-
-/**
  * Terrain
  */
 export type TerrainInTransit = {
   x: number;
   y: number;
-  type: TerrainType;
   sprite: number;
 };
-
-/**
- * TerrainTypes
- */
-export enum TerrainType {
-  SAND,
-  GRASS,
-}
 
 /**
  * Ports
  */
 
 export type PortInTransit = {
-  /**
-   * It's the name of the port. Comon' man, it's not that hard.
-   */
   name: string;
-
-  /**
-   * x position on the world map
-   */
   x: number;
-
-  /**
-   * y position on the world map
-   */
   y: number;
 
   /**
@@ -240,7 +267,7 @@ export type PortInTransit = {
   /**
    * Crew hiring options
    */
-  crew: CrewMemberInTransit[];
+  crew: CrewInTransit[];
 };
 
 /**
@@ -268,9 +295,9 @@ export enum CrewBonus {
 }
 
 /**
- * Crew member in transit
+ * Crew Member in Transit
  */
-export type CrewMemberInTransit = {
+export type CrewInTransit = {
   id: string;
   name: string;
   bonus: CrewBonus;
@@ -285,24 +312,4 @@ export type CrewMemberInTransit = {
 export type SellBuyPrice = {
   buy: number;
   sell: number;
-};
-
-/**
- * Port action types
- */
-export enum PortActionType {
-  SELL,
-  BUY,
-  HIRE,
-  FIRE,
-  REPAIR,
-}
-
-/**
- * Actions at poort
- */
-export type PortAction = {
-  type: PortActionType;
-  cargo?: Cargo;
-  crewId?: string;
 };

@@ -1,9 +1,9 @@
 import {
-  CannonDirection,
+  Action,
   ClientServerPayload,
-  CrewMemberInTransit,
+  CrewInTransit,
   PlayerInTransit,
-  PortAction,
+  ShipInTransit,
   Skin,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
@@ -55,42 +55,36 @@ SPRITE[Skin.BLACK] = {
   dead: new Sprite(SHIP_SHEET, 204, 0, 66, 113),
 };
 
-export class Player {
-  readonly MAX_ACC = 0.5;
-  sprite: Sprite;
+export class Ship {
+  id: string;
+  name: string;
+  skin: Skin;
+
   x: number;
   y: number;
-  heading: number = 90; // in degrees
-  speed: number = 1;
-  id: string;
-  health: number = 100;
-  firing: boolean = false;
-  cannon: CannonDirection = CannonDirection.OFF;
-  acceleration: number = 0;
-  skin: Skin;
-  dead: boolean = false;
-  kills: number = 0;
-  deaths: number = 0;
-  portAction: PortAction | null = null;
-  inventory: { [id: string]: number } = {};
-  money: number = 0;
-  crew: CrewMemberInTransit[] = [];
 
-  constructor(d: PlayerInTransit) {
+  heading: number = 90; // in degrees
+  health: number = 100;
+
+  dead: boolean;
+  kills: number;
+  deaths: number;
+
+  sprite: Sprite;
+
+  constructor(d: ShipInTransit) {
     this.id = d.id;
+    this.name = d.name;
+    this.skin = d.skin;
     this.x = d.x;
     this.y = d.y;
     this.heading = d.heading;
-    this.speed = d.speed;
     this.health = d.health;
-    this.skin = d.skin;
     this.dead = d.dead;
     this.kills = d.kills;
-    this.sprite = SPRITE[this.skin].alive;
     this.deaths = d.deaths;
-    this.money = d.money;
-    this.inventory = d.inventory;
-    this.crew = d.crew;
+
+    this.sprite = this.sprite = SPRITE[this.skin].alive;
   }
 
   render(map: Map): void {
@@ -106,15 +100,45 @@ export class Player {
       this.sprite = SPRITE[this.skin].broken;
     }
 
-    if (this.health <= 0 || this.dead) {
+    if (this.dead) {
       this.sprite = SPRITE[this.skin].dead;
     }
 
     map.drawSprite(this.sprite, this.x, this.y, this.heading);
   }
+}
+
+export class Player extends Ship {
+  readonly MAX_ACC = 0.5;
+  speed: number = 1;
+  money: number = 0;
+  acceleration: number = 0;
+  inventory: { [id: string]: number } = {};
+  crew: CrewInTransit[] = [];
+  actions: Action[] = [];
+
+  constructor(d: PlayerInTransit) {
+    super({
+      id: d.id,
+      name: d.name,
+      skin: d.skin,
+      x: d.x,
+      y: d.y,
+      heading: d.heading,
+      health: d.health,
+      dead: d.dead,
+      kills: d.kills,
+      deaths: d.deaths,
+    });
+
+    this.money = d.money;
+    this.inventory = d.inventory;
+    this.crew = d.crew;
+    this.name = d.name;
+  }
 
   accelerate(n: number) {
-    this.acceleration += n;
+    this.acceleration += n % 30;
 
     if (this.acceleration > this.MAX_ACC) {
       this.acceleration = this.MAX_ACC;
@@ -131,13 +155,25 @@ export class Player {
     }
   }
 
+  update(p: PlayerInTransit) {
+    this.dead = p.dead;
+    this.x = p.x;
+    this.y = p.y;
+    this.heading = p.heading;
+    this.speed = p.speed;
+    this.health = p.health;
+    this.kills = p.kills;
+    this.deaths = p.deaths;
+    this.money = p.money;
+    this.inventory = p.inventory;
+    this.crew = p.crew;
+  }
+
   toJSON(): ClientServerPayload {
     return {
       id: this.id,
-      heading: this.heading,
       acceleration: this.acceleration,
-      cannon: this.cannon,
-      portAction: this.portAction,
+      actions: this.actions,
     };
   }
 }

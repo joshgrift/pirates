@@ -1,17 +1,21 @@
 import {
   PlayerDef,
+  RESPAWN_DELAY,
   ShipDef,
   STARTING_CANNON_BALLS,
 } from "../../shared/GameDefs";
 import {
-  CannonDirection,
   ClientServerPayload,
   PlayerInTransit,
-  PortAction,
   Skin,
   Cargo,
-  CrewMemberInTransit,
+  ShipInTransit,
+  Action,
+  CrewInTransit,
+  TIMEOUT,
+  CannonSlot,
 } from "../../shared/Protocol";
+import { Collection } from "./Collection";
 import { MapEntity } from "./MapObject";
 
 type playerConstructor = {
@@ -19,22 +23,26 @@ type playerConstructor = {
   x: number;
   y: number;
   skin: Skin;
+  name: string;
 };
 
 export class Player extends MapEntity {
   skin: Skin;
-  cannon: CannonDirection = CannonDirection.OFF;
-  last_fired_left: number = 0;
-  last_fired_right: number = 0;
+  name: string;
+
   last_ping_time: number = 0;
   death_time: number = 0;
   kills: number = 0;
   deaths: number = 0;
-  def: PlayerDef;
-  portAction: PortAction | null = null;
-  inventory: { [id: string]: number } = {};
   money: number = 0;
-  crew: CrewMemberInTransit[] = [];
+
+  def: PlayerDef;
+
+  inventory: { [id: string]: number } = {};
+  cannons: { [id: number]: Cannon } = {};
+
+  crew: Collection<CrewInTransit> = new Collection();
+  actions: Action[] = [];
 
   constructor(p: playerConstructor) {
     super({
@@ -46,53 +54,38 @@ export class Player extends MapEntity {
 
     this.def = ShipDef;
     this.skin = p.skin;
+    this.name = p.name;
     this.last_ping_time = Date.now();
+    this.cannons[CannonSlot.LEFT] = {
+      slot: CannonSlot.LEFT,
+      lastFireTime: 0,
+    };
+
+    this.cannons[CannonSlot.RIGHT] = {
+      slot: CannonSlot.RIGHT,
+      lastFireTime: 0,
+    };
   }
 
   update(p: ClientServerPayload) {
     this.last_ping_time = Date.now();
-
-    if (!this.dead) {
-      this.heading = p.heading;
-
-      if (this.heading >= 360) {
-        this.heading = this.heading % 360;
-      }
-
-      if (this.heading <= -360) {
-        this.heading = this.heading % 360;
-      }
-
-      this.cannon = p.cannon;
-      this.acceleration = p.acceleration;
-      this.portAction = p.portAction;
-    }
+    this.acceleration = p.acceleration;
+    this.actions = p.actions;
   }
 
   applyWaterEffect() {
     this.speed *= this.def.waterResistenceFactor;
   }
 
-  canFire(): boolean {
+  canFire(slot: CannonSlot): boolean {
     return (
-      ((this.cannon == CannonDirection.LEFT &&
-        Date.now() - this.last_fired_left >= this.def.reloadTime) ||
-        (this.cannon == CannonDirection.RIGHT &&
-          Date.now() - this.last_fired_right >= this.def.reloadTime)) &&
+      Date.now() - this.cannons[slot].lastFireTime >= this.def.reloadTime &&
       this.inventory[Cargo.CANNON_BALL] > 0
     );
   }
 
-  fire() {
-    if (this.cannon == CannonDirection.RIGHT) {
-      this.last_fired_right = Date.now();
-    }
-
-    if (this.cannon == CannonDirection.LEFT) {
-      this.last_fired_left = Date.now();
-    }
-
-    this.cannon = CannonDirection.OFF;
+  fire(slot: CannonSlot) {
+    this.cannons[slot].lastFireTime = Date.now();
     this.inventory[Cargo.CANNON_BALL]--;
   }
 
@@ -114,8 +107,36 @@ export class Player extends MapEntity {
     this.inventory[Cargo.CANNON_BALL] = STARTING_CANNON_BALLS;
   }
 
-  toJSON(): PlayerInTransit {
+  /**
+   * has this player timed out?
+   */
+  timedOut(): boolean {
+    return Date.now() - this.last_ping_time > TIMEOUT;
+  }
+
+  /**
+   * can the player respawn yet?
+   * @returns
+   */
+  canRespawn(): boolean {
+    return Date.now() - this.death_time > RESPAWN_DELAY;
+  }
+
+  /**
+   * Adjust heading by i
+   * @param i
+   */
+  changeHeading(i: number) {
+    this.heading = (this.heading + i) % 360;
+  }
+
+  /**
+   * Export Player as PlayerInTransit
+   * @returns
+   */
+  exportAsPlayer(): PlayerInTransit {
     return {
+      name: this.name,
       x: this.x,
       y: this.y,
       id: this.id,
@@ -128,7 +149,31 @@ export class Player extends MapEntity {
       deaths: this.deaths,
       money: this.money,
       inventory: this.inventory,
-      crew: this.crew,
+      crew: this.crew.toJSON(),
+    };
+  }
+
+  /**
+   * Export Player as Ship
+   * @returns
+   */
+  toJSON(): ShipInTransit {
+    return {
+      name: this.name,
+      x: this.x,
+      y: this.y,
+      id: this.id,
+      heading: this.heading,
+      health: this.health,
+      skin: this.skin,
+      dead: this.dead,
+      kills: this.kills,
+      deaths: this.deaths,
     };
   }
 }
+
+type Cannon = {
+  slot: CannonSlot;
+  lastFireTime: number;
+};

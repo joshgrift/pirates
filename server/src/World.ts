@@ -3,29 +3,30 @@ import csvParse from "csv-parse/lib/sync";
 import { Collection } from "./Collection";
 import { Entity, Terrain } from "./Entity";
 import { Player } from "./Player";
+import { packString, random } from "../../shared/Util";
+import * as xml from "xml2js";
+import { Port } from "./MapObject";
+
 import {
   Cargo,
   ClientServerPayload,
-  CrewMemberInTransit,
+  CrewInTransit,
   EntityType,
   InitSetupPayload,
-  PortActionType,
   PortInTransit,
-  RESPAWN_DELAY,
-  ServerClientPayload,
-  TerrainType,
   TIMEOUT,
+  Action,
+  ActionType,
 } from "../../shared/Protocol";
-import { normalize, random } from "../../shared/MyMath";
+
 import {
   KILL_REWARD,
   TILE_SIZE,
   TREASURE_CHANCE,
   TREASURE_REWARD_MAX,
   WOOD_HEAL,
+  RESPAWN_DELAY,
 } from "../../shared/GameDefs";
-import * as xml from "xml2js";
-import { Port } from "./MapObject";
 
 export class World {
   height: number = 600;
@@ -40,227 +41,32 @@ export class World {
     this.loadMap(mapPath, mapJSON);
   }
 
+  /**
+   * Create a player
+   * @param data
+   * @returns id of player
+   */
   createPlayer(data: InitSetupPayload): string {
-    let id = "p" + Date.now();
+    let id = packString(data.name);
 
     let player = new Player({
       id: id,
       x: 0,
       y: 0,
       skin: data.skin,
+      name: data.name,
     });
 
     this.players.add(id, player);
     this.spawnPlayer(player);
 
-    console.log(id + " joined");
-
     return id;
   }
 
-  updateFromPlayer(update: ClientServerPayload) {
-    var player = this.players.get(update.id);
-
-    if (player) {
-      player.update(update);
-    } else {
-      console.log(
-        "Player " + update.id + " tried to update, but does not exist"
-      );
-    }
-  }
-
-  tick() {
-    this.players.forEach((p) => {
-      if (Date.now() - p.last_ping_time > TIMEOUT) {
-        console.log(p.id + " removed");
-        this.players.remove(p.id);
-      } else if (!p.dead) {
-        p.applyAcceleration();
-        p.applySpeed();
-        p.applyWaterEffect();
-
-        // shots
-        if (p.canFire()) {
-          let id = p.id + "shot" + Date.now();
-
-          this.spawn(
-            new Entity({
-              id: id,
-              type: EntityType.CANNON_BALL,
-              x: p.x,
-              y: p.y,
-              heading: p.heading + p.cannon,
-              owner: p,
-            })
-          );
-
-          p.fire();
-        }
-
-        // collisions
-        this.players.forEach((p2) => {
-          if (p.collidingWith(p2)) {
-            p.damage(p.def.damage);
-            p2.damage(p.def.damage);
-
-            this.spawn(
-              new Entity({
-                type: EntityType.SHIP_EXPLOSION,
-                x: p.x,
-                y: p2.y,
-                id: p.id + "and" + p2.id + "explosion",
-                heading: 0,
-              })
-            );
-          }
-        });
-
-        // collision with terrain
-        this.terrains.forEach((t) => {
-          if (p.collidingWith(t)) {
-            p.damage(t.def.damage);
-          }
-        });
-
-        // portActions
-        if (p.portAction) {
-          var onPort: Port | null = null;
-
-          for (let port of this.ports) {
-            if (p.collidingWith(port)) {
-              onPort = port;
-
-              if (p.portAction.type == PortActionType.BUY) {
-                if (p.portAction.cargo) {
-                  if (p.money - onPort.store[p.portAction.cargo].buy >= 0) {
-                    if (p.inventory[p.portAction.cargo] != null) {
-                      p.inventory[p.portAction.cargo]++;
-                    } else {
-                      p.inventory[p.portAction.cargo] = 1;
-                    }
-
-                    p.money -= onPort.store[p.portAction.cargo].buy;
-                  }
-                }
-              }
-
-              if (p.portAction.type == PortActionType.SELL) {
-                if (p.portAction.cargo) {
-                  if (p.inventory[p.portAction.cargo]) {
-                    p.inventory[p.portAction.cargo]--;
-                    p.money += onPort.store[p.portAction.cargo].sell;
-                  }
-                }
-              }
-
-              if (p.portAction.type == PortActionType.REPAIR) {
-                if (p.inventory[Cargo.WOOD] > 0 && p.health < 100) {
-                  p.health += WOOD_HEAL;
-                  p.inventory[Cargo.WOOD]--;
-                }
-              }
-
-              if (p.portAction.type == PortActionType.HIRE) {
-                if (p.portAction.crewId) {
-                  let crew: CrewMemberInTransit | null = null;
-
-                  for (var c of onPort.crew) {
-                    if ((c.id = p.portAction.crewId)) {
-                      crew = c;
-                      break;
-                    }
-                  }
-
-                  if (crew) {
-                    p.crew.push(crew);
-                    console.log(crew);
-                  }
-                }
-              }
-
-              break;
-            }
-          }
-
-          p.portAction = null;
-        }
-      } else if (p.dead) {
-        if (Date.now() - p.death_time > RESPAWN_DELAY) {
-          this.spawnPlayer(p);
-        }
-      }
-    });
-
-    this.entities.forEach((e) => {
-      e.tick();
-      e.applyAcceleration();
-      e.applySpeed();
-
-      this.players.forEach((p) => {
-        if (e.collidingWith(p) && !p.dead) {
-          if (e.type == EntityType.CANNON_BALL) {
-            if (e.owner) {
-              if ((e.owner.id as string) != p.id) {
-                p.damage(e.def.damage);
-                e.kill();
-
-                if (p.dead && e.owner) {
-                  let killer = this.players.get(e.owner.id);
-                  if (killer) {
-                    killer.kills++;
-                    killer.money += KILL_REWARD;
-                  }
-                }
-
-                var boom = new Entity({
-                  type: EntityType.SHIP_EXPLOSION,
-                  x: e.x,
-                  y: e.y,
-                  id: p.id + "and" + e.id + "explosion",
-                  heading: 0,
-                });
-                boom.tick();
-
-                this.spawn(boom);
-              }
-            }
-          } else if (e.type == EntityType.TREASURE) {
-            p.money += random(TREASURE_REWARD_MAX);
-            this.entities.remove(e.id);
-          }
-        }
-      });
-
-      if (e.dead) {
-        this.entities.remove(e.id);
-      }
-    });
-
-    // spawn random items
-    if (random(TREASURE_CHANCE) == 1) {
-      var treasure = new Entity({
-        type: EntityType.TREASURE,
-        x: random(this.width),
-        y: random(this.height),
-        id: Date.now() + "treasure",
-        heading: 0,
-      });
-
-      var safe = true;
-      for (var e of this.entities) {
-        if (e.collidingWith(treasure)) {
-          safe = false;
-          break;
-        }
-      }
-
-      if (safe) {
-        this.spawn(treasure);
-      }
-    }
-  }
-
+  /**
+   * Spawn player into map
+   * @param player
+   */
   spawnPlayer(player: Player) {
     var safe = false;
 
@@ -297,6 +103,12 @@ export class World {
     player.respawn(player.x, player.y);
   }
 
+  /**
+   * LoadMap into world
+   * @param mapPath
+   * @param mapJSONPath
+   * @returns
+   */
   async loadMap(mapPath: string, mapJSONPath: string): Promise<void> {
     var p = new Promise<void>((resolve, reject) => {
       let mapString = fs.readFileSync(mapPath, { encoding: "utf-8" });
@@ -318,7 +130,6 @@ export class World {
                     new Terrain({
                       x: x * TILE_SIZE,
                       y: y * TILE_SIZE,
-                      type: TerrainType.GRASS,
                       sprite: parseInt(t) - 1,
                     })
                   );
@@ -339,22 +150,245 @@ export class World {
     var json = JSON.parse(fs.readFileSync(mapJSONPath, { encoding: "utf-8" }));
 
     json.ports.forEach((p: PortInTransit) => {
-      let id = normalize(p.name);
+      let id = packString(p.name);
       this.ports.add(id, new Port(id, p));
     });
 
     return p;
   }
 
+  /**
+   * spawn entity into the map
+   * @param e
+   */
   spawn(e: Entity) {
     this.entities.add(e.id, e);
   }
 
-  toServerClientPayload(): ServerClientPayload {
-    return {
-      players: this.players.toJSON(),
-      entities: this.entities.toJSON(),
-      events: [],
-    };
+  /**
+   * Main Game Loop
+   */
+  tick() {
+    for (var player of this.players) {
+      if (player.timedOut()) {
+        console.log(`LOG: ${player.name} (${player.id}) was removed`);
+        this.players.remove(player.id);
+        continue;
+      }
+
+      if (player.dead && player.canRespawn()) {
+        this.spawnPlayer(player);
+        continue;
+      } else if (player.dead) {
+        continue;
+      }
+
+      for (let action of player.actions) {
+        var port: Port | null = null;
+
+        switch (action.type) {
+          case ActionType.SHOOT:
+            if (action.cannon && player.canFire(action.cannon)) {
+              this.spawn(
+                new Entity({
+                  id: player.id + "shot" + Date.now(),
+                  type: EntityType.CANNON_BALL,
+                  x: player.x,
+                  y: player.y,
+                  heading: player.heading + action.cannon,
+                  owner: player,
+                })
+              );
+
+              player.fire(action.cannon);
+            }
+            break;
+
+          case ActionType.TURN:
+            if (action.direction) {
+              player.changeHeading(action.direction);
+            }
+            break;
+
+          case ActionType.BUY:
+            port = this.getPort(player);
+
+            if (port && action.cargo) {
+              if (player.money - port.store[action.cargo].buy >= 0) {
+                if (player.inventory[action.cargo] != null) {
+                  player.inventory[action.cargo]++;
+                } else {
+                  player.inventory[action.cargo] = 1;
+                }
+
+                player.money -= port.store[action.cargo].buy;
+              }
+            }
+            break;
+
+          case ActionType.SELL:
+            port = this.getPort(player);
+
+            if (port && action.cargo) {
+              if (player.inventory[action.cargo]) {
+                player.inventory[action.cargo]--;
+                player.money += port.store[action.cargo].sell;
+              }
+            }
+            break;
+
+          case ActionType.REPAIR:
+            port = this.getPort(player);
+
+            if (port) {
+              if (player.inventory[Cargo.WOOD] > 0 && player.health < 100) {
+                player.health += WOOD_HEAL;
+                player.inventory[Cargo.WOOD]--;
+              }
+            }
+            break;
+
+          case ActionType.HIRE:
+            port = this.getPort(player);
+
+            if (port && action.crew && player.money >= action.crew.cost) {
+              player.crew.add(action.crew.id, action.crew);
+              player.money -= action.crew.cost;
+            }
+            break;
+
+          case ActionType.FIRE:
+            if (action.crew && player.crew.get(action.crew.id)) {
+              player.crew.remove(action.crew.id);
+            }
+            break;
+        }
+      }
+
+      player.applyAcceleration();
+      player.applySpeed();
+      player.applyWaterEffect();
+
+      this.checkCollisions(player);
+    }
+
+    this.doRandomSpawnTick();
+
+    for (var entity of this.entities) {
+      entity.tick();
+      entity.applyAcceleration();
+      entity.applySpeed();
+
+      if (entity.dead) {
+        this.entities.remove(entity.id);
+      }
+    }
+  }
+
+  /**
+   * Check collisions on Player
+   */
+  checkCollisions(player: Player) {
+    // colliding with players
+    for (let p of this.players) {
+      if (player.collidingWith(p)) {
+        player.damage(p.def.damage);
+        p.damage(player.def.damage);
+
+        this.spawn(
+          new Entity({
+            type: EntityType.SHIP_EXPLOSION,
+            x: player.x,
+            y: player.y,
+            id: p.id + "and" + player.id + "explosion",
+            heading: 0,
+          })
+        );
+      }
+    }
+
+    // entity collision
+    for (let e of this.entities) {
+      if (player.collidingWith(e) && !player.dead) {
+        if (e.type == EntityType.CANNON_BALL) {
+          if (e.owner) {
+            if ((e.owner.id as string) != player.id) {
+              player.damage(e.def.damage);
+              e.kill();
+
+              if (player.dead && e.owner) {
+                let killer = this.players.get(e.owner.id);
+                if (killer) {
+                  killer.kills++;
+                  killer.money += KILL_REWARD;
+                }
+              }
+
+              var boom = new Entity({
+                type: EntityType.SHIP_EXPLOSION,
+                x: e.x,
+                y: e.y,
+                id: player.id + "and" + e.id + "explosion",
+                heading: 0,
+              });
+              boom.tick();
+
+              this.spawn(boom);
+            }
+          }
+        } else if (e.type == EntityType.TREASURE) {
+          player.money += random(TREASURE_REWARD_MAX);
+          this.entities.remove(e.id);
+        }
+      }
+    }
+
+    // colliding with terrain
+    for (let t of this.terrains) {
+      if (player.collidingWith(t)) {
+        player.damage(t.def.damage);
+      }
+    }
+  }
+
+  /**
+   * Get the port the player is on
+   * @param player
+   */
+  getPort(player: Player): Port | null {
+    for (let port of this.ports) {
+      if (player.collidingWith(port)) {
+        return port;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Spawn random items on map
+   */
+  doRandomSpawnTick() {
+    if (random(TREASURE_CHANCE) == 1) {
+      var treasure = new Entity({
+        type: EntityType.TREASURE,
+        x: random(this.width),
+        y: random(this.height),
+        id: Date.now() + "treasure",
+        heading: 0,
+      });
+
+      var safe = true;
+      for (var e of this.entities) {
+        if (e.collidingWith(treasure)) {
+          safe = false;
+          break;
+        }
+      }
+
+      if (safe) {
+        this.spawn(treasure);
+      }
+    }
   }
 }
