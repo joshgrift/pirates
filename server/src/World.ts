@@ -274,7 +274,7 @@ export class World {
 
     this.doRandomSpawnTick();
 
-    for (var entity of this.entities) {
+    this.entities.forEach((entity) => {
       entity.tick();
       entity.applyAcceleration();
       entity.applySpeed();
@@ -282,7 +282,7 @@ export class World {
       if (entity.dead) {
         this.entities.remove(entity.id);
       }
-    }
+    });
   }
 
   /**

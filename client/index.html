@@ -64,14 +64,24 @@
             </div>
           </div>
           <div class="tab_content crew" v-if="isActive('crew')">
-            <div class="crew_member" v-for='crew in crews' :key="crew.id">
+            <div class="crew_member" v-for='crew in crew' :key="crew.id" v-if="!existsIn(crew.id,myCrew)">
+              <div class="title" v-if="!existsIn(crew.id,myCrew)">
+                <img :src="crew.url" width="50" height="50" />
+                <div class="name">
+                  <h3>{{crew.name}}</h3>
+                  <p>{{crew.description}}</p>
+                </div>
+                <span class="button" @click='hire(crew)'>Hire</span>
+              </div>
+            </div>
+            <div class="crew_member" v-for='crew in myCrew' :key="crew.id">
               <div class="title">
                 <img :src="crew.url" width="50" height="50" />
                 <div class="name">
                   <h3>{{crew.name}}</h3>
                   <p>{{crew.description}}</p>
                 </div>
-                <span class="button" @click='hire(crew.id)' :class="{fire: crew.cost == -1}">{{ crew.cost == -1 ? "Fire" : "Hire"}}</span>
+                <span class="button fire" @click='fire(crew)'>Fire</span>
               </div>
             </div>
           </div>

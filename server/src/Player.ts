@@ -3,6 +3,7 @@ import {
   RESPAWN_DELAY,
   ShipDef,
   STARTING_CANNON_BALLS,
+  STARTING_MONEY,
 } from "../../shared/GameDefs";
 import {
   ClientServerPayload,
@@ -34,7 +35,7 @@ export class Player extends MapEntity {
   death_time: number = 0;
   kills: number = 0;
   deaths: number = 0;
-  money: number = 0;
+  money: number = STARTING_MONEY;
 
   def: PlayerDef;
 
@@ -102,7 +103,7 @@ export class Player extends MapEntity {
     this.x = x;
     this.y = y;
     this.speed = 0;
-    this.money = 0;
+    this.money = STARTING_MONEY;
     this.inventory = {};
     this.inventory[Cargo.CANNON_BALL] = STARTING_CANNON_BALLS;
   }

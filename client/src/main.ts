@@ -45,7 +45,8 @@ type PortAppData = {
   amount: number;
   activeTab: string;
   items: CargoItem[];
-  crews: CrewInTransit[];
+  crew: CrewInTransit[];
+  myCrew: CrewInTransit[];
   name: string;
   player_name: string;
   cargo_capacity: number;
@@ -62,7 +63,8 @@ var app = createApp({
       amount: 1,
       activeTab: "store",
       items: [],
-      crews: [],
+      crew: [],
+      myCrew: [],
       cargo_capacity: 100,
       cargo_count: 10,
       crew_capacity: 4,
@@ -100,6 +102,20 @@ var app = createApp({
         type: ActionType.HIRE,
         crew: crew,
       });
+    },
+    fire: function (crew: CrewInTransit) {
+      game.doAction({
+        type: ActionType.FIRE,
+        crew: crew,
+      });
+    },
+    existsIn: function (id: string, crew: CrewInTransit[]) {
+      for (let c of crew) {
+        if (c.id == id) {
+          return true;
+        }
+      }
+      return false;
     },
   },
 }).mount("#port");
@@ -145,8 +161,8 @@ async function startGame() {
       }
       appData().items = items;
 
-      updateCrewList(d.port.crew);
-      updateCrewList(game.player.crew);
+      appData().crew = d.port.crew;
+      appData().myCrew = game.player.crew;
 
       portOpen = true;
     }
@@ -175,7 +191,7 @@ async function startGame() {
         UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.player.money} <progress value="${d.ui.player.health}" max="100"></progress>`;
       }
 
-      updateCrewList(game.player.crew);
+      appData().myCrew = game.player.crew;
 
       UI.playerList.innerHTML = `
       ${(() => {
@@ -193,20 +209,3 @@ async function startGame() {
 }
 
 UI.startButton?.addEventListener("click", startGame);
-
-function updateCrewList(crew: CrewInTransit[]) {
-  for (var c of crew) {
-    var found = false;
-    for (var c2 in appData().crews) {
-      if (c.id == appData().crews[c2].id) {
-        c.cost = -1;
-        appData().crews[c2] = c;
-        found = true;
-      }
-    }
-
-    if (!found) {
-      appData().crews.push(c);
-    }
-  }
-}
