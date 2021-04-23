@@ -47,7 +47,7 @@ export class World {
    * @returns id of player
    */
   createPlayer(data: InitSetupPayload): string {
-    let id = packString(data.name);
+    let id = packString(data.name + (Date.now() + "").substr(9, 4));
 
     let player = new Player({
       id: id,
