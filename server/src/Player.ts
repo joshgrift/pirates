@@ -17,7 +17,7 @@ import {
   CannonSlot,
 } from "../../shared/Protocol";
 import { Collection } from "./Collection";
-import { MapEntity } from "./MapObject";
+import { MapEntity, MapObject } from "./MapObject";
 
 type playerConstructor = {
   id: string;
@@ -124,11 +124,13 @@ export class Player extends MapEntity {
   }
 
   /**
-   * Adjust heading by i
+   * Adjust heading by i if the player is moving and not dead
    * @param i
    */
   changeHeading(i: number) {
-    this.heading = (this.heading + i) % 360;
+    if (this.speed >= 0.1 && !this.dead) {
+      this.heading = (this.heading + i) % 360;
+    }
   }
 
   /**
@@ -152,6 +154,15 @@ export class Player extends MapEntity {
       inventory: this.inventory,
       crew: this.crew.toJSON(),
     };
+  }
+
+  /**
+   * Apply a bounce off of an object
+   * @param e
+   */
+  bounce(e: MapObject) {
+    this.x -= this.speed * Math.cos((this.heading * Math.PI) / 180.0);
+    this.y -= this.speed * Math.sin((this.heading * Math.PI) / 180.0);
   }
 
   /**

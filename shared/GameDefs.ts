@@ -38,7 +38,7 @@ export class PlayerDef extends MapEntityDef {
 /** Definitions **/
 export let TerrainDef: MapObjectDef = {
   radius: 10,
-  damage: 20,
+  damage: 10,
 };
 
 export let EntityDefs: { [id: number]: MapEntityDef } = {};

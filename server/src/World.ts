@@ -348,6 +348,7 @@ export class World {
     // colliding with terrain
     for (let t of this.terrains) {
       if (player.collidingWith(t)) {
+        player.bounce(t);
         player.damage(t.def.damage);
       }
     }
