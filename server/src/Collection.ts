@@ -25,13 +25,14 @@ export class Collection<T> implements Iterable<T> {
 
   [Symbol.iterator]() {
     let count: number = -1;
+    let keys = Object.keys(this.data);
 
     return {
       next: () => {
         count++;
         return {
-          done: (count == Object.keys(this.data).length) as boolean,
-          value: this.data[Object.keys(this.data)[count]],
+          done: (count == keys.length) as boolean,
+          value: this.data[keys[count]],
         };
       },
     };

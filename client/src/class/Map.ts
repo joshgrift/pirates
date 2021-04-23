@@ -31,8 +31,8 @@ export class Map {
     angle: number,
     debug: boolean = false
   ) {
-    this.offsetWidth = playerX - this.width / 2;
-    this.offsetHeight = playerY - this.height / 2;
+    this.offsetWidth = Math.floor(playerX - this.width / 2);
+    this.offsetHeight = Math.floor(playerY - this.height / 2);
     this.DEBUG = debug;
   }
 
@@ -45,9 +45,13 @@ export class Map {
       y < this.offsetHeight + this.height + T
     ) {
       let drawX =
-        x - Math.floor(sprite.width / this.scale) / 2 - this.offsetWidth;
+        Math.floor(x) -
+        Math.floor(sprite.width / this.scale) / 2 -
+        this.offsetWidth;
       let drawY =
-        y - Math.floor(sprite.height / this.scale) / 2 - this.offsetHeight;
+        Math.floor(y) -
+        Math.floor(sprite.height / this.scale) / 2 -
+        this.offsetHeight;
       drawY = Math.floor(drawY);
       drawX = Math.floor(drawX);
 

@@ -274,11 +274,13 @@ export class World {
 
     this.doRandomSpawnTick();
 
-    this.entities.forEach((entity) => {
+    for (var entity of this.entities) {
       entity.tick();
       entity.applyAcceleration();
       entity.applySpeed();
+    }
 
+    this.entities.forEach((entity) => {
       if (entity.dead) {
         this.entities.remove(entity.id);
       }
