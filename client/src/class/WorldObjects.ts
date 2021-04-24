@@ -128,8 +128,8 @@ export class Port {
     map.drawSprite(
       new Sprite(
         TILES_SHEET,
-        (this.sprite % 16) * T,
-        Math.floor(this.sprite / 16) * T,
+        (this.sprite % 25) * T,
+        Math.floor(this.sprite / 25) * T,
         T,
         T
       ),
