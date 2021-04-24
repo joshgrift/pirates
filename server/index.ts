@@ -31,6 +31,13 @@ app.post("/join", function (req: Request, res: Response) {
   res.json(payload);
 });
 
+app.get("/health", function (req: Request, res: Response) {
+  res.json({
+    tickSpeed: controller.timer.getAvg(),
+    players: controller.world?.players.length() || 0,
+  });
+});
+
 app.use("/", express.static("../client"));
 HTTP.on("request", app);
 
@@ -54,6 +61,6 @@ HTTP.listen(process.env.PORT, () => {
   console.log(`Listening on http://${process.env.URL}:${process.env.PORT}`);
 });
 
-setInterval(() => {
+setInterval(async () => {
   controller.tick();
 }, TICK);

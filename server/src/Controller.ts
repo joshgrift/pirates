@@ -5,10 +5,12 @@ import {
   InitSetupPayload,
   ServerClientPayload,
 } from "../../shared/Protocol";
+import { Timer } from "../../shared/Util";
 import { World } from "./World";
 
 export class Controller {
   world: World | null = null;
+  timer: Timer = new Timer();
 
   /**
    * Load world into game
@@ -41,9 +43,11 @@ export class Controller {
   }
 
   tick() {
+    this.timer.startTimer();
     if (this.world) {
       this.world.tick();
     }
+    this.timer.stopTimer();
   }
 
   playerConnected(ws: WebSocket) {

@@ -88,3 +88,37 @@ export function avg(d: number[]): number {
 
   return Math.round(sum / d.length);
 }
+
+/**
+ * Timer to calculating average times of actions
+ */
+export class Timer {
+  last: number = 0;
+  list: number[] = [];
+  MAX: number = 10;
+
+  /**
+   * Start timer
+   */
+  startTimer(): void {
+    this.last = Date.now();
+  }
+
+  /**
+   * End timer and store value
+   */
+  stopTimer(): void {
+    this.list.push(Date.now() - this.last);
+    if (this.list.length > this.MAX) {
+      this.list.shift();
+    }
+  }
+
+  /**
+   * Average of the last values
+   * @return
+   */
+  getAvg(): number {
+    return avg(this.list);
+  }
+}

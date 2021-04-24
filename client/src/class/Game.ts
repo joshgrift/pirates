@@ -207,6 +207,8 @@ export class Game {
   }
 
   tick() {
+    setTimeout(() => this.tick(), TICK);
+
     if (this.status == Status.READY) {
       if (this.player.speed < 0.01 && !this.inPort) {
         var p = this.getPort();
@@ -248,8 +250,6 @@ export class Game {
 
       this.send(this.player.toJSON());
       this.player.actions = [];
-
-      setTimeout(() => this.tick(), TICK);
     }
   }
 

@@ -46,6 +46,10 @@ export class Collection<T> implements Iterable<T> {
     }
   }
 
+  length(): number {
+    return Object.keys(this.data).length;
+  }
+
   toJSON(): T[] {
     let result: T[] = [];
 
