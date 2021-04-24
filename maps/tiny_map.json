@@ -13,9 +13,9 @@
         "wood": {"buy":5, "sell":4}
       },
       "crew": [{
-        "id":"josh2",
-        "name":"Josh2",
-        "description":"Moar Damage",
+        "id":"susan",
+        "name":"Susan",
+        "description":"A munitions exprty, she modifies cannon balls so they do more damage",
         "bonus":0,
         "cost": 100,
         "sprite": "a"
@@ -34,9 +34,9 @@
         "wood": {"buy":6, "sell":4}
       },
       "crew": [{
-        "id":"josh",
-        "name":"Josh",
-        "description":"Heals your ship slowly over time",
+        "id":"justine",
+        "name":"Justine",
+        "description":"A carpenter by trade, she'll repair your ship slowly over time",
         "bonus":3,
         "cost": 100,
         "sprite": "b"
@@ -56,9 +56,9 @@
       },
       "crew": [
         {
-          "id":"nathan",
-          "name":"Nathan",
-          "description":"Makes you faster",
+          "id":"joanne",
+          "name":"Joanne",
+          "description":"An expert navigator, she'll increase your max speed",
           "bonus":2,
           "cost": 100,
           "sprite": "c"
@@ -80,7 +80,7 @@
       "crew": [{
         "id":"ben",
         "name":"Ben",
-        "description":"Gives you 150% health",
+        "description":"Knows the secrets of wood smithing, gives your ship 150% health",
         "bonus":1,
         "cost": 100,
         "sprite": "d"
@@ -102,9 +102,9 @@
           "id":"philip",
           "name":"Philip",
           "bonus":0,
-          "description":"Upgrades your damage",
+          "description":"Demolitions expert, increases your cannon ball damage",
           "cost": 100,
-          "sprite": "e"
+          "sprite": "f"
         }
       ]
     }
