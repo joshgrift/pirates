@@ -104,3 +104,6 @@ dist
 
 # Tiled App
 Tiled.AppImage
+
+# Environment file
+.env
