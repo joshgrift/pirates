@@ -9,15 +9,12 @@ import { Port } from "./MapObject";
 
 import {
   Cargo,
-  ClientServerPayload,
-  CrewInTransit,
   EntityType,
   InitSetupPayload,
   PortInTransit,
-  TIMEOUT,
-  Action,
   ActionType,
   CrewBonus,
+  EventType,
 } from "../../shared/Protocol";
 
 import {
@@ -26,7 +23,6 @@ import {
   TREASURE_CHANCE,
   TREASURE_REWARD_MAX,
   WOOD_HEAL,
-  RESPAWN_DELAY,
 } from "../../shared/GameDefs";
 
 export class World {
@@ -349,6 +345,7 @@ export class World {
             }
           }
         } else if (e.type == EntityType.TREASURE) {
+          player.events.push({ type: EventType.TREASURE_FOUND });
           player.doTransaction(random(TREASURE_REWARD_MAX));
           this.entities.remove(e.id);
         }

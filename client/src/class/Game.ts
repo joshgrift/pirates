@@ -4,6 +4,7 @@ import {
   CannonSlot,
   Cargo,
   ClientServerPayload,
+  EventType,
   InitReturnPayload,
   ServerClientPayload,
   Skin,
@@ -15,6 +16,7 @@ import { Entity, Port, Terrain } from "./WorldObjects";
 import { avg, decimalRound, distance, packString } from "../../../shared/Util";
 import { PortDef, ShipDef } from "../../../shared/GameDefs";
 import { Minimap } from "./MiniMap";
+import { DIALOGUE, Dialogue } from "./Dialogue";
 
 enum Status {
   READY,
@@ -26,6 +28,8 @@ export enum GameEvent {
   LEAVE_PORT,
   UI_UPDATE,
   OPEN_MAP,
+  DIALOGUE,
+  DISMISS_DIALOGUE,
 }
 
 export class Game {
@@ -91,6 +95,7 @@ export class Game {
     });
 
     this.socket.onopen = () => {
+      this.speak(DIALOGUE.welcome);
       this.send(this.player.toJSON());
     };
 
@@ -103,6 +108,7 @@ export class Game {
 
     document.addEventListener("keydown", (e) => {
       if (e.key == ".") {
+        this.speak(DIALOGUE.port);
         this.doAction({
           type: ActionType.SHOOT,
           cannon: CannonSlot.RIGHT,
@@ -122,6 +128,28 @@ export class Game {
 
       if (e.key == "m") {
         this.emit(GameEvent.OPEN_MAP, {});
+      }
+
+      if (e.key == "Enter") {
+        this.emit(GameEvent.DISMISS_DIALOGUE, {});
+      }
+
+      if (e.key == "w") {
+        this.speak(DIALOGUE.lower);
+      }
+
+      if (e.key == "s") {
+        this.speak(DIALOGUE.turn);
+      }
+
+      if (e.key == "a") {
+        setTimeout(() => {
+          // call this so it's triggered. If they
+          // move left and right, they probably
+          // know how to slow down
+          this.speak(DIALOGUE.turn);
+          this.speak(DIALOGUE.shooting);
+        }, 1000);
       }
 
       this.keys[e.key] = true;
@@ -159,6 +187,12 @@ export class Game {
       this.ships.push(new Ship(ship));
     }
 
+    for (let event of msg.events) {
+      if (event.type == EventType.TREASURE_FOUND) {
+        this.speak(DIALOGUE.found_treasure);
+      }
+    }
+
     this.player.update(msg.player);
 
     this.map.setView(
@@ -177,12 +211,14 @@ export class Game {
       if (this.player.speed < 0.01 && !this.inPort) {
         var p = this.getPort();
         if (p) {
+          this.speak(DIALOGUE.port_store);
           this.emit(GameEvent.ARRIVE_PORT, { port: p });
           this.inPort = true;
         }
       } else if (this.inPort) {
         var port = this.getPort();
         if (!port) {
+          this.speak(DIALOGUE.treasure);
           this.emit(GameEvent.LEAVE_PORT, {});
           this.inPort = false;
         }
@@ -291,6 +327,14 @@ export class Game {
   doAction(action: Action) {
     this.player.actions.push(action);
   }
+
+  speak(msg: Dialogue) {
+    if (!msg.triggered) {
+      this.emit(GameEvent.DIALOGUE, { dialogue: msg });
+    }
+
+    msg.triggered = true;
+  }
 }
 
 export type GameEventData = {
@@ -300,4 +344,5 @@ export type GameEventData = {
     ping: number;
     player: Player;
   };
+  dialogue?: Dialogue;
 };

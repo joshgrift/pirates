@@ -10,6 +10,7 @@ import {
   Skin,
 } from "../../shared/Protocol";
 import { createApp } from "vue";
+import { Dialogue, DIALOGUE } from "./class/Dialogue";
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -33,6 +34,9 @@ const UI = {
   skinInput: $("#skin") as HTMLSelectElement,
   map: $(".map") as HTMLDivElement,
   mapCanvas: $(".map canvas") as HTMLCanvasElement,
+  dialogue: $(".dialogue") as HTMLDivElement,
+  dialogueText: $(".dialogue p") as HTMLDivElement,
+  dialogueImage: $(".dialogue img") as HTMLImageElement,
 };
 
 let game: Game;
@@ -78,6 +82,9 @@ var app = createApp({
   methods: {
     changeTab: function (newtab: string) {
       this.activeTab = newtab;
+      if (newtab == "crew") {
+        game.speak(DIALOGUE.port_crew);
+      }
     },
     isActive: function (tab: string) {
       return this.activeTab == tab;
@@ -149,6 +156,18 @@ async function startGame() {
   game = new Game(UI.canvas, UI.mapCanvas, json, skin, UI.nameInput.value);
 
   UI.game.classList.add("open");
+
+  game.on(GameEvent.DISMISS_DIALOGUE, (d) => {
+    UI.dialogue.classList.remove("open");
+  });
+
+  game.on(GameEvent.DIALOGUE, (d) => {
+    if (d.dialogue) {
+      UI.dialogueText.innerHTML = d.dialogue.text;
+      UI.dialogueImage.src = "/assets/characters/" + d.dialogue.image + ".png";
+      UI.dialogue.classList.add("open");
+    }
+  });
 
   game.on(GameEvent.ARRIVE_PORT, (d) => {
     if (d.port && !portOpen) {

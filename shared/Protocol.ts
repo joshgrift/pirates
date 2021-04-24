@@ -60,6 +60,13 @@ export type ServerClientPayload = {
    * Cannon balls, debree, etc.
    */
   entities: EntityInTransit[];
+
+  /**
+   * Events are none physical map effects like damage taken,
+   * finding treasure, collecting items, etc. Usually these
+   * are to inform the client for some visual response.
+   */
+  events: EventsInTransit[];
 };
 
 /**
@@ -211,6 +218,20 @@ export enum Skin {
   GREEN,
   YELLOW,
   BLACK,
+}
+
+/**
+ * Event. Can store more information about the event type
+ */
+export type EventsInTransit = {
+  type: EventType;
+};
+
+/**
+ * Event types
+ */
+export enum EventType {
+  TREASURE_FOUND,
 }
 
 /**

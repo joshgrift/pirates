@@ -20,6 +20,7 @@ import {
   TIMEOUT,
   CannonSlot,
   CrewBonus,
+  EventsInTransit,
 } from "../../shared/Protocol";
 import { Collection } from "./Collection";
 import { MapEntity, MapObject } from "./MapObject";
@@ -47,6 +48,7 @@ export class Player extends MapEntity {
 
   inventory: { [id: string]: number } = {};
   cannons: { [id: number]: Cannon } = {};
+  events: EventsInTransit[] = [];
 
   crew: Collection<CrewInTransit> = new Collection();
   actions: Action[] = [];

@@ -68,6 +68,7 @@ export class Controller {
           player: player.exportAsPlayer(),
           ships: this.world.players.toJSON(),
           entities: this.world.entities.toJSON(),
+          events: player.events,
         };
       } else {
         console.error("ERR: player with id " + msg.id + " does not exist");
