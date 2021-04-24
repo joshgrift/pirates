@@ -1,5 +1,9 @@
 # Pirates
 
+![](https://img.shields.io/docker/cloud/build/joshgrift/pirates)
+![](https://img.shields.io/docker/pulls/joshgrift/pirates)
+![](https://img.shields.io/github/license/dotjersh/pirates)
+
 ## Client
 
 Standard Vanilla Typescript SPA built with webpack.
@@ -12,6 +16,8 @@ Standard NodeJS environment
 
 - `npm run build` - build a dist folder
 - `npm start` - runs the `index.ts` in nodejs
+
+`.env` provides default values for environment variables.
 
 ## Protocol
 
@@ -42,6 +48,15 @@ Maps have a corresponding .json file that includes crew options, ports, and othe
   - Sound Emotes?
 - Private Servers?
 - Web RTC with players nearby?
+
+## Running Locally
+
+`docker run -p 8081:8081 -d --rm -ePORT=8081 -eURL=127.0.0.1 joshgrift/pirates:latest`
+
+### Docker Tags:
+
+- `latest` - Latest release
+- `next` - Latest push the master
 
 ## Acknowledgements
 

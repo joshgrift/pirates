@@ -7,12 +7,14 @@ import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { Controller } from "./src/Controller";
 import * as WebSocket from "ws";
+import { createServer } from "http";
 
-const EXPRESS_PORT = 8081;
-const SERVER_PORT = 3000;
+// load default config
+require("dotenv").config();
+
+const HTTP = createServer();
 
 const controller: Controller = new Controller();
-
 controller.loadWorld("../maps/map.tmx", "../maps/tiny_map.json");
 
 /* express */
@@ -21,18 +23,19 @@ app.use(bodyParser.json());
 
 app.post("/join", function (req: Request, res: Response) {
   let payload = controller.join(req.body as InitSetupPayload);
-  payload["address"] = "ws://192.168.1.181:" + SERVER_PORT;
+  if (process.env.NODE_ENV == "production") {
+    payload["address"] = `wss://${process.env.URL}`;
+  } else {
+    payload["address"] = `ws://${process.env.URL}:${process.env.PORT}`;
+  }
   res.json(payload);
 });
 
 app.use("/", express.static("../client"));
+HTTP.on("request", app);
 
-app.listen(EXPRESS_PORT);
-console.log(`Listening on localhost:${EXPRESS_PORT}`);
-
-/* server */
 var s = new WebSocket.Server({
-  port: SERVER_PORT,
+  server: HTTP,
 });
 
 s.on("connection", (ws) => {
@@ -45,6 +48,10 @@ s.on("connection", (ws) => {
       )
     );
   });
+});
+
+HTTP.listen(process.env.PORT, () => {
+  console.log(`Listening on http://${process.env.URL}:${process.env.PORT}`);
 });
 
 setInterval(() => {
