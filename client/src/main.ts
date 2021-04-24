@@ -11,6 +11,7 @@ import {
 } from "../../shared/Protocol";
 import { createApp } from "vue";
 import { Dialogue, DIALOGUE } from "./class/Dialogue";
+import { Sound } from "./class/SoundEngine";
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -156,6 +157,7 @@ async function startGame() {
   game = new Game(UI.canvas, UI.mapCanvas, json, skin, UI.nameInput.value);
 
   UI.game.classList.add("open");
+  game.soundEngine.play(Sound.Ambience_Ship_LOOP, 0.25);
 
   game.on(GameEvent.DISMISS_DIALOGUE, (d) => {
     UI.dialogue.classList.remove("open");
@@ -172,6 +174,8 @@ async function startGame() {
   game.on(GameEvent.ARRIVE_PORT, (d) => {
     if (d.port && !portOpen) {
       UI.port.classList.add("open");
+      game.soundEngine.play(Sound.Item_Chest_Opening_01);
+      game.soundEngine.play(Sound.Ambience_Tavern_WithoutMusic_LOOP, 0.5);
 
       appData().name = d.port.name;
 
@@ -194,8 +198,10 @@ async function startGame() {
   game.on(GameEvent.OPEN_MAP, (d) => {
     if (UI.map.classList.contains("open")) {
       UI.map.classList.remove("open");
+      game.soundEngine.play(Sound.Player_Map_Close);
     } else {
       UI.map.classList.add("open");
+      game.soundEngine.play(Sound.Player_Map_Open);
     }
   });
 
@@ -203,6 +209,11 @@ async function startGame() {
     if (portOpen) {
       UI.port.classList.remove("open");
       portOpen = false;
+      game.soundEngine.play(Sound.Item_Chest_Close);
+      game.soundEngine.stop(Sound.Ambience_Tavern_WithoutMusic_LOOP);
+
+      // turn of repair sound
+      game.soundEngine.stop(Sound.Player_Ship_Repair_04);
     }
   });
 

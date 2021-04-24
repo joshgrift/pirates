@@ -31,6 +31,11 @@ app.post("/join", function (req: Request, res: Response) {
   res.json(payload);
 });
 
+app.get("/sound/:sound", function (req: Request, res: Response) {
+  console.log(req.params["sound"]);
+  res.redirect(process.env.SOUND_BASE_URL + req.params["sound"]);
+});
+
 app.get("/health", function (req: Request, res: Response) {
   res.json({
     tickSpeed: controller.timer.getAvg(),

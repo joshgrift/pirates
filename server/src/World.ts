@@ -168,6 +168,7 @@ export class World {
    */
   tick() {
     for (var player of this.players) {
+      player.events = [];
       if (player.timedOut()) {
         console.log(`LOG: ${player.name} (${player.id}) was removed`);
         this.players.remove(player.id);
@@ -203,6 +204,7 @@ export class World {
                 type = EntityType.UPGRADED_CANNON_BALL;
               }
 
+              player.events.push({ type: EventType.SHOT_FIRED });
               this.spawn(
                 new Entity({
                   id: player.id + "shot" + Date.now(),
@@ -236,6 +238,7 @@ export class World {
                 }
 
                 player.doTransaction(-port.store[action.cargo].buy);
+                player.events.push({ type: EventType.LOAD_CARGO });
               }
             }
             break;
@@ -247,8 +250,10 @@ export class World {
               if (player.inventory[action.cargo]) {
                 player.inventory[action.cargo]--;
                 player.doTransaction(port.store[action.cargo].sell);
+                player.events.push({ type: EventType.UNLOAD_CARGO });
               }
             }
+
             break;
 
           case ActionType.REPAIR:
@@ -258,6 +263,7 @@ export class World {
               if (player.inventory[Cargo.WOOD] > 0 && player.health < 100) {
                 player.heal(WOOD_HEAL);
                 player.inventory[Cargo.WOOD]--;
+                player.events.push({ type: EventType.REPAIR });
               }
             }
             break;
@@ -318,6 +324,7 @@ export class World {
         player.damage(p.def.damage);
         p.damage(player.def.damage);
 
+        p.events.push({ type: EventType.DAMAGE });
         this.spawn(
           new Entity({
             type: EntityType.SHIP_EXPLOSION,
@@ -342,6 +349,7 @@ export class World {
               player.damage(e.def.damage);
               e.kill();
 
+              player.events.push({ type: EventType.EXPLOSION });
               var boom = new Entity({
                 type: EntityType.SHIP_EXPLOSION,
                 x: e.x,

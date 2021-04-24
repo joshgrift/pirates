@@ -10,7 +10,7 @@ import { EntityType } from "./Protocol";
 export const TILE_SIZE: number = 32;
 export const KILL_REWARD: number = 100;
 export const STARTING_CANNON_BALLS: number = 100;
-export const STARTING_MONEY: number = 0;
+export const STARTING_MONEY: number = 600;
 export const WOOD_HEAL: number = 5;
 export const SPRITE_SHEET_WIDTH: number = 25;
 export const SPRITE_SHEET_HEIGHT: number = 25;

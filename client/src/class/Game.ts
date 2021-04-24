@@ -13,10 +13,11 @@ import {
 import { Map } from "./Map";
 import { Player, Ship } from "./Player";
 import { Entity, Port, Terrain } from "./WorldObjects";
-import { avg, decimalRound, distance, packString } from "../../../shared/Util";
+import { avg, distance, packString } from "../../../shared/Util";
 import { PortDef, ShipDef } from "../../../shared/GameDefs";
 import { Minimap } from "./MiniMap";
 import { DIALOGUE, Dialogue } from "./Dialogue";
+import { Sound, SoundEngine } from "./SoundEngine";
 
 enum Status {
   READY,
@@ -55,6 +56,7 @@ export class Game {
   socket: WebSocket;
 
   miniMap: Minimap;
+  soundEngine: SoundEngine;
 
   constructor(
     c: HTMLCanvasElement,
@@ -70,6 +72,8 @@ export class Game {
       this.terrain.push(new Terrain(t));
     }
 
+    this.soundEngine = new SoundEngine();
+    this.soundEngine.preload();
     this.miniMap = new Minimap(mapCanvas, this.terrain);
 
     load.ports.forEach((p) => {
@@ -132,17 +136,28 @@ export class Game {
 
       if (e.key == "Enter") {
         this.emit(GameEvent.DISMISS_DIALOGUE, {});
+        this.soundEngine.play(Sound.Player_Walking_WoodenLeg_03);
       }
 
       if (e.key == "w") {
+        if (!this.keys[e.key]) {
+          this.soundEngine.play(Sound.Player_HoistSail);
+        }
         this.speak(DIALOGUE.lower);
       }
 
       if (e.key == "s") {
+        if (!this.keys[e.key]) {
+          this.soundEngine.play(Sound.Player_HoistSail);
+        }
         this.speak(DIALOGUE.turn);
       }
 
-      if (e.key == "a") {
+      if (e.key == "a" || e.key == "d") {
+        if (!this.keys[e.key]) {
+          this.soundEngine.play(Sound.Item_Rudder_Movement_01);
+        }
+
         setTimeout(() => {
           // call this so it's triggered. If they
           // move left and right, they probably
@@ -199,6 +214,34 @@ export class Game {
 
         case EventType.DEATH:
           this.speak(DIALOGUE.death);
+          break;
+
+        case EventType.SHOT_FIRED:
+          this.soundEngine.play(Sound.Weapons_CannonsShot_04);
+          break;
+
+        case EventType.DAMAGE:
+          this.soundEngine.play(Sound.Impact_Ship_03);
+          break;
+
+        case EventType.EXPLOSION:
+          this.soundEngine.play(Sound.Impact_Ship_02);
+          break;
+
+        case EventType.MISS:
+          this.soundEngine.play(Sound.Impact_Cannon_OnWater_03);
+          break;
+
+        case EventType.WRECK_FOUND:
+          this.soundEngine.play(Sound.Item_CoinChest_Opening_01);
+          break;
+
+        case EventType.UNLOAD_CARGO || EventType.LOAD_CARGO:
+          this.soundEngine.play(Sound.Item_Chest_Landing);
+          break;
+
+        case EventType.REPAIR:
+          this.soundEngine.play(Sound.Player_Ship_Repair_04);
           break;
       }
     }

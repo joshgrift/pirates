@@ -235,6 +235,14 @@ export enum EventType {
   WRECK_FOUND,
   SHIP_DESTROYED,
   DEATH,
+  SHOT_FIRED,
+  DAMAGE,
+  EXPLOSION,
+  NEAR_MISS,
+  MISS,
+  UNLOAD_CARGO,
+  LOAD_CARGO,
+  REPAIR,
 }
 
 /**
