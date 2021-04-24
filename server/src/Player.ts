@@ -21,6 +21,7 @@ import {
   CannonSlot,
   CrewBonus,
   EventsInTransit,
+  EventType,
 } from "../../shared/Protocol";
 import { Collection } from "./Collection";
 import { MapEntity, MapObject } from "./MapObject";
@@ -96,10 +97,15 @@ export class Player extends MapEntity {
     this.inventory[Cargo.CANNON_BALL]--;
   }
 
+  /**
+   * kill player
+   * @override
+   */
   kill() {
     this.dead = true;
     this.deaths++;
     this.death_time = Date.now();
+    this.events.push({ type: EventType.DEATH });
   }
 
   respawn(x: number, y: number) {
@@ -211,6 +217,16 @@ export class Player extends MapEntity {
   }
 
   /**
+   * Pillage Wreck
+   * @param cargo
+   */
+  pillage(cargo: { [id: string]: number }) {
+    for (var c in cargo) {
+      this.inventory[c] += Math.floor(cargo[c] * 0.5); // player only collects 50% of items in a stash
+    }
+  }
+
+  /**
    * Apply water resistence to player
    */
   applyWaterEffect() {
@@ -247,6 +263,7 @@ export class Player extends MapEntity {
       this.health = maxHealth;
     }
   }
+
   /**
    * Does this player have bonus c
    * @param c

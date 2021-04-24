@@ -188,8 +188,18 @@ export class Game {
     }
 
     for (let event of msg.events) {
-      if (event.type == EventType.TREASURE_FOUND) {
-        this.speak(DIALOGUE.found_treasure);
+      switch (event.type) {
+        case EventType.TREASURE_FOUND:
+          this.speak(DIALOGUE.found_treasure);
+          break;
+
+        case EventType.SHIP_DESTROYED:
+          this.speak(DIALOGUE.ship_destroyed);
+          break;
+
+        case EventType.DEATH:
+          this.speak(DIALOGUE.death);
+          break;
       }
     }
 

@@ -19,6 +19,7 @@ import {
 
 import {
   KILL_REWARD,
+  RESPAWN_DELAY,
   TILE_SIZE,
   TREASURE_CHANCE,
   TREASURE_REWARD_MAX,
@@ -174,6 +175,16 @@ export class World {
       }
 
       if (player.dead && player.canRespawn()) {
+        this.spawn(
+          new Entity({
+            type: EntityType.WRECK,
+            x: player.x,
+            y: player.y,
+            id: Date.now() + "wreck",
+            heading: player.heading,
+            reward: player.inventory,
+          })
+        );
         this.spawnPlayer(player);
         continue;
       } else if (player.dead) {
@@ -273,6 +284,13 @@ export class World {
       player.applyHealEffects();
 
       this.checkCollisions(player);
+
+      // announce death if player is dead
+      if (player.dead) {
+        this.players.forEach((p) => {
+          p.events.push({ type: EventType.SHIP_DESTROYED });
+        });
+      }
     }
 
     this.doRandomSpawnTick();
@@ -324,14 +342,6 @@ export class World {
               player.damage(e.def.damage);
               e.kill();
 
-              if (player.dead && e.owner) {
-                let killer = this.players.get(e.owner.id);
-                if (killer) {
-                  killer.kills++;
-                  killer.doTransaction(KILL_REWARD);
-                }
-              }
-
               var boom = new Entity({
                 type: EntityType.SHIP_EXPLOSION,
                 x: e.x,
@@ -347,6 +357,10 @@ export class World {
         } else if (e.type == EntityType.TREASURE) {
           player.events.push({ type: EventType.TREASURE_FOUND });
           player.doTransaction(random(TREASURE_REWARD_MAX));
+          this.entities.remove(e.id);
+        } else if (e.type == EntityType.WRECK) {
+          player.events.push({ type: EventType.WRECK_FOUND });
+          player.pillage(e.reward);
           this.entities.remove(e.id);
         }
       }

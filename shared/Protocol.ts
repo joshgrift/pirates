@@ -232,6 +232,9 @@ export type EventsInTransit = {
  */
 export enum EventType {
   TREASURE_FOUND,
+  WRECK_FOUND,
+  SHIP_DESTROYED,
+  DEATH,
 }
 
 /**
@@ -243,6 +246,7 @@ export enum EntityType {
   CANNON_IMPACT,
   TREASURE,
   UPGRADED_CANNON_BALL,
+  WRECK,
 }
 
 /**

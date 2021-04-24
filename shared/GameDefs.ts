@@ -80,6 +80,14 @@ EntityDefs[EntityType.TREASURE] = {
   maxAcceleration: 0,
 };
 
+EntityDefs[EntityType.WRECK] = {
+  radius: 17,
+  damage: 0,
+  health: 20 * 60 * 5, // 5 minutes
+  maxSpeed: 0,
+  maxAcceleration: 0,
+};
+
 export const ShipDef: PlayerDef = {
   radius: 17.5,
   damage: 50,

@@ -67,6 +67,21 @@ export const DIALOGUE = {
     triggered: false,
     image: "happy",
   },
+  death: {
+    text: `
+      Oh no, we're sinking! Let's take this lifeboat so we can fight another day.
+    `,
+    triggered: false,
+    image: "disappointed",
+  },
+  ship_destroyed: {
+    text: `
+      A ship was destroyed! Let's head over to its wreckage and see what we can find. The wreckage should look like a 
+      black hull with no sails.
+    `,
+    triggered: false,
+    image: "talking",
+  },
 };
 
 export type Dialogue = {

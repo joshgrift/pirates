@@ -15,11 +15,13 @@ type EntityConstructor = {
   speed?: number;
   heading?: number;
   owner?: Player;
+  reward?: { [id: string]: number };
 };
 
 export class Entity extends MapEntity {
   type: EntityType;
   owner: Player | null = null;
+  reward: { [id: string]: number } = {};
 
   constructor(d: EntityConstructor) {
     super({
@@ -35,6 +37,10 @@ export class Entity extends MapEntity {
 
     if (d.owner) {
       this.owner = d.owner;
+    }
+
+    if (d.reward) {
+      this.reward = d.reward;
     }
   }
 
