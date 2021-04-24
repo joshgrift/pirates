@@ -6,8 +6,7 @@
       "y": 2656,
       "sprite":350,
       "store": {
-        "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":13, "sell":13},
+        "gold": {"buy":11, "sell":10},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":3, "sell":2},
         "wood": {"buy":5, "sell":4}
@@ -27,8 +26,8 @@
       "y": 2848,
       "sprite":350,
       "store": {
-        "wheat": {"buy":10, "sell":9},
-        "gold": {"buy":13, "sell":13},
+        "wheat": {"buy":15, "sell":12},
+        "gold": {"buy":12, "sell":11},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":10, "sell":3},
         "wood": {"buy":6, "sell":4}
@@ -52,7 +51,7 @@
         "gold": {"buy":12, "sell":10},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":4, "sell":1},
-        "wood": {"buy":5, "sell":4}
+        "wood": {"buy":3, "sell":3}
       },
       "crew": [
         {
@@ -71,11 +70,11 @@
       "y": 416,
       "sprite":350,
       "store": {
-        "wheat": {"buy":10, "sell":9},
+        "wheat": {"buy":11, "sell":11},
         "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
         "bread": {"buy":2, "sell":1},
-        "wood": {"buy":2, "sell":2}
+        "wood": {"buy":3, "sell":2}
       },
       "crew": [{
         "id":"ben",
@@ -95,7 +94,7 @@
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":13, "sell":13},
         "cannon_ball": {"buy":0.1, "sell":0.1},
-        "wood": {"buy":2, "sell":1}
+        "wood": {"buy":3, "sell":1}
       },
       "crew": [
         {

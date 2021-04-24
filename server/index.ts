@@ -15,7 +15,7 @@ require("dotenv").config();
 const HTTP = createServer();
 
 const controller: Controller = new Controller();
-controller.loadWorld("../maps/map.tmx", "../maps/tiny_map.json");
+controller.loadWorld("../maps/map.tmx", "../maps/map.json");
 
 /* express */
 var app = express();
@@ -32,7 +32,6 @@ app.post("/join", function (req: Request, res: Response) {
 });
 
 app.get("/sound/:sound", function (req: Request, res: Response) {
-  console.log(req.params["sound"]);
   res.redirect(process.env.SOUND_BASE_URL + req.params["sound"]);
 });
 
