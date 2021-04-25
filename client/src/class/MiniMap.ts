@@ -25,7 +25,8 @@ export class Minimap {
       );
     }
 
-    this.ctx.fillStyle = "#a83c3c";
+    // Don't show players on minimap
+    /*this.ctx.fillStyle = "#a83c3c";
     for (let s of ships) {
       this.ctx.fillRect(
         Math.floor(s.x / TILE_SIZE) * this.T - 1,
@@ -33,7 +34,7 @@ export class Minimap {
         this.T + 2,
         this.T + 2
       );
-    }
+    }*/
 
     this.ctx.fillStyle = "#3c62a8";
     for (let port of ports) {
