@@ -2,24 +2,11 @@ export const DIALOGUE = {
   welcome: {
     text: `
       Welcome to Pirates' Quest, Captain! I'm Marina, your first mate. <br>
-      Let's get underway, press <code>W</code> to raise the sail.
+      Press <code>W</code> to lower the sail and <code>S</code> to raise the sail.<br>
+      Use <code>A</code> and <code>D</code> to avoid running into anything.
     `,
     triggered: false,
     image: "happy",
-  },
-  lower: {
-    text: `
-      Sweet! I love the sea. Let's slow down by pressing <code>S</code>
-    `,
-    triggered: false,
-    image: "talking",
-  },
-  turn: {
-    text: `
-      Land Ahoy! Use <code>A</code> and <code>D</code> to avoid running into anything.
-    `,
-    triggered: false,
-    image: "talking",
   },
   shooting: {
     text: `

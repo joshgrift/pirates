@@ -204,7 +204,10 @@ export class World {
                 type = EntityType.UPGRADED_CANNON_BALL;
               }
 
-              player.events.push({ type: EventType.SHOT_FIRED });
+              this.players.forEach((p) => {
+                p.events.push({ type: EventType.SHOT_FIRED });
+              });
+
               this.spawn(
                 new Entity({
                   id: player.id + "shot" + Date.now(),
@@ -294,7 +297,9 @@ export class World {
       // announce death if player is dead
       if (player.dead) {
         this.players.forEach((p) => {
-          p.events.push({ type: EventType.SHIP_DESTROYED });
+          if (p.id != player.id) {
+            p.events.push({ type: EventType.SHIP_DESTROYED });
+          }
         });
       }
     }
@@ -324,7 +329,6 @@ export class World {
         player.damage(p.def.damage);
         p.damage(player.def.damage);
 
-        p.events.push({ type: EventType.DAMAGE });
         this.spawn(
           new Entity({
             type: EntityType.SHIP_EXPLOSION,
@@ -349,7 +353,10 @@ export class World {
               player.damage(e.def.damage);
               e.kill();
 
-              player.events.push({ type: EventType.EXPLOSION });
+              this.players.forEach((p) => {
+                p.events.push({ type: EventType.EXPLOSION });
+              });
+
               var boom = new Entity({
                 type: EntityType.SHIP_EXPLOSION,
                 x: e.x,

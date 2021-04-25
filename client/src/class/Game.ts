@@ -112,7 +112,9 @@ export class Game {
 
     document.addEventListener("keydown", (e) => {
       if (e.key == ".") {
-        this.speak(DIALOGUE.port);
+        if (DIALOGUE.shooting.triggered) {
+          this.speak(DIALOGUE.port);
+        }
         this.doAction({
           type: ActionType.SHOOT,
           cannon: CannonSlot.RIGHT,
@@ -139,32 +141,14 @@ export class Game {
         this.soundEngine.play(Sound.Player_Walking_WoodenLeg_03);
       }
 
-      if (e.key == "w") {
-        if (!this.keys[e.key]) {
-          this.soundEngine.play(Sound.Player_HoistSail);
-        }
-        this.speak(DIALOGUE.lower);
-      }
-
-      if (e.key == "s") {
-        if (!this.keys[e.key]) {
-          this.soundEngine.play(Sound.Player_HoistSail);
-        }
-        this.speak(DIALOGUE.turn);
-      }
-
       if (e.key == "a" || e.key == "d") {
         if (!this.keys[e.key]) {
           this.soundEngine.play(Sound.Item_Rudder_Movement_01);
         }
 
         setTimeout(() => {
-          // call this so it's triggered. If they
-          // move left and right, they probably
-          // know how to slow down
-          this.speak(DIALOGUE.turn);
           this.speak(DIALOGUE.shooting);
-        }, 1000);
+        }, 2000);
       }
 
       this.keys[e.key] = true;
@@ -205,7 +189,9 @@ export class Game {
     for (let event of msg.events) {
       switch (event.type) {
         case EventType.TREASURE_FOUND:
-          this.speak(DIALOGUE.found_treasure);
+          if (DIALOGUE.treasure.triggered) {
+            this.speak(DIALOGUE.found_treasure);
+          }
           break;
 
         case EventType.SHIP_DESTROYED:
@@ -213,6 +199,7 @@ export class Game {
           break;
 
         case EventType.DEATH:
+          this.player.acceleration = 0;
           this.speak(DIALOGUE.death);
           break;
 
@@ -237,6 +224,10 @@ export class Game {
           break;
 
         case EventType.UNLOAD_CARGO || EventType.LOAD_CARGO:
+          this.soundEngine.play(Sound.Item_Chest_Landing);
+          break;
+
+        case EventType.LOAD_CARGO || EventType.LOAD_CARGO:
           this.soundEngine.play(Sound.Item_Chest_Landing);
           break;
 
@@ -383,6 +374,7 @@ export class Game {
 
   speak(msg: Dialogue) {
     if (!msg.triggered) {
+      this.soundEngine.play(Sound.Item_GemsChest_Opening);
       this.emit(GameEvent.DIALOGUE, { dialogue: msg });
     }
 

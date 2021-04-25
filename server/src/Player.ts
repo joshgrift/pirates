@@ -97,6 +97,15 @@ export class Player extends MapEntity {
     this.inventory[Cargo.CANNON_BALL]--;
   }
 
+  damage(n: number) {
+    this.events.push({ type: EventType.DAMAGE });
+    this.health -= n;
+
+    if (this.health <= 0) {
+      this.kill();
+    }
+  }
+
   /**
    * kill player
    * @override
@@ -222,7 +231,11 @@ export class Player extends MapEntity {
    */
   pillage(cargo: { [id: string]: number }) {
     for (var c in cargo) {
-      this.inventory[c] += Math.floor(cargo[c] * 0.5); // player only collects 50% of items in a stash
+      if (this.inventory[c]) {
+        this.inventory[c] += Math.floor(cargo[c] * 0.5); // player only collects 50% of items in a stash
+      } else {
+        this.inventory[c] = Math.floor(cargo[c] * 0.5);
+      }
     }
   }
 
@@ -271,7 +284,7 @@ export class Player extends MapEntity {
    */
   hasBonus(bonus: CrewBonus): boolean {
     for (var c of this.crew) {
-      if ((c.bonus = bonus)) {
+      if (c.bonus == bonus) {
         return true;
       }
     }

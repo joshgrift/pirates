@@ -27,6 +27,7 @@ export class SoundEngine {
     this.load(Sound.Item_CoinChest_Opening_01);
     this.load(Sound.Player_Ship_Repair_04, true);
     this.load(Sound.Weapons_CannonsShot_02);
+    this.load(Sound.Item_GemsChest_Opening);
   }
 
   /**
@@ -49,8 +50,10 @@ export class SoundEngine {
     if (this.sound[sound]) {
       this.sound[sound].volume = volume;
 
-      if (!this.sound[sound].ended) {
-        this.sound[sound].currentTime = 0;
+      if (!this.sound[sound].ended && !this.sound[sound].loop) {
+        var a = new Audio("/sound/" + sound);
+        a.volume = volume;
+        a.play();
       }
 
       this.sound[sound].play();

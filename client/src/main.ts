@@ -3,6 +3,7 @@ import { Game, GameEvent } from "./class/Game";
 import {
   ActionType,
   Cargo,
+  CrewBonus,
   CrewInTransit,
   InitReturnPayload,
   InitSetupPayload,
@@ -12,6 +13,7 @@ import {
 import { createApp } from "vue";
 import { Dialogue, DIALOGUE } from "./class/Dialogue";
 import { Sound } from "./class/SoundEngine";
+import { UPGRADE_MAX_HEALTH } from "../../shared/GameDefs";
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -167,7 +169,14 @@ async function startGame() {
     if (d.dialogue) {
       UI.dialogueText.innerHTML = d.dialogue.text;
       UI.dialogueImage.src = "/assets/characters/" + d.dialogue.image + ".png";
-      UI.dialogue.classList.add("open");
+      if (UI.dialogue.classList.contains("open")) {
+        UI.dialogue.classList.remove("open");
+        setTimeout(() => {
+          UI.dialogue.classList.add("open");
+        }, 500);
+      } else {
+        UI.dialogue.classList.add("open");
+      }
     }
   });
 
@@ -224,13 +233,19 @@ async function startGame() {
           `${d.ui.player.acceleration} px/t^2 => ${d.ui.player.speed} px/t | ${d.ui.player.health}% | ${d.ui.player.heading} degrees | ${d.ui.ping} ms | ${d.ui.player.kills} kills | ${d.ui.player.x}, ${d.ui.player.y} | dead: ${d.ui.player.dead} | $${d.ui.player.money} <br>` +
           `${JSON.stringify(d.ui.player.inventory)}`;
       } else {
+        let maxHealth = 100;
+        d.ui.player.crew.forEach((c) => {
+          if (c.bonus == CrewBonus.MORE_HEALTH) {
+            maxHealth = UPGRADE_MAX_HEALTH;
+          }
+        });
         let inventory = "";
 
         for (let i of Object.keys(d.ui.player.inventory)) {
           inventory += ` <i class='inventory ${i}'></i> ${d.ui.player.inventory[i]}`;
         }
 
-        UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.player.money} <progress value="${d.ui.player.health}" max="100"></progress>`;
+        UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.player.money} <progress value="${d.ui.player.health}" max="${maxHealth}"></progress>`;
       }
 
       appData().myCrew = game.player.crew;
