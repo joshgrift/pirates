@@ -1,13 +1,8 @@
 import {
   Action,
-  ActionType,
-  CannonSlot,
-  Cargo,
   ClientServerPayload,
-  EventType,
   InitReturnPayload,
   ServerClientPayload,
-  Skin,
   TICK,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
@@ -18,6 +13,12 @@ import { PortDef, ShipDef } from "../../../shared/GameDefs";
 import { Minimap } from "./MiniMap";
 import { DIALOGUE, Dialogue } from "./Dialogue";
 import { Sound, SoundEngine } from "./SoundEngine";
+import {
+  ActionType,
+  CannonSlot,
+  EventType,
+  Skin,
+} from "../../../shared/Objects";
 
 enum Status {
   READY,
@@ -315,10 +316,8 @@ export class Game {
 
   getPort(): Port | null {
     for (var p of this.ports) {
-      if (
-        distance(this.player.x, this.player.y, p.x, p.y) <
-        PortDef.radius + ShipDef.radius
-      ) {
+      // TODO: server side pls
+      if (distance(this.player.x, this.player.y, p.x, p.y) < 100) {
         return p;
       }
     }

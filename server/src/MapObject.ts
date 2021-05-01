@@ -1,22 +1,33 @@
 import { distance } from "../../shared/Util";
-import { MapEntityDef, MapObjectDef, PortDef } from "../../shared/GameDefs";
-import {
-  CrewInTransit,
-  PortInTransit,
-  SellBuyPrice,
-} from "../../shared/Protocol";
+import { PortDef } from "../../shared/GameDefs";
+import { CrewInTransit, PortInTransit } from "../../shared/Protocol";
+import { MapEntityDef, MapObjectDef, SellBuyPrice } from "../../shared/Objects";
+import { BitMap } from "../../shared/BitMap";
 
 export class MapObject {
   id: string;
   x: number;
   y: number;
   def: MapObjectDef;
+  angle: number; // angle in degrees
+  bitMap: BitMap | null = null;
 
-  constructor(d: { id: string; x: number; y: number; def: MapObjectDef }) {
+  constructor(d: {
+    id: string;
+    x: number;
+    y: number;
+    angle: number;
+    def: MapObjectDef;
+  }) {
     this.id = d.id;
     this.x = d.x;
     this.y = d.y;
     this.def = d.def;
+    this.angle = d.angle;
+
+    if (this.def.collisionMap) {
+      this.bitMap = BitMap.fromHex(this.def.collisionMap);
+    }
   }
 
   collidingWith(o: MapObject) {
@@ -24,7 +35,24 @@ export class MapObject {
       return false;
     }
 
-    return distance(this.x, this.y, o.x, o.y) < this.def.radius + o.def.radius;
+    // these objects shouldn't collide
+    if (this.bitMap == null || o.bitMap == null) {
+      return false;
+    }
+
+    // if we're over 200 pixels away, we probably aren't colliding
+    if (distance(this.x, this.y, o.x, o.y) > 200) {
+      // TODO: make this a value determined by the bitmap
+      return false;
+    }
+
+    return this.bitMap.intersects(
+      o.bitMap,
+      o.x - this.x,
+      o.y - this.y,
+      this.angle,
+      o.angle
+    );
   }
 }
 
@@ -33,7 +61,6 @@ export class MapEntity extends MapObject {
   health: number;
   speed: number = 0;
   acceleration: number = 0;
-  heading: number = 0;
   def: MapEntityDef;
 
   constructor(d: {
@@ -43,9 +70,9 @@ export class MapEntity extends MapObject {
     def: MapEntityDef;
     speed?: number;
     acceleration?: number;
-    heading?: number;
+    angle?: number;
   }) {
-    super({ id: d.id, x: d.x, y: d.y, def: d.def });
+    super({ id: d.id, x: d.x, y: d.y, angle: d.angle || 0, def: d.def });
     this.def = d.def;
     this.health = this.def.health;
 
@@ -59,10 +86,6 @@ export class MapEntity extends MapObject {
       this.acceleration = d.acceleration;
     } else {
       this.acceleration = this.def.maxAcceleration;
-    }
-
-    if (d.heading) {
-      this.heading = d.heading;
     }
   }
 
@@ -84,8 +107,8 @@ export class MapEntity extends MapObject {
 
   applySpeed() {
     if (this.health > 0) {
-      this.x += this.speed * Math.cos((this.heading * Math.PI) / 180.0);
-      this.y += this.speed * Math.sin((this.heading * Math.PI) / 180.0);
+      this.x += this.speed * Math.cos((this.angle * Math.PI) / 180.0);
+      this.y += this.speed * Math.sin((this.angle * Math.PI) / 180.0);
     }
   }
 
@@ -104,7 +127,7 @@ export class MapEntity extends MapObject {
 
 export class Port extends MapObject {
   name: string;
-  sprite: number;
+  terrainId: number;
   store: { [id: string]: SellBuyPrice };
   crew: CrewInTransit[];
 
@@ -114,11 +137,12 @@ export class Port extends MapObject {
       x: d.x,
       y: d.y,
       def: PortDef,
+      angle: 0,
     });
     this.name = d.name;
     this.store = d.store;
     this.crew = d.crew;
-    this.sprite = d.sprite;
+    this.terrainId = d.terrainId;
   }
 
   toJSON(): PortInTransit {
@@ -126,9 +150,9 @@ export class Port extends MapObject {
       name: this.name,
       x: this.x,
       y: this.y,
-      sprite: this.sprite,
       store: this.store,
       crew: this.crew,
+      terrainId: this.terrainId,
     };
   }
 }

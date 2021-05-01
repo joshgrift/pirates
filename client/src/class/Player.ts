@@ -1,14 +1,21 @@
+import { BitMap } from "../../../shared/BitMap";
+import { ShipDef } from "../../../shared/GameDefs";
+import { Skin } from "../../../shared/Objects";
 import {
   Action,
   ClientServerPayload,
   CrewInTransit,
   PlayerInTransit,
   ShipInTransit,
-  Skin,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
 
+if (ShipDef.collisionMap) {
+  var ShipCollisionMap = BitMap.fromHex(ShipDef.collisionMap);
+}
+
+var SHIP_SPRITE_ROTATION = -90;
 var SHIP_SHEET = new Spritesheet("./assets/ships.png");
 
 var SPRITE: {
@@ -21,38 +28,38 @@ var SPRITE: {
 } = {};
 
 SPRITE[Skin.RED] = {
-  alive: new Sprite(SHIP_SHEET, 204, 115, 66, 113),
-  damaged: new Sprite(SHIP_SHEET, 0, 77, 66, 113),
-  broken: new Sprite(SHIP_SHEET, 272, 230, 66, 113),
-  dead: new Sprite(SHIP_SHEET, 136, 345, 66, 113),
+  alive: new Sprite(SHIP_SHEET, 204, 115, 66, 113, SHIP_SPRITE_ROTATION),
+  damaged: new Sprite(SHIP_SHEET, 0, 77, 66, 113, SHIP_SPRITE_ROTATION),
+  broken: new Sprite(SHIP_SHEET, 272, 230, 66, 113, SHIP_SPRITE_ROTATION),
+  dead: new Sprite(SHIP_SHEET, 136, 345, 66, 113, SHIP_SPRITE_ROTATION),
 };
 
 SPRITE[Skin.BLUE] = {
-  alive: new Sprite(SHIP_SHEET, 68, 77, 66, 113),
-  damaged: new Sprite(SHIP_SHEET, 340, 230, 66, 113),
-  broken: new Sprite(SHIP_SHEET, 272, 0, 66, 113),
-  dead: new Sprite(SHIP_SHEET, 136, 115, 66, 113),
+  alive: new Sprite(SHIP_SHEET, 68, 77, 66, 113, SHIP_SPRITE_ROTATION),
+  damaged: new Sprite(SHIP_SHEET, 340, 230, 66, 113, SHIP_SPRITE_ROTATION),
+  broken: new Sprite(SHIP_SHEET, 272, 0, 66, 113, SHIP_SPRITE_ROTATION),
+  dead: new Sprite(SHIP_SHEET, 136, 115, 66, 113, SHIP_SPRITE_ROTATION),
 };
 
 SPRITE[Skin.YELLOW] = {
-  alive: new Sprite(SHIP_SHEET, 68, 307, 66, 113),
-  damaged: new Sprite(SHIP_SHEET, 340, 115, 66, 113),
-  broken: new Sprite(SHIP_SHEET, 204, 345, 66, 113),
-  dead: new Sprite(SHIP_SHEET, 136, 0, 66, 113),
+  alive: new Sprite(SHIP_SHEET, 68, 307, 66, 113, SHIP_SPRITE_ROTATION),
+  damaged: new Sprite(SHIP_SHEET, 340, 115, 66, 113, SHIP_SPRITE_ROTATION),
+  broken: new Sprite(SHIP_SHEET, 204, 345, 66, 113, SHIP_SPRITE_ROTATION),
+  dead: new Sprite(SHIP_SHEET, 136, 0, 66, 113, SHIP_SPRITE_ROTATION),
 };
 
 SPRITE[Skin.GREEN] = {
-  alive: new Sprite(SHIP_SHEET, 68, 192, 66, 113),
-  damaged: new Sprite(SHIP_SHEET, 340, 345, 66, 113),
-  broken: new Sprite(SHIP_SHEET, 272, 115, 66, 113),
-  dead: new Sprite(SHIP_SHEET, 136, 230, 66, 113),
+  alive: new Sprite(SHIP_SHEET, 68, 192, 66, 113, SHIP_SPRITE_ROTATION),
+  damaged: new Sprite(SHIP_SHEET, 340, 345, 66, 113, SHIP_SPRITE_ROTATION),
+  broken: new Sprite(SHIP_SHEET, 272, 115, 66, 113, SHIP_SPRITE_ROTATION),
+  dead: new Sprite(SHIP_SHEET, 136, 230, 66, 113, SHIP_SPRITE_ROTATION),
 };
 
 SPRITE[Skin.BLACK] = {
-  alive: new Sprite(SHIP_SHEET, 408, 115, 66, 113),
-  damaged: new Sprite(SHIP_SHEET, 0, 307, 66, 113),
-  broken: new Sprite(SHIP_SHEET, 272, 345, 66, 113),
-  dead: new Sprite(SHIP_SHEET, 204, 0, 66, 113),
+  alive: new Sprite(SHIP_SHEET, 408, 115, 66, 113, SHIP_SPRITE_ROTATION),
+  damaged: new Sprite(SHIP_SHEET, 0, 307, 66, 113, SHIP_SPRITE_ROTATION),
+  broken: new Sprite(SHIP_SHEET, 272, 345, 66, 113, SHIP_SPRITE_ROTATION),
+  dead: new Sprite(SHIP_SHEET, 204, 0, 66, 113, SHIP_SPRITE_ROTATION),
 };
 
 export class Ship {
@@ -104,7 +111,7 @@ export class Ship {
       this.sprite = SPRITE[this.skin].dead;
     }
 
-    map.drawSprite(this.sprite, this.x, this.y, this.heading);
+    map.drawSprite(this.sprite, this.x, this.y, this.heading, ShipCollisionMap);
   }
 }
 

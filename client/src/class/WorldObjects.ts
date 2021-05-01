@@ -1,17 +1,45 @@
+import { BitMap } from "../../../shared/BitMap";
 import {
+  DefaultTerrainDef,
+  EntityDefs,
   SPRITE_SHEET_HEIGHT,
   SPRITE_SHEET_WIDTH,
+  TerrainDefs,
 } from "../../../shared/GameDefs";
+import { EntityType, SellBuyPrice } from "../../../shared/Objects";
 import {
   CrewInTransit,
   EntityInTransit,
-  EntityType,
   PortInTransit,
-  SellBuyPrice,
   TerrainInTransit,
 } from "../../../shared/Protocol";
 import { Map } from "./Map";
 import { Sprite, Spritesheet } from "./Sprites";
+
+/** local version of bitmaps for debugging */
+
+var BITMAP: {
+  ENTITY: { [id: number]: BitMap };
+  TERRAIN: { [id: number]: BitMap };
+} = {
+  ENTITY: {},
+  TERRAIN: {},
+};
+
+var entityTypes: EntityType[] = [
+  EntityType.SHIP_EXPLOSION,
+  EntityType.CANNON_BALL,
+  EntityType.UPGRADED_CANNON_BALL,
+  EntityType.TREASURE,
+  EntityType.WRECK,
+];
+
+for (let t of entityTypes) {
+  let map = EntityDefs[t].collisionMap;
+  if (map) {
+    BITMAP.ENTITY[t] = BitMap.fromHex(map);
+  }
+}
 
 var T = 64;
 
@@ -64,7 +92,13 @@ export class Entity {
   }
 
   render(map: Map): void {
-    map.drawSprite(SPRITE.ENTITY[this.type][0], this.x, this.y, this.heading);
+    map.drawSprite(
+      SPRITE.ENTITY[this.type][0],
+      this.x,
+      this.y,
+      this.heading,
+      BITMAP.ENTITY[this.type]
+    );
   }
 
   toJSON(): EntityInTransit {
@@ -84,11 +118,20 @@ export class Terrain {
   x: number;
   y: number;
   sprite: number;
+  bitmap: BitMap | null = null;
 
   constructor(t: TerrainInTransit) {
     this.x = t.x;
     this.y = t.y;
-    this.sprite = t.sprite;
+    this.sprite = t.terrainId;
+
+    if (TerrainDefs[this.sprite]) {
+      var map =
+        TerrainDefs[this.sprite].collisionMap || DefaultTerrainDef.collisionMap;
+      if (map) {
+        this.bitmap = BitMap.fromHex(map);
+      }
+    }
   }
 
   render(map: Map): void {
@@ -102,7 +145,8 @@ export class Terrain {
       ),
       this.x,
       this.y,
-      90
+      0,
+      this.bitmap
     );
   }
 }
@@ -123,7 +167,7 @@ export class Port {
     this.y = d.y;
     this.store = d.store;
     this.crew = d.crew;
-    this.sprite = d.sprite;
+    this.sprite = d.terrainId;
   }
 
   render(map: Map): void {
@@ -146,7 +190,7 @@ export class Port {
       name: this.name,
       x: this.x,
       y: this.y,
-      sprite: this.sprite,
+      terrainId: this.sprite,
       store: this.store,
       crew: this.crew,
     };

@@ -90,6 +90,66 @@ export function avg(d: number[]): number {
 }
 
 /**
+ * degrees to radians!
+ * @param d degrees
+ * @returns radians
+ */
+export function radians(d: number) {
+  return (d * Math.PI) / 180.0;
+}
+
+/**
+ * Generates square matrix of 0s
+ * @param s size
+ * @returns 2d array of 0s
+ */
+export function getEmptyMatrix(s: number): number[][] {
+  let m: number[][] = [];
+  for (let y = 0; y < s; y++) {
+    m.push([]);
+    for (let x = 0; x < s; x++) {
+      m[y].push(0);
+    }
+  }
+  return m;
+}
+
+/**
+ * Rotate m Matrix by d degrees
+ * @param m Matrix to rotate
+ * @param d degrees to rotate by
+ * @returns rotated matrix
+ */
+export function rotateMatrix(m: number[][], d: number): number[][] {
+  var r = radians(d % 360);
+
+  var dest = getEmptyMatrix(m.length);
+
+  var h = m.length;
+  var w = m[0].length;
+  var mh = h / 2 - 0.5;
+  var mw = w / 2 - 0.5;
+
+  var c = Math.cos(r);
+  var s = Math.sin(r);
+  let x0 = Math.round(mw - c * mw - s * mh);
+  let y0 = Math.round(mh - c * mh + s * mw);
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let srcX = Math.round(c * x + s * y + x0);
+      let srcY = Math.round(-s * x + c * y + y0);
+
+      if (srcY < h && srcX < w && srcX >= 0 && srcY >= 0) {
+        dest[y][x] = m[srcY][srcX];
+      }
+    }
+  }
+
+  return dest;
+}
+
+/**
  * Timer to calculating average times of actions
  */
 export class Timer {

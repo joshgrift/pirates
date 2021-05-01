@@ -1,4 +1,5 @@
 import { Sprite, Spritesheet } from "./Sprites";
+import { BitMap } from "../../../shared/BitMap";
 
 export class Map {
   DEBUG = false;
@@ -36,7 +37,13 @@ export class Map {
     this.DEBUG = debug;
   }
 
-  drawSprite(sprite: Sprite, x: number, y: number, heading: number = 0) {
+  drawSprite(
+    sprite: Sprite,
+    x: number,
+    y: number,
+    angle: number = 0,
+    bitmap?: BitMap | null
+  ) {
     var T = 32;
     if (
       x > this.offsetWidth - T &&
@@ -44,6 +51,9 @@ export class Map {
       y > this.offsetHeight - T &&
       y < this.offsetHeight + this.height + T
     ) {
+      let localX = Math.floor(x) - this.offsetWidth;
+      let localY = Math.floor(y) - this.offsetHeight;
+
       let drawX =
         Math.floor(x) -
         Math.floor(sprite.width / this.scale) / 2 -
@@ -60,7 +70,7 @@ export class Map {
         drawX + Math.floor(sprite.width / this.scale / 2),
         drawY + Math.floor(sprite.height / this.scale / 2)
       );
-      this.ctx.rotate(((heading - 90) * Math.PI) / 180.0);
+      this.ctx.rotate(((angle + sprite.rotation) * Math.PI) / 180.0);
 
       this.ctx.translate(
         -(drawX + Math.floor(sprite.width / this.scale / 2)),
@@ -79,17 +89,23 @@ export class Map {
         Math.floor(sprite.height / this.scale)
       );
 
-      if (this.DEBUG && false) {
-        this.ctx.strokeStyle = "red";
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, 35, 0, 2 * Math.PI);
-        this.ctx.stroke();
-
-        this.ctx.fillStyle = "black";
-        this.ctx.fillRect(x - 2, y - 2, 4, 4);
-      }
-
       this.ctx.restore();
+
+      if (this.DEBUG && bitmap) {
+        this.ctx.beginPath();
+        for (let mapy = 0; mapy < bitmap.height; mapy++) {
+          for (let mapx = 0; mapx < bitmap.width; mapx++) {
+            if (bitmap.get(mapx, mapy, angle)) {
+              this.ctx.lineTo(
+                localX + mapx - bitmap.cX,
+                localY + mapy - bitmap.cY
+              );
+            }
+          }
+        }
+        this.ctx.strokeStyle = "red";
+        this.ctx.stroke();
+      }
     }
   }
 

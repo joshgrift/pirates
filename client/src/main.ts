@@ -1,19 +1,21 @@
 import "./style.scss";
 import { Game, GameEvent } from "./class/Game";
 import {
-  ActionType,
-  Cargo,
-  CrewBonus,
   CrewInTransit,
   InitReturnPayload,
   InitSetupPayload,
-  SellBuyPrice,
-  Skin,
 } from "../../shared/Protocol";
 import { createApp } from "vue";
 import { Dialogue, DIALOGUE } from "./class/Dialogue";
 import { Sound } from "./class/SoundEngine";
 import { UPGRADE_MAX_HEALTH } from "../../shared/GameDefs";
+import {
+  ActionType,
+  Cargo,
+  CrewBonus,
+  SellBuyPrice,
+  Skin,
+} from "../../shared/Objects";
 
 // plz put your pitch forks down
 let $ = (q: string) => {

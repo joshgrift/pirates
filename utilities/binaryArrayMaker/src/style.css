@@ -1,0 +1,14 @@
+input {
+  width: 50px;
+}
+
+p{
+  user-select: none;
+  line-height: 11px;
+  background-image: url('file:///home/josh/git/pirates/maps/tiles/tile_09.png')
+}
+
+span {
+  display: inline-block;
+  margin-right: -3px;
+}

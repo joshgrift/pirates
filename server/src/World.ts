@@ -8,32 +8,45 @@ import * as xml from "xml2js";
 import { Port } from "./MapObject";
 
 import {
-  Cargo,
-  EntityType,
+  EntityInTransit,
+  EventsInTransit,
   InitSetupPayload,
   PortInTransit,
-  ActionType,
-  CrewBonus,
-  EventType,
+  ShipInTransit,
 } from "../../shared/Protocol";
 
 import {
-  KILL_REWARD,
-  RESPAWN_DELAY,
   TILE_SIZE,
   TREASURE_CHANCE,
   TREASURE_REWARD_MAX,
   WOOD_HEAL,
 } from "../../shared/GameDefs";
+import {
+  ActionType,
+  Cargo,
+  CrewBonus,
+  EntityType,
+  EventType,
+} from "../../shared/Objects";
 
 export class World {
   height: number = 600;
   width: number = 600;
   players: Collection<Player> = new Collection();
   entities: Collection<Entity> = new Collection();
-  events: Collection<Event> = new Collection();
   ports: Collection<Port> = new Collection();
   terrains: Terrain[] = [];
+
+  /**
+   * A copy of the exported world so we don't have to convert it when every player gets an update
+   */
+  exported: {
+    ships: ShipInTransit[];
+    entities: EntityInTransit[];
+  } = {
+    ships: [],
+    entities: [],
+  };
 
   constructor(mapPath: string, mapJSON: string) {
     this.loadMap(mapPath, mapJSON);
@@ -128,7 +141,7 @@ export class World {
                     new Terrain({
                       x: x * TILE_SIZE,
                       y: y * TILE_SIZE,
-                      sprite: parseInt(t) - 1,
+                      terrainId: parseInt(t) - 1,
                     })
                   );
                 }
@@ -182,7 +195,7 @@ export class World {
             x: player.x,
             y: player.y,
             id: Date.now() + "wreck",
-            heading: player.heading,
+            angle: player.angle,
             reward: player.inventory,
           })
         );
@@ -214,7 +227,7 @@ export class World {
                   type: type,
                   x: player.x,
                   y: player.y,
-                  heading: player.heading + action.cannon,
+                  angle: player.angle + action.cannon,
                   owner: player,
                 })
               );
@@ -317,6 +330,8 @@ export class World {
         this.entities.remove(entity.id);
       }
     });
+
+    this.saveExport();
   }
 
   /**
@@ -335,7 +350,6 @@ export class World {
             x: player.x,
             y: player.y,
             id: p.id + "and" + player.id + "explosion",
-            heading: 0,
           })
         );
       }
@@ -362,7 +376,6 @@ export class World {
                 x: e.x,
                 y: e.y,
                 id: player.id + "and" + e.id + "explosion",
-                heading: 0,
               });
               boom.tick();
 
@@ -414,7 +427,6 @@ export class World {
         x: random(this.width),
         y: random(this.height),
         id: Date.now() + "treasure",
-        heading: 0,
       });
 
       var safe = true;
@@ -429,5 +441,27 @@ export class World {
         this.spawn(treasure);
       }
     }
+  }
+
+  /**
+   * save export to local export variable
+   */
+  saveExport() {
+    var ships: ShipInTransit[] = [];
+    var entities: EntityInTransit[] = [];
+    var events: EventsInTransit[] = [];
+
+    for (let s of this.players) {
+      ships.push(s.toJSON());
+    }
+
+    for (let e of this.entities) {
+      entities.push(e.toJSON());
+    }
+
+    this.exported = {
+      ships,
+      entities,
+    };
   }
 }

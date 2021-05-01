@@ -1,11 +1,12 @@
 import { Player } from "./Player";
-import {
-  EntityInTransit,
-  EntityType,
-  TerrainInTransit,
-} from "../../shared/Protocol";
+import { EntityInTransit, TerrainInTransit } from "../../shared/Protocol";
 import { MapEntity, MapObject } from "./MapObject";
-import { EntityDefs, TerrainDef } from "../../shared/GameDefs";
+import {
+  DefaultTerrainDef,
+  EntityDefs,
+  TerrainDefs,
+} from "../../shared/GameDefs";
+import { EntityType } from "../../shared/Objects";
 
 type EntityConstructor = {
   id: string;
@@ -13,7 +14,7 @@ type EntityConstructor = {
   x: number;
   y: number;
   speed?: number;
-  heading?: number;
+  angle?: number;
   owner?: Player;
   reward?: { [id: string]: number };
 };
@@ -29,7 +30,7 @@ export class Entity extends MapEntity {
       x: d.x,
       y: d.y,
       speed: d.speed,
-      heading: d.heading,
+      angle: d.angle || 0,
       def: EntityDefs[d.type],
     });
 
@@ -63,28 +64,34 @@ export class Entity extends MapEntity {
       health: this.health,
       id: this.id,
       speed: this.speed,
-      heading: this.heading,
+      heading: this.angle,
     };
   }
 }
 
 export class Terrain extends MapObject {
-  sprite: number;
+  terrainId: number;
 
   constructor(d: TerrainInTransit) {
+    let def = DefaultTerrainDef;
+    if (TerrainDefs[d.terrainId]) {
+      def = TerrainDefs[d.terrainId];
+    }
+
     super({
       id: d.x + "" + d.y,
       x: d.x,
       y: d.y,
-      def: TerrainDef,
+      angle: 0,
+      def: def,
     });
 
-    this.sprite = d.sprite;
+    this.terrainId = d.terrainId;
   }
 
   toJSON(): TerrainInTransit {
     return {
-      sprite: this.sprite,
+      terrainId: this.terrainId,
       x: this.x,
       y: this.y,
     };

@@ -4,6 +4,7 @@ import {
   InitReturnPayload,
   InitSetupPayload,
   ServerClientPayload,
+  ShipInTransit,
 } from "../../shared/Protocol";
 import { Timer } from "../../shared/Util";
 import { World } from "./World";
@@ -70,9 +71,9 @@ export class Controller {
         player.update(msg);
         return {
           player: player.exportAsPlayer(),
-          ships: this.world.players.toJSON(),
-          entities: this.world.entities.toJSON(),
           events: player.events,
+          ships: this.world.exported.ships,
+          entities: this.world.exported.entities,
         };
       } else {
         console.error("ERR: player with id " + msg.id + " does not exist");

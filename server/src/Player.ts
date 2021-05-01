@@ -1,6 +1,5 @@
 import {
   HEALTH,
-  PlayerDef,
   RESPAWN_DELAY,
   ShipDef,
   STARTING_CANNON_BALLS,
@@ -10,18 +9,21 @@ import {
   UPGRADE_WATER_RESISTANCE,
 } from "../../shared/GameDefs";
 import {
+  CannonSlot,
+  Cargo,
+  CrewBonus,
+  EventType,
+  PlayerDef,
+  Skin,
+} from "../../shared/Objects";
+import {
   ClientServerPayload,
   PlayerInTransit,
-  Skin,
-  Cargo,
   ShipInTransit,
   Action,
   CrewInTransit,
   TIMEOUT,
-  CannonSlot,
-  CrewBonus,
   EventsInTransit,
-  EventType,
 } from "../../shared/Protocol";
 import { Collection } from "./Collection";
 import { MapEntity, MapObject } from "./MapObject";
@@ -151,7 +153,7 @@ export class Player extends MapEntity {
    */
   changeHeading(i: number) {
     if (this.speed >= 0.1 && !this.dead) {
-      this.heading = (this.heading + i) % 360;
+      this.angle = (this.angle + i) % 360;
     }
   }
 
@@ -190,7 +192,7 @@ export class Player extends MapEntity {
       x: this.x,
       y: this.y,
       id: this.id,
-      heading: this.heading,
+      heading: this.angle,
       speed: this.speed,
       health: this.health,
       skin: this.skin,
@@ -208,8 +210,8 @@ export class Player extends MapEntity {
    * @param e
    */
   bounce(e: MapObject) {
-    this.x -= this.speed * Math.cos((this.heading * Math.PI) / 180.0);
-    this.y -= this.speed * Math.sin((this.heading * Math.PI) / 180.0);
+    //this.x -= this.speed * Math.cos((this.angle * Math.PI) / 180.0);
+    //this.y -= this.speed * Math.sin((this.angle * Math.PI) / 180.0);
   }
 
   /**
@@ -301,7 +303,7 @@ export class Player extends MapEntity {
       x: this.x,
       y: this.y,
       id: this.id,
-      heading: this.heading,
+      heading: this.angle,
       health: this.health,
       skin: this.skin,
       dead: this.dead,

@@ -13,6 +13,17 @@
  * The types for these requests follow.
  */
 
+import {
+  ActionType,
+  CannonSlot,
+  Cargo,
+  CrewBonus,
+  EntityType,
+  EventType,
+  SellBuyPrice,
+  Skin,
+} from "./Objects";
+
 /** Tick Speed in miliseconds */
 export const TICK = 50;
 
@@ -119,60 +130,6 @@ export type Action = {
   count?: number;
 };
 
-export enum CannonSlot {
-  LEFT = 270,
-  RIGHT = 90,
-  FRONT = 180,
-}
-
-/**
- * Action types. The required fields in Action are specified.
- */
-export enum ActionType {
-  /**
-   * Turn the ship.
-   * @requires direction
-   */
-  TURN,
-
-  /**
-   * Shoot Cannons
-   * @requires direction
-   */
-  SHOOT,
-
-  /**
-   * Sell Cargo
-   * @requires cargo
-   * @requires count
-   */
-  SELL,
-
-  /**
-   * Buy Cargo
-   * @requires cargo
-   * @requires count
-   */
-  BUY,
-
-  /**
-   * Hire Crew
-   * @requires crewId
-   */
-  HIRE,
-
-  /**
-   * Fire Crew
-   * @requires crewId
-   */
-  FIRE,
-
-  /**
-   * Repair Ship
-   */
-  REPAIR,
-}
-
 /**
  * Ship data while in transit
  */
@@ -210,52 +167,11 @@ export type PlayerInTransit = {
 };
 
 /**
- * Player Skin Types
- */
-export enum Skin {
-  RED,
-  BLUE,
-  GREEN,
-  YELLOW,
-  BLACK,
-}
-
-/**
  * Event. Can store more information about the event type
  */
 export type EventsInTransit = {
   type: EventType;
 };
-
-/**
- * Event types
- */
-export enum EventType {
-  TREASURE_FOUND,
-  WRECK_FOUND,
-  SHIP_DESTROYED,
-  DEATH,
-  SHOT_FIRED,
-  DAMAGE,
-  EXPLOSION,
-  NEAR_MISS,
-  MISS,
-  UNLOAD_CARGO,
-  LOAD_CARGO,
-  REPAIR,
-}
-
-/**
- * Entity Types
- */
-export enum EntityType {
-  CANNON_BALL,
-  SHIP_EXPLOSION,
-  CANNON_IMPACT,
-  TREASURE,
-  UPGRADED_CANNON_BALL,
-  WRECK,
-}
 
 /**
  * Entity data while in transit
@@ -276,7 +192,11 @@ export type EntityInTransit = {
 export type TerrainInTransit = {
   x: number;
   y: number;
-  sprite: number;
+
+  /**
+   * Image and collision map defintion
+   */
+  terrainId: number;
 };
 
 /**
@@ -289,9 +209,9 @@ export type PortInTransit = {
   y: number;
 
   /**
-   * sprite location
+   * Image and collision map defintion
    */
-  sprite: number;
+  terrainId: number;
 
   /**
    * sell and buy options
@@ -305,29 +225,6 @@ export type PortInTransit = {
 };
 
 /**
- * Inventory Item
- */
-export enum Cargo {
-  WOOD = "wood",
-  CANNON_BALL = "cannon_ball",
-  WHEAT = "wheat",
-}
-
-/**
- * Crew Options
- */
-export enum CrewBonus {
-  MORE_DAMAGE,
-  MORE_HEALTH,
-  FAST_BOI,
-  MEDIC,
-  MORE_RANGE, // TODO
-  EXTRA_CANNON, // TODO
-  BETTER_TRADE, // TODO
-  MORE_CAPACITY, // TODO
-}
-
-/**
  * Crew Member in Transit
  */
 export type CrewInTransit = {
@@ -337,12 +234,4 @@ export type CrewInTransit = {
   description: string;
   cost: number;
   sprite: string;
-};
-
-/**
- * Type to indicate price adjustments when buying and selling
- */
-export type SellBuyPrice = {
-  buy: number;
-  sell: number;
 };

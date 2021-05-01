@@ -24,18 +24,24 @@ export class Sprite {
   y: number;
   height: number;
   width: number;
+  rotation: number = 0; // offset rotation in degrees
 
   constructor(
     sheet: Spritesheet,
     x: number,
     y: number,
     width: number,
-    height: number
+    height: number,
+    rotation?: number
   ) {
     this.x = x;
     this.y = y;
     this.sheet = sheet;
     this.height = height;
     this.width = width;
+
+    if (rotation) {
+      this.rotation = rotation;
+    }
   }
 }

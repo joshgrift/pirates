@@ -1,0 +1,17 @@
+{
+  "name": "hitboxgenerator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^15.0.1",
+    "canvas": "^2.7.0",
+    "ts-node": "^9.1.1"
+  }
+}
