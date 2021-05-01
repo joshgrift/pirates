@@ -7,7 +7,7 @@ import { packString, random } from "../../shared/Util";
 import * as xml from "xml2js";
 import { Port } from "./MapObject";
 
-const DEBUG = true;
+const DEBUG = false;
 
 import {
   EntityInTransit,
