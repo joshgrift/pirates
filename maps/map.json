@@ -4,7 +4,7 @@
       "name":"Port of Santiago",
       "x": 2880,
       "y": 2656,
-      "sprite":350,
+      "terrainId":350,
       "store": {
         "gold": {"buy":11, "sell":10},
         "cannon_ball": {"buy":0.1, "sell":0.1},
@@ -24,7 +24,7 @@
       "name":"Port of Bombados",
       "x": 1728,
       "y": 2848,
-      "sprite":350,
+      "terrainId":350,
       "store": {
         "wheat": {"buy":15, "sell":12},
         "gold": {"buy":12, "sell":11},
@@ -45,7 +45,7 @@
       "name":"Port of Almarty",
       "x": 1568,
       "y": 1568,
-      "sprite":350,
+      "terrainId":350,
       "store": {
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":12, "sell":10},
@@ -68,7 +68,7 @@
       "name":"Nate's Port",
       "x": 1216,
       "y": 416,
-      "sprite":350,
+      "terrainId":350,
       "store": {
         "wheat": {"buy":11, "sell":11},
         "gold": {"buy":13, "sell":13},
@@ -89,7 +89,7 @@
       "name":"Benorito",
       "x": 2816,
       "y": 416,
-      "sprite":350,
+      "terrainId":350,
       "store": {
         "wheat": {"buy":10, "sell":9},
         "gold": {"buy":13, "sell":13},

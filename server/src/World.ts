@@ -7,6 +7,8 @@ import { packString, random } from "../../shared/Util";
 import * as xml from "xml2js";
 import { Port } from "./MapObject";
 
+const DEBUG = true;
+
 import {
   EntityInTransit,
   EventsInTransit,
@@ -180,6 +182,9 @@ export class World {
    * Main Game Loop
    */
   tick() {
+    if (DEBUG) {
+      console.time();
+    }
     for (var player of this.players) {
       player.events = [];
       if (player.timedOut()) {
@@ -332,6 +337,9 @@ export class World {
     });
 
     this.saveExport();
+    if (DEBUG) {
+      console.timeEnd();
+    }
   }
 
   /**

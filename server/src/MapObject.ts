@@ -40,8 +40,8 @@ export class MapObject {
       return false;
     }
 
-    // if we're over 200 pixels away, we probably aren't colliding
-    if (distance(this.x, this.y, o.x, o.y) > 200) {
+    // if we're over 80 pixels away, we probably aren't colliding
+    if (distance(this.x, this.y, o.x, o.y) > 80) {
       // TODO: make this a value determined by the bitmap
       return false;
     }
