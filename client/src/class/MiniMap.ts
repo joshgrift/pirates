@@ -2,6 +2,9 @@ import { TILE_SIZE } from "../../../shared/GameDefs";
 import { Player, Ship } from "./Player";
 import { Port, Terrain } from "./WorldObjects";
 
+/**
+ * Minimap interface
+ */
 export class Minimap {
   ctx: CanvasRenderingContext2D;
   terrain: Terrain[];
@@ -12,7 +15,7 @@ export class Minimap {
     this.terrain = terrain;
   }
 
-  render(ships: Ship[], player: Player, ports: Port[]) {
+  public render(ships: Ship[], player: Player, ports: Port[]) {
     this.ctx.clearRect(0, 0, 100 * this.T, 100 * this.T);
     this.ctx.fillStyle = "#968d4b";
 

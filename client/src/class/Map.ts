@@ -18,6 +18,9 @@ export type Sprite = {
   rotation?: number;
 };
 
+/**
+ * Interface with the canvas.
+ */
 export class Map {
   DEBUG = false;
   scale = 2;
@@ -42,7 +45,7 @@ export class Map {
     this.canvas.height = this.height;
   }
 
-  setView(
+  public setView(
     playerX: number,
     playerY: number,
     speed: number,
@@ -54,7 +57,7 @@ export class Map {
     this.DEBUG = debug;
   }
 
-  drawSprite(
+  public drawSprite(
     sprite: Sprite,
     x: number,
     y: number,
@@ -126,7 +129,7 @@ export class Map {
     }
   }
 
-  clear() {
+  public clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 }

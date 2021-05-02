@@ -44,7 +44,7 @@ export class Ship {
     this.kills = d.kills;
     this.deaths = d.deaths;
 
-    this.sprite = this.sprite = SHIP[0][this.skin][100];
+    this.sprite = this.sprite = SHIP[0][this.skin][this.health];
   }
 
   render(map: Map): void {
@@ -77,24 +77,19 @@ export class Player extends Ship {
   crew: CrewInTransit[] = [];
   actions: Action[] = [];
 
-  constructor(d: PlayerInTransit) {
+  constructor(d: { name: string; id: string; skin: Skin }) {
     super({
       id: d.id,
       name: d.name,
       skin: d.skin,
-      x: d.x,
-      y: d.y,
-      heading: d.heading,
-      health: d.health,
-      dead: d.dead,
-      kills: d.kills,
-      deaths: d.deaths,
+      x: 0,
+      y: 0,
+      heading: 90,
+      health: 0,
+      dead: false,
+      kills: 0,
+      deaths: 0,
     });
-
-    this.money = d.money;
-    this.inventory = d.inventory;
-    this.crew = d.crew;
-    this.name = d.name;
   }
 
   accelerate(n: number) {

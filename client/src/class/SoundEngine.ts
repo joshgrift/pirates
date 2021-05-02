@@ -8,7 +8,7 @@ export class SoundEngine {
    * preload all sounds
    * @param
    */
-  preload() {
+  public preload() {
     this.load(Sound.Item_Chest_Opening_01);
     this.load(Sound.Item_Chest_Close);
     this.load(Sound.Player_Map_Open);
@@ -34,7 +34,7 @@ export class SoundEngine {
    * Preload a sound
    * @param sound
    */
-  load(sound: Sound, loop: boolean = false) {
+  public load(sound: Sound, loop: boolean = false) {
     this.sound[sound] = new Audio("/sound/" + sound);
     if (loop) {
       this.sound[sound].loop = true;
@@ -46,7 +46,7 @@ export class SoundEngine {
    * @param sound
    * @param volume volume between 0 and 1
    */
-  play(sound: Sound, volume: number = 1) {
+  public play(sound: Sound, volume: number = 1) {
     if (this.sound[sound]) {
       this.sound[sound].volume = volume;
 
@@ -66,7 +66,7 @@ export class SoundEngine {
    * stop a sound
    * @param sound
    */
-  stop(sound: Sound) {
+  public stop(sound: Sound) {
     this.sound[sound].pause();
   }
 }

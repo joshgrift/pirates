@@ -6,7 +6,7 @@ import {
   InitSetupPayload,
 } from "../../shared/Protocol";
 import { createApp } from "vue";
-import { Dialogue, DIALOGUE } from "./class/Dialogue";
+import { DIALOGUE } from "./class/Dialogue";
 import { Sound } from "./class/SoundEngine";
 import { UPGRADE_MAX_HEALTH } from "../../shared/GameDefs";
 import {

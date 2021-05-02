@@ -32,7 +32,7 @@ export class Entity {
     this.spritesheet = new Spritesheet("./assets/ships.png");
   }
 
-  render(map: Map): void {
+  public render(map: Map): void {
     map.drawSprite(
       ENTITY[this.type],
       this.x,
@@ -63,7 +63,7 @@ export class Terrain {
     }
   }
 
-  render(map: Map): void {
+  public render(map: Map): void {
     map.drawSprite(TERRAIN(this.sprite), this.x, this.y, 0, this.bitmap);
   }
 }
@@ -87,7 +87,7 @@ export class Port {
     this.sprite = d.terrainId;
   }
 
-  render(map: Map): void {
+  public render(map: Map): void {
     map.drawSprite(TERRAIN(this.sprite), this.x, this.y, 90);
   }
 }
