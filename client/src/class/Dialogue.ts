@@ -1,4 +1,4 @@
-export const DIALOGUE = {
+export const DIALOGUE: { [id: string]: Dialogue } = {
   welcome: {
     text: `
       Welcome to Pirates' Quest, Captain! I'm Marina, your first mate. <br>

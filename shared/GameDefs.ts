@@ -21,6 +21,7 @@ export const STARTING_MONEY: number = 10;
 export const WOOD_HEAL: number = 5;
 export const SPRITE_SHEET_WIDTH: number = 25;
 export const SPRITE_SHEET_HEIGHT: number = 25;
+export const SPRITE_SHEET_TILE_SIZE: number = 64;
 export const TREASURE_CHANCE: number = 300;
 export const TREASURE_REWARD_MAX: number = 20;
 export const RESPAWN_DELAY = 5000;

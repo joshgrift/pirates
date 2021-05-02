@@ -9,7 +9,6 @@ import { Map } from "./Map";
 import { Player, Ship } from "./Player";
 import { Entity, Port, Terrain } from "./WorldObjects";
 import { avg, distance, packString } from "../../../shared/Util";
-import { PortDef, ShipDef } from "../../../shared/GameDefs";
 import { Minimap } from "./MiniMap";
 import { DIALOGUE, Dialogue } from "./Dialogue";
 import { Sound, SoundEngine } from "./SoundEngine";

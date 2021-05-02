@@ -1,5 +1,22 @@
-import { Sprite, Spritesheet } from "./Sprites";
 import { BitMap } from "../../../shared/BitMap";
+
+export class Spritesheet {
+  img: CanvasImageSource;
+
+  constructor(url: string) {
+    this.img = new Image();
+    this.img.src = url;
+  }
+}
+
+export type Sprite = {
+  sheet: Spritesheet;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  rotation?: number;
+};
 
 export class Map {
   DEBUG = false;
@@ -70,7 +87,7 @@ export class Map {
         drawX + Math.floor(sprite.width / this.scale / 2),
         drawY + Math.floor(sprite.height / this.scale / 2)
       );
-      this.ctx.rotate(((angle + sprite.rotation) * Math.PI) / 180.0);
+      this.ctx.rotate(((angle + (sprite.rotation || 0)) * Math.PI) / 180.0);
 
       this.ctx.translate(
         -(drawX + Math.floor(sprite.width / this.scale / 2)),
