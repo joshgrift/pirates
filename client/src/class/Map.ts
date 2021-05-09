@@ -76,11 +76,11 @@ export class Map {
 
       let drawX =
         Math.floor(x) -
-        Math.floor(sprite.width / this.scale) / 2 -
+        Math.floor(sprite.width / this.scale / 2) -
         this.offsetWidth;
       let drawY =
         Math.floor(y) -
-        Math.floor(sprite.height / this.scale) / 2 -
+        Math.floor(sprite.height / this.scale / 2) -
         this.offsetHeight;
       drawY = Math.floor(drawY);
       drawX = Math.floor(drawX);
