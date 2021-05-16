@@ -38,10 +38,9 @@ export enum GameEvent {
  * Should not interact with DOM, only canvas.
  */
 export class Game {
-  readonly MAX_PINGS = 100;
   DEBUG = false;
-  last_ping: number = Date.now();
-  pings: number[] = [];
+
+  savedMessage: ServerClientPayload | null = null;
 
   map: Map;
   ships: Ship[] = [];
@@ -97,7 +96,13 @@ export class Game {
     };
 
     this.socket.onmessage = (d) => {
-      this.handle(JSON.parse(d.data) as ServerClientPayload);
+      if (this.savedMessage) {
+        // debug only
+        // console.error("Frame from server before previous frame handled");
+      }
+
+      this.savedMessage = JSON.parse(d.data) as ServerClientPayload;
+
       if (this.status == Status.DISCONNECTED) {
         this.ready();
       }
@@ -154,8 +159,9 @@ export class Game {
 
   private ready() {
     this.status = Status.READY;
-    this.tick();
-    this.uiUpdate();
+    setInterval(this.tick.bind(this), TICK);
+    setInterval(this.uiUpdate.bind(this), TICK * 20);
+    setInterval(this.render.bind(this), TICK);
   }
 
   private send(d: ClientServerPayload) {
@@ -163,12 +169,6 @@ export class Game {
   }
 
   private handle(msg: ServerClientPayload) {
-    this.pings.push(Date.now() - this.last_ping);
-    if (this.pings.length > this.MAX_PINGS) {
-      this.pings.shift();
-    }
-    this.last_ping = Date.now();
-
     this.entities = [];
     for (let e of msg.entities) {
       this.entities.push(new Entity(e));
@@ -239,13 +239,9 @@ export class Game {
       this.player.heading,
       this.DEBUG
     );
-
-    this.render();
   }
 
   private tick() {
-    setTimeout(() => this.tick(), TICK);
-
     if (this.status == Status.READY) {
       if (this.player.speed < 0.01 && !this.inPort) {
         var p = this.getPort();
@@ -287,6 +283,15 @@ export class Game {
 
       this.send(this.player.toJSON());
       this.player.actions = [];
+
+      // handle server response
+      if (this.savedMessage) {
+        this.handle(this.savedMessage);
+        this.savedMessage = null;
+      } else {
+        // debug only
+        //console.error("Missed frame from server");
+      }
     }
   }
 
@@ -294,16 +299,12 @@ export class Game {
     this.emit(GameEvent.UI_UPDATE, {
       ui: {
         player: this.player,
-        ping: avg(this.pings),
+        ping: 0,
         ships: this.ships,
       },
     });
 
     this.miniMap.render(this.ships, this.player, this.ports);
-
-    setTimeout(() => {
-      this.uiUpdate();
-    }, 200);
   }
 
   private getPort(): Port | null {
@@ -339,6 +340,11 @@ export class Game {
         entity.render(this.map);
       });
     }
+
+    /*setTimeout(() => {
+      this.render();
+    }, 50);*/
+    //window.requestAnimationFrame(this.render.bind(this));
   }
 
   private emit(event: GameEvent, d: GameEventData) {

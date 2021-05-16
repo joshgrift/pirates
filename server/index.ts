@@ -6,7 +6,8 @@ import {
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { Controller } from "./src/Controller";
-import * as WebSocket from "ws";
+import { Server } from "ws";
+import type WebSocket from "ws";
 import { createServer } from "http";
 
 // load default config
@@ -45,18 +46,15 @@ app.get("/health", function (req: Request, res: Response) {
 app.use("/", express.static("../client"));
 HTTP.on("request", app);
 
-var s = new WebSocket.Server({
+var s = new Server({
   server: HTTP,
 });
 
-s.on("connection", (ws) => {
+s.on("connection", (ws: WebSocket) => {
   ws.on("message", (message) => {
-    ws.send(
-      JSON.stringify(
-        controller.messageReceieved(
-          JSON.parse(message.toString()) as ClientServerPayload
-        )
-      )
+    controller.messageReceieved(
+      JSON.parse(message.toString()) as ClientServerPayload,
+      ws
     );
   });
 });

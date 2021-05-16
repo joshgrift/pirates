@@ -27,6 +27,7 @@ import {
 } from "../../shared/Protocol";
 import { Collection } from "./Collection";
 import { MapEntity, MapObject } from "./MapObject";
+import type WebSocket from "ws";
 
 type playerConstructor = {
   id: string;
@@ -39,6 +40,7 @@ type playerConstructor = {
 export class Player extends MapEntity {
   skin: Skin;
   name: string;
+  socket: WebSocket | null = null;
 
   last_ping_time: number = 0;
   death_time: number = 0;
@@ -189,8 +191,8 @@ export class Player extends MapEntity {
   exportAsPlayer(): PlayerInTransit {
     return {
       name: this.name,
-      x: this.x,
-      y: this.y,
+      x: Math.round(this.x),
+      y: Math.round(this.y),
       id: this.id,
       heading: this.angle,
       speed: this.speed,
@@ -300,8 +302,8 @@ export class Player extends MapEntity {
   toJSON(): ShipInTransit {
     return {
       name: this.name,
-      x: this.x,
-      y: this.y,
+      x: Math.round(this.x),
+      y: Math.round(this.y),
       id: this.id,
       heading: this.angle,
       health: this.health,
