@@ -9,7 +9,6 @@ import { Map } from "./Map";
 import { Player, Ship } from "./Player";
 import { Entity, Port, Terrain } from "./WorldObjects";
 import { avg, distance, packString } from "../../../shared/Util";
-import { PortDef, ShipDef } from "../../../shared/GameDefs";
 import { Minimap } from "./MiniMap";
 import { DIALOGUE, Dialogue } from "./Dialogue";
 import { Sound, SoundEngine } from "./SoundEngine";
@@ -34,11 +33,14 @@ export enum GameEvent {
   DISMISS_DIALOGUE,
 }
 
+/**
+ * GameLoop, communication with server, and rendering.
+ * Should not interact with DOM, only canvas.
+ */
 export class Game {
-  readonly MAX_PINGS = 100;
   DEBUG = false;
-  last_ping: number = Date.now();
-  pings: number[] = [];
+
+  savedMessage: ServerClientPayload | null = null;
 
   map: Map;
   ships: Ship[] = [];
@@ -84,19 +86,8 @@ export class Game {
 
     this.player = new Player({
       name: name,
-      x: 0,
-      y: 0,
-      speed: 0,
-      health: 100,
       id: load.id,
-      heading: 90,
       skin: skin,
-      dead: false,
-      kills: 0,
-      deaths: 0,
-      inventory: {},
-      money: 0,
-      crew: [],
     });
 
     this.socket.onopen = () => {
@@ -105,7 +96,13 @@ export class Game {
     };
 
     this.socket.onmessage = (d) => {
-      this.handle(JSON.parse(d.data) as ServerClientPayload);
+      if (this.savedMessage) {
+        // debug only
+        // console.error("Frame from server before previous frame handled");
+      }
+
+      this.savedMessage = JSON.parse(d.data) as ServerClientPayload;
+
       if (this.status == Status.DISCONNECTED) {
         this.ready();
       }
@@ -160,23 +157,18 @@ export class Game {
     });
   }
 
-  ready() {
+  private ready() {
     this.status = Status.READY;
-    this.tick();
-    this.uiUpdate();
+    setInterval(this.tick.bind(this), TICK);
+    setInterval(this.uiUpdate.bind(this), TICK * 20);
+    setInterval(this.render.bind(this), TICK);
   }
 
-  send(d: ClientServerPayload) {
+  private send(d: ClientServerPayload) {
     this.socket.send(JSON.stringify(d));
   }
 
-  handle(msg: ServerClientPayload) {
-    this.pings.push(Date.now() - this.last_ping);
-    if (this.pings.length > this.MAX_PINGS) {
-      this.pings.shift();
-    }
-    this.last_ping = Date.now();
-
+  private handle(msg: ServerClientPayload) {
     this.entities = [];
     for (let e of msg.entities) {
       this.entities.push(new Entity(e));
@@ -247,13 +239,9 @@ export class Game {
       this.player.heading,
       this.DEBUG
     );
-
-    this.render();
   }
 
-  tick() {
-    setTimeout(() => this.tick(), TICK);
-
+  private tick() {
     if (this.status == Status.READY) {
       if (this.player.speed < 0.01 && !this.inPort) {
         var p = this.getPort();
@@ -295,26 +283,31 @@ export class Game {
 
       this.send(this.player.toJSON());
       this.player.actions = [];
+
+      // handle server response
+      if (this.savedMessage) {
+        this.handle(this.savedMessage);
+        this.savedMessage = null;
+      } else {
+        // debug only
+        //console.error("Missed frame from server");
+      }
     }
   }
 
-  uiUpdate() {
+  private uiUpdate() {
     this.emit(GameEvent.UI_UPDATE, {
       ui: {
         player: this.player,
-        ping: avg(this.pings),
+        ping: 0,
         ships: this.ships,
       },
     });
 
     this.miniMap.render(this.ships, this.player, this.ports);
-
-    setTimeout(() => {
-      this.uiUpdate();
-    }, 200);
   }
 
-  getPort(): Port | null {
+  private getPort(): Port | null {
     for (var p of this.ports) {
       // TODO: server side pls
       if (distance(this.player.x, this.player.y, p.x, p.y) < 100) {
@@ -325,7 +318,7 @@ export class Game {
     return null;
   }
 
-  render() {
+  private render() {
     if (this.status == Status.READY) {
       this.map.clear();
 
@@ -347,31 +340,28 @@ export class Game {
         entity.render(this.map);
       });
     }
+
+    /*setTimeout(() => {
+      this.render();
+    }, 50);*/
+    //window.requestAnimationFrame(this.render.bind(this));
   }
 
-  updateUIElement(query: string, value: string) {
-    let e = document.querySelector(query);
-
-    if (e) {
-      e.innerHTML = value;
-    }
-  }
-
-  emit(event: GameEvent, d: GameEventData) {
+  private emit(event: GameEvent, d: GameEventData) {
     if (this.gameEventCallbacks[event]) {
       this.gameEventCallbacks[event](d);
     }
   }
 
-  on(event: GameEvent, callback: (d: GameEventData) => void) {
+  public on(event: GameEvent, callback: (d: GameEventData) => void) {
     this.gameEventCallbacks[event] = callback;
   }
 
-  doAction(action: Action) {
+  public doAction(action: Action) {
     this.player.actions.push(action);
   }
 
-  speak(msg: Dialogue) {
+  public speak(msg: Dialogue) {
     if (!msg.triggered) {
       this.soundEngine.play(Sound.Item_GemsChest_Opening);
       this.emit(GameEvent.DIALOGUE, { dialogue: msg });

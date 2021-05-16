@@ -1,6 +1,26 @@
-import { Sprite, Spritesheet } from "./Sprites";
 import { BitMap } from "../../../shared/BitMap";
 
+export class Spritesheet {
+  img: CanvasImageSource;
+
+  constructor(url: string) {
+    this.img = new Image();
+    this.img.src = url;
+  }
+}
+
+export type Sprite = {
+  sheet: Spritesheet;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  rotation?: number;
+};
+
+/**
+ * Interface with the canvas.
+ */
 export class Map {
   DEBUG = false;
   scale = 2;
@@ -25,7 +45,7 @@ export class Map {
     this.canvas.height = this.height;
   }
 
-  setView(
+  public setView(
     playerX: number,
     playerY: number,
     speed: number,
@@ -37,7 +57,7 @@ export class Map {
     this.DEBUG = debug;
   }
 
-  drawSprite(
+  public drawSprite(
     sprite: Sprite,
     x: number,
     y: number,
@@ -56,11 +76,11 @@ export class Map {
 
       let drawX =
         Math.floor(x) -
-        Math.floor(sprite.width / this.scale) / 2 -
+        Math.floor(sprite.width / this.scale / 2) -
         this.offsetWidth;
       let drawY =
         Math.floor(y) -
-        Math.floor(sprite.height / this.scale) / 2 -
+        Math.floor(sprite.height / this.scale / 2) -
         this.offsetHeight;
       drawY = Math.floor(drawY);
       drawX = Math.floor(drawX);
@@ -70,7 +90,7 @@ export class Map {
         drawX + Math.floor(sprite.width / this.scale / 2),
         drawY + Math.floor(sprite.height / this.scale / 2)
       );
-      this.ctx.rotate(((angle + sprite.rotation) * Math.PI) / 180.0);
+      this.ctx.rotate(((angle + (sprite.rotation || 0)) * Math.PI) / 180.0);
 
       this.ctx.translate(
         -(drawX + Math.floor(sprite.width / this.scale / 2)),
@@ -109,7 +129,7 @@ export class Map {
     }
   }
 
-  clear() {
+  public clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 }

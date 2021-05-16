@@ -1,4 +1,3 @@
-import * as WebSocket from "ws";
 import {
   ClientServerPayload,
   InitReturnPayload,
@@ -8,6 +7,7 @@ import {
 } from "../../shared/Protocol";
 import { Timer } from "../../shared/Util";
 import { World } from "./World";
+import type WebSocket from "ws";
 
 export class Controller {
   world: World | null = null;
@@ -47,15 +47,23 @@ export class Controller {
     this.timer.startTimer();
     if (this.world) {
       this.world.tick();
-    }
-    this.timer.stopTimer();
-  }
 
-  playerConnected(ws: WebSocket) {
-    ws.on("message", (message) => {
-      if (this.world) {
+      // send messages back to players
+      for (let player of this.world.players) {
+        if (player.socket) {
+          player.socket.send(
+            JSON.stringify({
+              player: player.exportAsPlayer(),
+              events: player.events,
+              ships: this.world.exported.ships,
+              entities: this.world.exported.entities,
+            } as ServerClientPayload)
+          );
+        }
       }
-    });
+    }
+
+    this.timer.stopTimer();
   }
 
   /**
@@ -63,18 +71,16 @@ export class Controller {
    * @param msg Payload from server
    * @returns Payload to return to the client. Returns null if the user is no longer apart of the server
    */
-  messageReceieved(msg: ClientServerPayload): ServerClientPayload | null {
+  messageReceieved(msg: ClientServerPayload, ws: WebSocket) {
     if (this.world) {
       var player = this.world.players.get(msg.id);
 
       if (player) {
+        if (!player.socket) {
+          player.socket = ws;
+        }
+
         player.update(msg);
-        return {
-          player: player.exportAsPlayer(),
-          events: player.events,
-          ships: this.world.exported.ships,
-          entities: this.world.exported.entities,
-        };
       } else {
         console.error("ERR: player with id " + msg.id + " does not exist");
         return null;
