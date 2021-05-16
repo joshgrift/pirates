@@ -91,7 +91,7 @@ export class Game {
     });
 
     this.socket.onopen = () => {
-      this.speak(DIALOGUE.welcome);
+      this.speak(DIALOGUE.welcome, true);
       this.send(this.player.toJSON());
     };
 
@@ -141,7 +141,7 @@ export class Game {
 
       if (e.key == "a" || e.key == "d") {
         if (!this.keys[e.key]) {
-          this.soundEngine.play(Sound.Item_Rudder_Movement_01);
+          this.soundEngine.play(Sound.Item_Rudder_Movement_01, 0.5);
         }
 
         setTimeout(() => {
@@ -201,11 +201,11 @@ export class Game {
           break;
 
         case EventType.DAMAGE:
-          this.soundEngine.play(Sound.Impact_Ship_03);
+          this.soundEngine.play(Sound.Impact_Ship_03, 0.8);
           break;
 
         case EventType.EXPLOSION:
-          this.soundEngine.play(Sound.Impact_Ship_02);
+          this.soundEngine.play(Sound.Impact_Ship_02, 0.8);
           break;
 
         case EventType.MISS:
@@ -217,11 +217,11 @@ export class Game {
           break;
 
         case EventType.UNLOAD_CARGO || EventType.LOAD_CARGO:
-          this.soundEngine.play(Sound.Item_Chest_Landing);
+          this.soundEngine.play(Sound.Item_Chest_Landing, 0.6);
           break;
 
         case EventType.LOAD_CARGO || EventType.LOAD_CARGO:
-          this.soundEngine.play(Sound.Item_Chest_Landing);
+          this.soundEngine.play(Sound.Item_Chest_Landing, 0.6);
           break;
 
         case EventType.REPAIR:
@@ -361,9 +361,11 @@ export class Game {
     this.player.actions.push(action);
   }
 
-  public speak(msg: Dialogue) {
+  public speak(msg: Dialogue, silent = false) {
     if (!msg.triggered) {
-      this.soundEngine.play(Sound.Item_GemsChest_Opening);
+      if (!silent) {
+        this.soundEngine.play(Sound.Player_Map_Open);
+      }
       this.emit(GameEvent.DIALOGUE, { dialogue: msg });
     }
 
