@@ -4,7 +4,6 @@ import {
   TICK,
 } from "../shared/Protocol";
 import express, { Request, Response } from "express";
-import bodyParser from "body-parser";
 import { Controller } from "./src/Controller";
 import { Server } from "ws";
 import type WebSocket from "ws";
@@ -20,7 +19,7 @@ controller.loadWorld("../maps/map.tmx", "../maps/map.json");
 
 /* express */
 var app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.post("/join", function (req: Request, res: Response) {
   let payload = controller.join(req.body as InitSetupPayload);

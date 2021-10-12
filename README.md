@@ -10,7 +10,9 @@
 
 Standard Vanilla Typescript SPA built with webpack.
 
-- `npm run build` - runs webpack in watch mode to compile `src` into `dist`. Server serves `dist` to users
+- `npm run build` - runs webpack in watch mode to compile `src` into `dist`.
+
+Server serves `dist` to users
 
 ### Server
 
