@@ -107,3 +107,7 @@ Tiled.AppImage
 
 # Environment file
 .env
+
+
+# rust version
+target
