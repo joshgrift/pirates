@@ -9,6 +9,8 @@ import { Timer } from "../../shared/Util";
 import { World } from "./World";
 import type WebSocket from "ws";
 
+const DEBUG = false;
+
 export class Controller {
   world: World | null = null;
   timer: Timer = new Timer();
@@ -64,6 +66,9 @@ export class Controller {
     }
 
     this.timer.stopTimer();
+    if (DEBUG) {
+      console.log("tick took: " + this.timer.getTime() + "ms");
+    }
   }
 
   /**

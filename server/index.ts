@@ -9,6 +9,8 @@ import { Server } from "ws";
 import type WebSocket from "ws";
 import { createServer } from "http";
 
+const DEBUG = false;
+
 // load default config
 require("dotenv").config();
 
@@ -62,6 +64,35 @@ HTTP.listen(process.env.PORT, () => {
   console.log(`Listening on http://${process.env.URL}:${process.env.PORT}`);
 });
 
-setInterval(async () => {
-  controller.tick();
-}, TICK);
+var previousTick = Date.now();
+var actualTicks = 0;
+
+function loop() {
+  var now = Date.now();
+
+  actualTicks++;
+  if (previousTick + TICK <= now) {
+    var delta = (now - previousTick) / 1000;
+    previousTick = now;
+
+    controller.tick();
+
+    if (DEBUG)
+      console.log(
+        "delta",
+        delta,
+        "(target: " + TICK + " ms)",
+        "node ticks",
+        actualTicks
+      );
+    actualTicks = 0;
+  }
+
+  if (Date.now() - previousTick < TICK - 16) {
+    setTimeout(loop);
+  } else {
+    setImmediate(loop);
+  }
+}
+
+loop();

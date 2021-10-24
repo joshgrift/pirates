@@ -181,4 +181,11 @@ export class Timer {
   getAvg(): number {
     return avg(this.list);
   }
+
+  /**
+   * Get the lastest time
+   */
+  getTime(): number {
+    return this.list[this.list.length - 1];
+  }
 }

@@ -1,0 +1,10 @@
+[package]
+name = "pirates"
+version = "0.1.0"
+authors = ["Josh <josh@grift.ca>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+redis = "0.21.3"
