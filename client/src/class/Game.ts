@@ -34,13 +34,18 @@ export enum GameEvent {
 }
 
 /**
+ * Max number of packets we can saved up before we clear the buffer and bring the player up to date.
+ */
+let SAVED_PACKAGE_LIMIT = 3;
+
+/**
  * GameLoop, communication with server, and rendering.
  * Should not interact with DOM, only canvas.
  */
 export class Game {
   DEBUG = false;
 
-  savedMessage: ServerClientPayload | null = null;
+  savedMessage: ServerClientPayload[] = [];
 
   map: Map;
   ships: Ship[] = [];
@@ -96,12 +101,7 @@ export class Game {
     };
 
     this.socket.onmessage = (d) => {
-      if (this.savedMessage) {
-        // debug only
-        // console.error("Frame from server before previous frame handled");
-      }
-
-      this.savedMessage = JSON.parse(d.data) as ServerClientPayload;
+      this.savedMessage.push(JSON.parse(d.data) as ServerClientPayload);
 
       if (this.status == Status.DISCONNECTED) {
         this.ready();
@@ -159,9 +159,11 @@ export class Game {
 
   private ready() {
     this.status = Status.READY;
-    setInterval(this.tick.bind(this), TICK);
-    setInterval(this.uiUpdate.bind(this), TICK * 20);
-    setInterval(this.render.bind(this), TICK);
+
+    new HighResolutionTimer(TICK, this.tick.bind(this));
+    new HighResolutionTimer(TICK * 20, this.uiUpdate.bind(this));
+
+    this.render();
   }
 
   private send(d: ClientServerPayload) {
@@ -285,12 +287,18 @@ export class Game {
       this.player.actions = [];
 
       // handle server response
-      if (this.savedMessage) {
-        this.handle(this.savedMessage);
-        this.savedMessage = null;
+      let pkg = this.savedMessage.shift();
+      if (pkg) {
+        this.handle(pkg);
+
+        if (this.savedMessage.length > SAVED_PACKAGE_LIMIT) {
+          console.error("Client is too far behind, catching up...");
+          this.savedMessage = [];
+        }
       } else {
-        // debug only
-        //console.error("Missed frame from server");
+        if (true) {
+          console.error("Missed frame from server");
+        }
       }
     }
   }
@@ -341,10 +349,7 @@ export class Game {
       });
     }
 
-    /*setTimeout(() => {
-      this.render();
-    }, 50);*/
-    //window.requestAnimationFrame(this.render.bind(this));
+    window.requestAnimationFrame(this.render.bind(this));
   }
 
   private emit(event: GameEvent, d: GameEventData) {
@@ -382,3 +387,41 @@ export type GameEventData = {
   };
   dialogue?: Dialogue;
 };
+
+export class HighResolutionTimer {
+  private timer: NodeJS.Timeout | undefined;
+  private startTime: number | undefined;
+  private currentTime: number | undefined;
+  private totalTicks: number = 0;
+
+  constructor(public duration: number, public callback: () => void) {
+    this.run();
+  }
+
+  run() {
+    let lastTime = this.currentTime;
+    this.currentTime = Date.now();
+
+    if (!this.startTime) {
+      this.startTime = this.currentTime;
+    }
+
+    this.callback();
+
+    let nextTick =
+      this.duration -
+      (this.currentTime - (this.startTime + this.totalTicks * this.duration));
+    this.totalTicks++;
+
+    this.timer = setTimeout(() => {
+      this.run();
+    }, nextTick);
+  }
+
+  stop() {
+    if (this.timer !== undefined) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+  }
+}

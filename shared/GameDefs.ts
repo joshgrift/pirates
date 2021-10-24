@@ -191,8 +191,8 @@ EntityDefs[EntityType.WRECK] = {
 export const ShipDef: PlayerDef = {
   damage: 50,
   health: 100,
-  maxSpeed: 3,
-  maxAcceleration: 0.5,
+  maxSpeed: 2,
+  maxAcceleration: 0.4,
   maxHealth: 100,
   reloadTime: 1000,
   waterResistenceFactor: 0.85,

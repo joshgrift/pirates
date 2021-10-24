@@ -25,7 +25,7 @@ import {
 } from "./Objects";
 
 /** Tick Speed in miliseconds */
-export const TICK = 50;
+export const TICK = 33;
 
 /** Timeout in miliseconds */
 export const TIMEOUT = 10000;
