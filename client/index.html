@@ -44,7 +44,7 @@
             <div class="tab_content store" v-if="isActive('store')">
               <div v-for="item in items" :key="item.id" class="item">
                 <span class="icon">
-                  <i class="inventory" :class='item.id'></i>
+                  <i class="inventory tooltip" :class='item.id'></i>
                 </span>
                 <span class="quantity">
                   {{ item.quantity }}

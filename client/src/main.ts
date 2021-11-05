@@ -244,10 +244,10 @@ async function startGame() {
         let inventory = "";
 
         for (let i of Object.keys(d.ui.player.inventory)) {
-          inventory += ` <i class='inventory ${i}'></i> ${d.ui.player.inventory[i]}`;
+          inventory += ` <i class='inventory tooltip tooltip-up ${i}'></i> ${d.ui.player.inventory[i]}`;
         }
 
-        UI.stats.innerHTML = `${inventory} <i class='inventory money'></i> ${d.ui.player.money} <progress value="${d.ui.player.health}" max="${maxHealth}"></progress>`;
+        UI.stats.innerHTML = `${inventory} <i class='inventory tooltip tooltip-up money'></i> ${d.ui.player.money} <progress value="${d.ui.player.health}" max="${maxHealth}"></progress>`;
       }
 
       appData().myCrew = game.player.crew;

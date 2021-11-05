@@ -324,3 +324,59 @@ i.inventory {
     background-position-x: -10 * 16px;
   }
 }
+
+.tooltip {
+  position:relative;
+}
+
+.tooltip:before {
+  content: "";
+  position:absolute;
+  padding:5px 8px 5px 6px;
+  border-radius:7px;
+  background-color: $primary_action;
+  color: $primary_text;
+  text-align:center;
+  white-space: nowrap;
+  display:none;
+
+  top:50%;
+  transform:translateY(-50%);
+  left:100%;
+  margin-left:6px;
+}
+
+.tooltip-up.tooltip:before {
+  top:-180%;
+  transform:translateX(-50%);
+  left:50%;
+  margin-bottom:6px;
+}
+
+.tooltip:hover:before {
+  display:block;
+}
+
+.cannon_ball.tooltip:before {
+  content: "Cannon Ball";
+}
+
+.wood.tooltip:before {
+  content: "Wood";
+}
+
+.wheat.tooltip:before {
+  content: "Wheat";
+}
+
+.gold.tooltip:before {
+  content: "Gold";
+}
+
+.bread.tooltip:before {
+  content: "Bread";
+}
+
+.money.tooltip:before {
+  content: "Money";
+}
