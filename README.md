@@ -44,7 +44,9 @@ Due to license issues, all sounds are owned and stored by Josh Grift. Access to 
 
 ## Deployment
 
-`docker run -p 8081:8081 -d --rm -ePORT=8081 -eURL=127.0.0.1 joshgrift/pirates:latest`
+- Build `docker build . --tag joshgrift/pirates:next`
+- Run `docker run -p 8081:8081 -d --rm -ePORT=8081 -eURL=127.0.0.1 joshgrift/pirates:next`
+- Visit localhost:8081
 
 ### Docker Tags:
 

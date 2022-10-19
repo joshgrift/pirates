@@ -22,11 +22,11 @@
     "websocket": "^1.0.33"
   },
   "devDependencies": {
-    "@types/node": "^16",
+    "@types/node": "^18.11.0",
     "@types/vue": "^2.0.0",
     "css-loader": "^6",
     "sass": "^1.32.10",
-    "sass-loader": "^12",
+    "sass-loader": "^13.1.0",
     "style-loader": "^3",
     "ts-loader": "^9",
     "ts-node": "^10",
