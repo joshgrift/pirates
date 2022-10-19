@@ -1,6 +1,7 @@
 # Pirates
 
-![](https://img.shields.io/docker/cloud/build/joshgrift/pirates)
+[![Deployment](https://github.com/joshgrift/pirates/actions/workflows/next-deploy.yml/badge.svg)](https://github.com/joshgrift/pirates/actions/workflows/next-deploy.yml)
+[![Release](https://github.com/joshgrift/pirates/actions/workflows/release.yml/badge.svg)](https://github.com/joshgrift/pirates/actions/workflows/release.yml)
 ![](https://img.shields.io/docker/pulls/joshgrift/pirates)
 ![](https://img.shields.io/github/license/dotjersh/pirates)
 
