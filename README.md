@@ -80,3 +80,4 @@ Due to license issues, all sounds are owned and stored by Josh Grift. Access to 
 - Inventory Items - [cheekyinkling (Shikashis)](https://cheekyinkling.itch.io/shikashis-fantasy-icons-pack)
 - Characters - [illustmaker](https://illustmaker.abi-station.com/index_en.shtml)
 - Map Builder - [Tiled](https://www.mapeditor.org/download.html)
+- Nipple - [NippleJS](https://yoannmoi.net/nipplejs/)

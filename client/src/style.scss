@@ -78,18 +78,19 @@ body {
 
   #port {
     display: grid;
+    box-sizing: border-box;
     grid-template-rows: 0.1fr auto 64px;
     background-color: $soft;
     position: fixed;
     top: 0px;
-    left: -320px;
+    left: -100%;
     transition: 1s ease all;
-    width: 280px;
+    width: 100vw;
     padding: 20px;
     height: calc(100vh - 40px);
 
     &.open {
-      left: 0px;
+      left: 0%;
     }
 
     #shelf {
@@ -253,11 +254,11 @@ body {
 
   .dialogue {
     background-color: $soft;
-    border: 1px solid $primary_action;
+    border-top: 1px solid $primary_action;
     position: fixed;
-    bottom: -102px;
-    left: 320px;
-    width: calc(100vw - 640px);
+    bottom: -100%;
+    left: 0px;
+    width: 100vw;
     transition: 1s ease all;
 
     code {
@@ -282,7 +283,7 @@ body {
     }
 
     &.open {
-      bottom: 0px;
+      bottom: 0%;
     }
   }
 }
@@ -326,35 +327,35 @@ i.inventory {
 }
 
 .tooltip {
-  position:relative;
+  position: relative;
 }
 
 .tooltip:before {
   content: "";
-  position:absolute;
-  padding:5px 8px 5px 6px;
-  border-radius:7px;
+  position: absolute;
+  padding: 5px 8px 5px 6px;
+  border-radius: 7px;
   background-color: $primary_action;
   color: $primary_text;
-  text-align:center;
+  text-align: center;
   white-space: nowrap;
-  display:none;
+  display: none;
 
-  top:50%;
-  transform:translateY(-50%);
-  left:100%;
-  margin-left:6px;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 100%;
+  margin-left: 6px;
 }
 
 .tooltip-up.tooltip:before {
-  top:-180%;
-  transform:translateX(-50%);
-  left:50%;
-  margin-bottom:6px;
+  top: -180%;
+  transform: translateX(-50%);
+  left: 50%;
+  margin-bottom: 6px;
 }
 
 .tooltip:hover:before {
-  display:block;
+  display: block;
 }
 
 .cannon_ball.tooltip:before {

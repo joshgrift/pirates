@@ -16,6 +16,7 @@ import {
   SellBuyPrice,
   Skin,
 } from "../../shared/Objects";
+import nipplejs from 'nipplejs';
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -154,6 +155,11 @@ async function startGame() {
     } as InitSetupPayload),
   });
 
+  var nipple = nipplejs.create({});
+  nipple.on("move", (evt, data) => {
+    console.log(data);
+  })
+
   appData().player_name = UI.nameInput.value;
 
   var json: InitReturnPayload = (await result.json()) as InitReturnPayload;
@@ -254,12 +260,12 @@ async function startGame() {
 
       UI.playerList.innerHTML = `
       ${(() => {
-        var r = "";
-        for (let p of d.ui.ships) {
-          r += `<li>${p.name} - ${p.kills} / ${p.deaths} K/D</li>`;
-        }
-        return r;
-      })()}
+          var r = "";
+          for (let p of d.ui.ships) {
+            r += `<li>${p.name} - ${p.kills} / ${p.deaths} K/D</li>`;
+          }
+          return r;
+        })()}
       `;
     }
   });
