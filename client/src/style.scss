@@ -13,11 +13,21 @@ $sea: #89cff0;
   src: url("../assets/ComicMono.ttf");
 }
 
+* {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 body {
   margin: 0px;
   font-family: comicMono;
   background-color: $sea;
   color: $primary_action;
+  touch-action: none;
+}
+
+.world {
+  position: relative;
 }
 
 #menu {
@@ -83,14 +93,14 @@ body {
     background-color: $soft;
     position: fixed;
     top: 0px;
-    left: -100%;
+    left: -100vw;
     transition: 1s ease all;
     width: 100vw;
     padding: 20px;
-    height: calc(100vh - 40px);
+    height: 100vh;
 
     &.open {
-      left: 0%;
+      left: 0vw;
     }
 
     #shelf {

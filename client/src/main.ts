@@ -11,12 +11,17 @@ import { Sound } from "./class/SoundEngine";
 import { UPGRADE_MAX_HEALTH } from "../../shared/GameDefs";
 import {
   ActionType,
+  CannonSlot,
   Cargo,
   CrewBonus,
   SellBuyPrice,
   Skin,
 } from "../../shared/Objects";
 import nipplejs from 'nipplejs';
+
+document.ondblclick = function (e) {
+  e.preventDefault();
+}
 
 // plz put your pitch forks down
 let $ = (q: string) => {
@@ -43,6 +48,7 @@ const UI = {
   dialogue: $(".dialogue") as HTMLDivElement,
   dialogueText: $(".dialogue p") as HTMLDivElement,
   dialogueImage: $(".dialogue img") as HTMLImageElement,
+  nipple: nipplejs.create({ zone: $(".world") as HTMLElement })
 };
 
 let game: Game;
@@ -103,6 +109,7 @@ var app = createApp({
       });
     },
     sell: function (i: Cargo) {
+      console.log("sell")
       game.doAction({
         type: ActionType.SELL,
         cargo: i,
@@ -155,23 +162,47 @@ async function startGame() {
     } as InitSetupPayload),
   });
 
-  var nipple = nipplejs.create({});
-  nipple.on("move", (evt, data) => {
-    console.log(data);
-  })
-
   appData().player_name = UI.nameInput.value;
 
   var json: InitReturnPayload = (await result.json()) as InitReturnPayload;
 
   game = new Game(UI.canvas, UI.mapCanvas, json, skin, UI.nameInput.value);
 
+  let controlling = false;
+
+  UI.nipple.on("move", (evt, data) => {
+    game.nippleUpdate = data;
+    controlling = true;
+  })
+
+  UI.nipple.on("removed", (evt, data) => {
+    game.nippleUpdate = undefined;
+    controlling = false;
+  });
+
+  // shoot on second tap
+  UI.canvas.addEventListener("touchstart", (e) => {
+    if (controlling && e.touches.length == 2) {
+      if (e.touches[1].clientX < window.innerWidth / 2) {
+        game.doAction({
+          type: ActionType.SHOOT,
+          cannon: CannonSlot.LEFT,
+        });
+      } else {
+        game.doAction({
+          type: ActionType.SHOOT,
+          cannon: CannonSlot.RIGHT,
+        });
+      }
+    }
+  });
+
+  UI.dialogue.addEventListener("touchstart", (e) => {
+    UI.dialogue.classList.remove("open");
+  })
+
   UI.game.classList.add("open");
   game.soundEngine.play(Sound.Ambience_Ship_LOOP, 0.25);
-
-  game.on(GameEvent.DISMISS_DIALOGUE, (d) => {
-    UI.dialogue.classList.remove("open");
-  });
 
   game.on(GameEvent.DIALOGUE, (d) => {
     if (d.dialogue) {

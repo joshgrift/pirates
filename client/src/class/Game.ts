@@ -18,6 +18,7 @@ import {
   EventType,
   Skin,
 } from "../../../shared/Objects";
+import nipplejs from 'nipplejs';
 
 enum Status {
   READY,
@@ -43,28 +44,29 @@ let SAVED_PACKAGE_LIMIT = 3;
  * Should not interact with DOM, only canvas.
  */
 export class Game {
-  DEBUG = false;
+  private savedMessage: ServerClientPayload[] = [];
 
-  savedMessage: ServerClientPayload[] = [];
+  private map: Map;
+  private ships: Ship[] = [];
+  private entities: Entity[] = [];
+  private terrain: Terrain[] = [];
+  private ports: Port[] = [];
 
-  map: Map;
-  ships: Ship[] = [];
-  entities: Entity[] = [];
-  terrain: Terrain[] = [];
-  ports: Port[] = [];
+  private inPort: boolean = false;
 
-  inPort: boolean = false;
+  private gameEventCallbacks: { [id: number]: (d: GameEventData) => void } = {};
 
-  gameEventCallbacks: { [id: number]: (d: GameEventData) => void } = {};
+  private keys: { [id: string]: Boolean } = {};
 
-  player: Player;
-  keys: { [id: string]: Boolean } = {};
+  private status: Status = Status.DISCONNECTED;
+  private socket: WebSocket;
 
-  status: Status = Status.DISCONNECTED;
-  socket: WebSocket;
+  private miniMap: Minimap;
 
-  miniMap: Minimap;
-  soundEngine: SoundEngine;
+  public player: Player;
+  public soundEngine: SoundEngine;
+  public DEBUG = false;
+  public nippleUpdate: nipplejs.JoystickOutputData | undefined;
 
   constructor(
     c: HTMLCanvasElement,
@@ -282,6 +284,46 @@ export class Game {
           direction: -1,
         });
       }
+
+      if (this.nippleUpdate && this.nippleUpdate.angle) {
+        let targetDirection = 360 - Math.floor(this.nippleUpdate.angle.degree);
+        let currentDirection = this.player.heading;
+
+        let diff = targetDirection - currentDirection;
+
+        let i = 0;
+
+        if (diff < 5 && diff > 0) {
+          i = 0;
+        } else if (
+          ((currentDirection - targetDirection) + 360) % 360 > ((targetDirection - currentDirection) + 360) % 360
+        ) {
+          i = 1;
+        } else {
+          i = -1;
+        }
+
+        //console.log(`target: ${targetDirection}, current: ${currentDirection}, diff: ${diff}, dir: ${i}`);
+
+        this.doAction({
+          type: ActionType.TURN,
+          direction: i * 1,
+        });
+
+
+        let force = this.nippleUpdate.force;
+
+        if (force < 0.5) {
+          this.player.accelerate(-0.1);
+        } else {
+          this.player.accelerate(0.01 * force);
+        }
+      }
+
+      if (!this.nippleUpdate) {
+        this.player.accelerate(-0.01);
+      }
+
 
       this.send(this.player.toJSON());
       this.player.actions = [];

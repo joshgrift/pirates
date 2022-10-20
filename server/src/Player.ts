@@ -156,6 +156,9 @@ export class Player extends MapEntity {
   changeHeading(i: number) {
     if (this.speed >= 0.1 && !this.dead) {
       this.angle = (this.angle + i) % 360;
+      if (this.angle < 0) {
+        this.angle = this.angle + 360;
+      }
     }
   }
 
